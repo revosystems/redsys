@@ -13,7 +13,7 @@ abstract class RESTRequestOperationMessage extends RESTGenericXml
     {
         $this->setAmount($amount); // i.e. 1,23 (decimal point depends on currency code)
         $this->setCurrency($currency); // ISO-4217 numeric currency code
-        $this->setOrder($data->orderId);
+        $this->setOrder($data->orderReference);
         $this->setTransactionType(RESTConstants::$AUTHORIZATION);
         $this->setCard($data);
         // Other optional parameters example can be added by "addParameter" method

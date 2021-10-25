@@ -12,8 +12,11 @@ use Revosystems\RedsysGateway\Models\ChargeRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 
-abstract class RedsysWebhook
+abstract class Webhook
 {
+    /**
+     * @var RedsysConfig
+     */
     protected $config;
 
     public function __construct(RedsysConfig $config)
@@ -38,7 +41,7 @@ abstract class RedsysWebhook
         if ($data->shouldSaveCard) {
             $challengeRequest->createReference();
         }
-        $response   = RedsysRest::make(RESTTrataRequestService::class, $this->config->claveComercio, $this->config->test)->sendOperation($challengeRequest);
+        $response   = RedsysRest::make(RESTTrataRequestService::class, $this->config->key, $this->config->test)->sendOperation($challengeRequest);
         $result     = $response->getResult();
 
         Log::debug("[REDSYS] Getting webhook authentication response {$result}");
@@ -64,8 +67,8 @@ abstract class RedsysWebhook
     protected function getRequestOperation(ChargeRequest $data, $posOrderId, $amount, $currency)
     {
         return (new RESTAuthenticationRequestOperationMessage)
-            ->setMerchant($this->config->merchantCode)
-            ->setTerminal($this->config->merchantTerminal)
+            ->setMerchant($this->config->code)
+            ->setTerminal($this->config->terminal)
             ->generate($data, $posOrderId, $amount, $currency);
     }
 }

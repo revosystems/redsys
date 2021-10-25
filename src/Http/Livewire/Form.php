@@ -3,10 +3,10 @@
 namespace Revosystems\RedsysGateway\Http\Livewire;
 
 use Livewire\Component;
-use Revosystems\RedsysGateway\Models\ChargeRequest;
+use Revosystems\RedsysGateway\Redsys;
 use Revosystems\RedsysGateway\RedsysError;
 
-class RedsysForm extends Component
+class Form extends Component
 {
     protected $listeners = [
         'onFormErrorReceived',
@@ -14,15 +14,15 @@ class RedsysForm extends Component
         'checkoutButtons.cardsFound' => 'shouldSelect',
     ];
 
-    public $iframeUrl;
-    public $merchantCode;
-    public $merchantTerminal;
-    public $orderId;
-    public $buttonText;
-    public $customerToken;
     public $shouldSaveCard;
-    public $cardId;
-    public $select = false;
+    protected $iframeUrl;
+    protected $merchantCode;
+    protected $merchantTerminal;
+    protected $orderReference;
+    protected $buttonText;
+    protected $customerToken;
+    protected $cardId;
+    protected $select = false;
 
     public $formError;
     /**
@@ -30,21 +30,19 @@ class RedsysForm extends Component
      */
     public $error;
 
-    public function mount($iframeUrl, $merchantCode, $merchantTerminal, $orderId, $buttonText, $customerToken, $cardId)
+    public function mount($iframeUrl, $merchantCode, $merchantTerminal, $orderReference, $buttonText)
     {
         $this->iframeUrl        = $iframeUrl;
         $this->merchantCode     = $merchantCode;
         $this->merchantTerminal = $merchantTerminal;
-        $this->orderId          = $orderId;
+        $this->orderReference   = $orderReference;
         $this->buttonText       = $buttonText;
-        $this->customerToken    = $customerToken;
-        $this->cardId           = $cardId;
         $this->formError        = null;
     }
 
     public function render()
     {
-        return view('livewire.redsys-form');
+        return view('redsys-gateway::livewire.form');
     }
 
     public function onFormErrorReceived($formErrorCode)
@@ -55,7 +53,10 @@ class RedsysForm extends Component
 
     public function onFormSuccess($idOper, $params)
     {
-        $this->emit('onPayPressed', serialize(new ChargeRequest($idOper, $this->cardId, $this->orderId, $this->shouldSaveCard, $this->customerToken, $params)));
+        $result                 = Redsys::get()->charge($idOper, $params);
+        $this->paymentReference = $result->reference;
+        $this->emit('payResponse', $result->gatewayResponse);    // Gateway render Javascript handles this result
+//        $this->emit('onPayPressed', serialize(new ChargeRequest($idOper, $this->cardId, $this->orderReference, $this->shouldSaveCard, $this->customerToken, $params)));
     }
 
     public function shouldSelect(bool $select)

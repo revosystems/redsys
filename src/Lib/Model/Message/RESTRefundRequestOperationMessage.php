@@ -14,7 +14,7 @@ class RESTRefundRequestOperationMessage extends RESTInitialRequestOperationMessa
     {
         $this->setAmount($amount); // i.e. 1,23 (decimal point depends on currency code)
         $this->setCurrency($currency); // ISO-4217 numeric currency code
-        $this->setOrder($data->orderId);
+        $this->setOrder($data->orderReference);
         $this->setTransactionType(RESTConstants::$REFUND);
         $this->addParameter("DS_MERCHANT_REVO_ORDER_ID", $posOrderId);
         return $this;

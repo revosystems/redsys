@@ -10,7 +10,7 @@ use Revosystems\RedsysGateway\Models\ChargeResult;
 
 class RedsysChallengeForm
 {
-    private $webhook;
+    protected $webhook;
 
     public function __construct($webhook)
     {
@@ -20,7 +20,7 @@ class RedsysChallengeForm
     public function display(ChargeRequest $data, RESTResponseMessage $response, $termUrl, $amount) : ChargeResult
     {
         $operation  = base64_encode(serialize($response->getOperation()));
-        Cache::put("redsys.webhooks.{$data->orderId}", [
+        Cache::put("redsys.webhooks.{$data->orderReference}", [
             'data'          => serialize($data),
             'operation'     => $operation,
             'redsysWebhook' => serialize($this->webhook),
@@ -35,6 +35,6 @@ class RedsysChallengeForm
                 'termUrl'   => $termUrl,
             ])->toHtml(),
             "operation"     => $operation,
-        ], $amount, "redsys:{$data->orderId}");
+        ], $amount, "redsys:{$data->orderReference}");
     }
 }

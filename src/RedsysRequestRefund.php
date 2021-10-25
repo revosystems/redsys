@@ -16,7 +16,7 @@ class RedsysRequestRefund extends RedsysRequest
     {
         $requestOperation = $this->requestOperation(new ChargeRequest(null, null, $reference), null, $amount, $currency);
 
-        $response = RedsysRest::make(RESTTrataRequestService::class, $this->config->claveComercio, $this->config->test)
+        $response = RedsysRest::make(RESTTrataRequestService::class, $this->config->key, $this->config->test)
             ->sendOperation($requestOperation);
 
         $result   = $response->getResult();

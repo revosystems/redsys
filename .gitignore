@@ -2,3 +2,4 @@
 composer.phar
 .DS_Store
 .php_cs.cache
+.idea

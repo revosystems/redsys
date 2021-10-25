@@ -25,7 +25,7 @@ class RedsysRequestApplePay extends RedsysRequest
         $requestOperation->addParameter("DS_XPAYTYPE", "Apple");
         $requestOperation->addParameter("DS_XPAYORIGEN", 'WEB');
 
-        $response = RedsysRest::make(RESTTrataRequestService::class, $this->config->claveComercio, $this->config->test)
+        $response = RedsysRest::make(RESTTrataRequestService::class, $this->config->key, $this->config->test)
             ->sendOperation($requestOperation);
         $result   = $response->getResult();
         Log::debug("[REDSYS] Getting apple pay response {$result}");
@@ -33,6 +33,6 @@ class RedsysRequestApplePay extends RedsysRequest
             Log::error("[REDSYS] Operation `ApplePay` was not OK");
             return new ChargeResult(false, $this->getResponse($response));
         }
-        return new ChargeResult(true, $this->getResponse($response), $requestOperation->getAmount(), "redsys:{$data->orderId}");
+        return new ChargeResult(true, $this->getResponse($response), $requestOperation->getAmount(), "redsys:{$data->orderReference}");
     }
 }

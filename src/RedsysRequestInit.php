@@ -17,14 +17,14 @@ class RedsysRequestInit extends RedsysRequest
         $requestOperation = $this->requestOperation($data, $posOrderId, $amount, $currency)
             ->demandCardData();
 
-        $response = RedsysRest::make(RESTInitialRequestService::class, $this->config->claveComercio, $this->config->test)
+        $response = RedsysRest::make(RESTInitialRequestService::class, $this->config->key, $this->config->test)
             ->sendOperation($requestOperation);
 
         $result   = $response->getResult();
         Log::debug("[REDSYS] Getting response {$result}");
         if ($result == RESTConstants::$RESP_LITERAL_KO) {
             Log::error("[REDSYS] Operation `Inicia Petición` was not OK");
-            return new ChargeResult(false, $this->getResponse($response), $amount, $data->orderId);
+            return new ChargeResult(false, $this->getResponse($response), $amount, $data->orderReference);
         }
         return $response;
     }

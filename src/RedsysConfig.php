@@ -5,16 +5,14 @@ namespace Revosystems\RedsysGateway;
 
 class RedsysConfig
 {
-    public $merchantCode;
-    public $merchantTerminal;
-    public $claveComercio;
-    public $test;
+    public $code;
+    public $terminal;
+    public $key;
 
-    public function __construct($merchantCode, $merchantTerminal, $claveComercio, $test = false)
+    public function __construct(array $config)
     {
-        $this->merchantCode     = $merchantCode ?? "999008881";
-        $this->merchantTerminal = $merchantTerminal ?? "001";
-        $this->claveComercio    = $claveComercio ?? "sq7HjrUOBfKmC576ILgskD5srU870gJ7";
-        $this->test             = $test;
+        $this->code     = $config['merchant_code'] ?? "999008881";
+        $this->key      = $config['merchant_key'] ?? "sq7HjrUOBfKmC576ILgskD5srU870gJ7";
+        $this->terminal = $config['merchant_terminal'] ?? "001";
     }
 }

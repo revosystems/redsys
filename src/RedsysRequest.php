@@ -25,8 +25,8 @@ abstract class RedsysRequest
     {
         $operationMessageClass = $this->operationMessageClass();
         return (new $operationMessageClass)
-            ->setMerchant($this->config->merchantCode)
-            ->setTerminal($this->config->merchantTerminal)
+            ->setMerchant($this->config->code)
+            ->setTerminal($this->config->terminal)
             ->generate($data, $posOrderId, $amount, $currency);
     }
 

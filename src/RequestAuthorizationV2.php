@@ -7,7 +7,7 @@ use Revosystems\RedsysGateway\Lib\Model\Message\RESTAuthorizationRequestOperatio
 use Revosystems\RedsysGateway\Lib\Model\Message\RESTResponseMessage;
 use Revosystems\RedsysGateway\Models\ChargeRequest;
 
-class RedsysRequestAuthorizationV2 extends RedsysRequestAuthorization
+class RequestAuthorizationV2 extends RequestAuthorization
 {
     public function handle(ChargeRequest $data, $posOrderId, $amount, $currency, RESTResponseMessage $response)
     {
@@ -40,7 +40,7 @@ class RedsysRequestAuthorizationV2 extends RedsysRequestAuthorization
             (string)$data->extraInfo['browser_width'],
             (string)$data->extraInfo['browser_tz'],
             $response->getThreeDSServerTransID(),
-            $this->getWebhookUrl($data->orderId, $posOrderId),
+            $this->getWebhookUrl($data->orderReference, $posOrderId),
             $threeDSMethodURL ? 'N' : 'U'
         );
 //        if (auth()->user()->email) {
@@ -50,6 +50,6 @@ class RedsysRequestAuthorizationV2 extends RedsysRequestAuthorization
 
     protected function getWebhookClass()
     {
-        return RedsysWebhookV2::class;
+        return WebhookV2::class;
     }
 }

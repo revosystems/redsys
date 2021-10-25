@@ -6,16 +6,28 @@
     "authors": [
         {
             "name": "Pau Benet Prat",
-            "email": "pau@revo.works"
+            "email": "pau.benet.prat@gmail.com"
         }
     ],
     "require": {
-        "php": "^7.3|^8.0",
-        "livewire/livewire": "^2.7"
+        "php": ">=7.3",
+        "livewire/livewire": "^2.4",
+        "illuminate/http": "8.x-dev",
+        "illuminate/view": ">=8.0.0",
+        "illuminate/support": "8.x-dev",
+        "illuminate/routing": "8.x-dev"
     },
     "autoload": {
         "psr-4": {
             "Revosystems\\RedsysGateway\\": "src"
         }
-    }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Revosystems\\RedsysGateway\\RedsysGatewayServiceProvider"
+            ]
+        }
+    },
+    "minimum-stability": "dev"
 }

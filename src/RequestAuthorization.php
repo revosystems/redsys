@@ -9,7 +9,7 @@ use Revosystems\RedsysGateway\Lib\Service\Impl\RESTTrataRequestService;
 use Revosystems\RedsysGateway\Models\ChargeRequest;
 use Illuminate\Support\Facades\Log;
 
-abstract class RedsysRequestAuthorization extends RedsysRequest
+abstract class RequestAuthorization extends RedsysRequest
 {
     abstract protected function getWebhookClass();
     protected function operationMessageClass()
@@ -23,7 +23,7 @@ abstract class RedsysRequestAuthorization extends RedsysRequest
             $operationRequest->createReference();
         }
 
-        $response = RedsysRest::make(RESTTrataRequestService::class, $this->config->claveComercio, $this->config->test)->sendOperation($operationRequest);
+        $response = RedsysRest::make(RESTTrataRequestService::class, $this->config->key, $this->config->test)->sendOperation($operationRequest);
         $result   = $response->getResult();
         Log::debug("[REDSYS] Getting response {$result}");
         if ($result == RESTConstants::$RESP_LITERAL_KO) {
@@ -36,12 +36,12 @@ abstract class RedsysRequestAuthorization extends RedsysRequest
         }
         if ($result == RESTConstants::$RESP_LITERAL_OK) {
             Log::debug("[REDSYS] Operation authorization was OK (frictionless)");
-            return new ChargeResult(true, $this->getResponse($response), $operationRequest->getAmount(), "redsys:{$data->orderId}");
+            return new ChargeResult(true, $this->getResponse($response), $operationRequest->getAmount(), "redsys:{$data->orderReference}");
         }
-        return (new RedsysChallengeForm($this->redsysWebhook()))->display($data, $response, $this->getWebhookUrl($data->orderId, $posOrderId), $operationRequest->getAmount());
+        return (new RedsysChallengeForm($this->redsysWebhook()))->display($data, $response, $this->getWebhookUrl($data->orderReference, $posOrderId), $operationRequest->getAmount());
     }
 
-    protected function redsysWebhook()
+    protected function redsysWebhook() : Webhook
     {
         $webhookClass = $this->getWebhookClass();
         return new $webhookClass($this->config);

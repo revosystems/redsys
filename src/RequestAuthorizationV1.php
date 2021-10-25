@@ -5,7 +5,7 @@ namespace Revosystems\RedsysGateway;
 
 use Revosystems\RedsysGateway\Models\ChargeRequest;
 
-class RedsysRequestAuthorizationV1 extends RedsysRequestAuthorization
+class RequestAuthorizationV1 extends RequestAuthorization
 {
     public function handle(ChargeRequest $data, $posOrderId, $amount, $currency)
     {
@@ -16,6 +16,6 @@ class RedsysRequestAuthorizationV1 extends RedsysRequestAuthorization
 
     protected function getWebhookClass()
     {
-        return RedsysWebhookV1::class;
+        return WebhookV1::class;
     }
 }
