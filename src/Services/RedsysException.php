@@ -1,7 +1,7 @@
 <?php
 
 
-namespace Revosystems\RedsysGateway;
+namespace Revosystems\RedsysPayment\Services;
 
 class RedsysException extends \RuntimeException
 {

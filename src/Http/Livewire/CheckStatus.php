@@ -1,6 +1,6 @@
 <?php
 
-namespace Revosystems\RedsysGateway\Http\Livewire;
+namespace Revosystems\RedsysPayment\Http\Livewire;
 
 use Illuminate\Support\Facades\Cache;
 use Livewire\Component;
@@ -16,12 +16,14 @@ class CheckStatus extends Component
 
     public function render()
     {
-        return view('redsys-gateway::livewire.check-status');
+        return view('redsys-payment::livewire.check-status');
     }
 
     public function checkStatus()
     {
-        $result = Cache::get("redsys.webhooks.{$this->orderReference}.result");
+        $result = Cache::get("rv-redsys-payment.webhooks.{$this->orderReference}.result");
+        logger('result status');
+        logger($result);
         if ($result == 'FAILED') {
             return $this->emit('onPaymentCompleted', "Redsys payment failed");
         }

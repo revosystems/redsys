@@ -1,13 +1,13 @@
 <?php
 
 
-namespace Revosystems\RedsysGateway;
+namespace Revosystems\RedsysPayment\Services;
 
-use Revosystems\RedsysGateway\Models\ChargeResult;
-use Revosystems\RedsysGateway\Lib\Constants\RESTConstants;
-use Revosystems\RedsysGateway\Lib\Model\Message\RESTAuthorizationRequestOperationMessage;
-use Revosystems\RedsysGateway\Lib\Service\Impl\RESTTrataRequestService;
-use Revosystems\RedsysGateway\Models\ChargeRequest;
+use Revosystems\RedsysPayment\Models\ChargeResult;
+use Revosystems\RedsysPayment\Lib\Constants\RESTConstants;
+use Revosystems\RedsysPayment\Lib\Model\Message\RESTAuthorizationRequestOperationMessage;
+use Revosystems\RedsysPayment\Lib\Service\Impl\RESTTrataRequestService;
+use Revosystems\RedsysPayment\Models\ChargeRequest;
 use Illuminate\Support\Facades\Log;
 
 class RedsysRequestGooglePay extends RedsysRequest
@@ -17,15 +17,15 @@ class RedsysRequestGooglePay extends RedsysRequest
         return RESTAuthorizationRequestOperationMessage::class;
     }
 
-    public function handle(ChargeRequest $data, $posOrderId, $amount, $currency, $payData)
+    public function handle(ChargeRequest $chargeRequest, $orderId, $amount, $currency, $payData)
     {
-        $requestOperation = $this->requestOperation($data, $posOrderId, $amount, $currency);
+        $requestOperation = $this->requestOperation($chargeRequest, $orderId, $amount, $currency);
         $requestOperation->useDirectPayment();
         $requestOperation->addParameter("DS_XPAYDATA", base64_encode($payData));
         $requestOperation->addParameter("DS_XPAYTYPE", "Google");
         $requestOperation->addParameter("DS_XPAYORIGEN", 'WEB');
 
-        $response = RedsysRest::make(RESTTrataRequestService::class, $this->config->key, $this->config->test)
+        $response = RedsysRest::make(RESTTrataRequestService::class, $this->config->key)
             ->sendOperation($requestOperation);
         $result   = $response->getResult();
         Log::debug("[REDSYS] Getting google pay response {$result}");
@@ -33,6 +33,6 @@ class RedsysRequestGooglePay extends RedsysRequest
             Log::error("[REDSYS] Operation `GooglePay` was not OK");
             return new ChargeResult(false, $this->getResponse($response));
         }
-        return new ChargeResult(true, $this->getResponse($response), $requestOperation->getAmount(), "redsys:{$data->orderReference}");
+        return new ChargeResult(true, $this->getResponse($response), $requestOperation->getAmount(), "redsys:{$chargeRequest->orderReference}");
     }
 }

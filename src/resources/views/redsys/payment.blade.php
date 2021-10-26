@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends(config('redsys-payment.indexLayout'))
 
 @section('head')
 {{--    <script src="https://cdn.jsdelivr.net/gh/alpinejs/alpine@v2.8.2/dist/alpine.min.js" defer></script>--}}
@@ -8,7 +8,7 @@
 
 @section('header')
     <div class="flex justify-center">
-        <div class="text-sm">Orden #{{$externalOrderId}}</div>
+        <div class="text-sm">Orden #{{$orderId}}</div>
     </div>
 @endsection
 

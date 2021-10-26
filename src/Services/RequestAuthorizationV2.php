@@ -1,22 +1,22 @@
 <?php
 
 
-namespace Revosystems\RedsysGateway;
+namespace Revosystems\RedsysPayment\Services;
 
-use Revosystems\RedsysGateway\Lib\Model\Message\RESTAuthorizationRequestOperationMessage;
-use Revosystems\RedsysGateway\Lib\Model\Message\RESTResponseMessage;
-use Revosystems\RedsysGateway\Models\ChargeRequest;
+use Revosystems\RedsysPayment\Lib\Model\Message\RESTAuthorizationRequestOperationMessage;
+use Revosystems\RedsysPayment\Lib\Model\Message\RESTResponseMessage;
+use Revosystems\RedsysPayment\Models\ChargeRequest;
 
 class RequestAuthorizationV2 extends RequestAuthorization
 {
-    public function handle(ChargeRequest $data, $posOrderId, $amount, $currency, RESTResponseMessage $response)
+    public function handle(ChargeRequest $chargeRequest, $orderId, $amount, $currency, RESTResponseMessage $response)
     {
-        $operationRequest = $this->requestOperation($data, $posOrderId, $amount, $currency);
-        $this->setEMV3DSParamsV2($data, $operationRequest, $response, $posOrderId);
-        return $this->getAuthorizationChargeResult($data, $operationRequest, $posOrderId);
+        $operationRequest = $this->requestOperation($chargeRequest, $orderId, $amount, $currency);
+        $this->setEMV3DSParamsV2($chargeRequest, $operationRequest, $response, $orderId);
+        return $this->getAuthorizationChargeResult($chargeRequest, $operationRequest, $orderId);
     }
 
-    protected function setEMV3DSParamsV2(ChargeRequest $data, RESTAuthorizationRequestOperationMessage $operationRequest, $response, $posOrderId): void
+    protected function setEMV3DSParamsV2(ChargeRequest $chargeRequest, RESTAuthorizationRequestOperationMessage $operationRequest, $response, $orderId): void
     {
         $threeDSInfo          = $response->getThreeDSInfo();
         $threeDSMethodURL     = $response->getThreeDSMethodURL();
@@ -35,12 +35,12 @@ class RequestAuthorizationV2 extends RequestAuthorization
             request()->ip(),
 //            request()->header('Accept-Language', 'es-ES'), // navigator.language
             "es-ES",
-            (string)$data->extraInfo['browser_color_depth'],
-            (string)$data->extraInfo['browser_height'],
-            (string)$data->extraInfo['browser_width'],
-            (string)$data->extraInfo['browser_tz'],
+            (string)$chargeRequest->extraInfo['browser_color_depth'],
+            (string)$chargeRequest->extraInfo['browser_height'],
+            (string)$chargeRequest->extraInfo['browser_width'],
+            (string)$chargeRequest->extraInfo['browser_tz'],
             $response->getThreeDSServerTransID(),
-            $this->getWebhookUrl($data->orderReference, $posOrderId),
+            $this->getWebhookUrl($chargeRequest->orderReference, $orderId),
             $threeDSMethodURL ? 'N' : 'U'
         );
 //        if (auth()->user()->email) {

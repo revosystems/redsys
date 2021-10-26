@@ -1,16 +1,18 @@
 <?php
 
 
-namespace Revosystems\RedsysGateway;
+namespace Revosystems\RedsysPayment\Services;
 
-use Revosystems\RedsysGateway\Models\ChargeResult;
-use Revosystems\RedsysGateway\Lib\Constants\RESTConstants;
-use Revosystems\RedsysGateway\Lib\Model\Message\RESTAuthenticationRequestOperationMessage;
-use Revosystems\RedsysGateway\Lib\Model\Message\RESTResponseMessage;
-use Revosystems\RedsysGateway\Lib\Service\Impl\RESTTrataRequestService;
-use Revosystems\RedsysGateway\Models\ChargeRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use Revosystems\RedsysPayment\Lib\Constants\RESTConstants;
+use Revosystems\RedsysPayment\Lib\Model\Message\RESTAuthenticationRequestOperationMessage;
+use Revosystems\RedsysPayment\Lib\Model\Message\RESTResponseMessage;
+use Revosystems\RedsysPayment\Lib\Service\Impl\RESTTrataRequestService;
+use Revosystems\RedsysPayment\Models\ChargeRequest;
+use Revosystems\RedsysPayment\Models\ChargeResult;
+use Revosystems\RedsysPayment\Models\Redsys;
+use Revosystems\RedsysPayment\Models\RedsysConfig;
 
 abstract class Webhook
 {
@@ -27,21 +29,21 @@ abstract class Webhook
     /**
      * @throws RedsysException
      */
-    public function handle($operation, $posOrderId, ChargeRequest $data, Request $request)
+    public function handle($operation, $orderId, ChargeRequest $chargeRequest, Request $request)
     {
-        $challengeRequest = $this->getRequestOperation($data, $posOrderId, $operation->getAmount(), $operation->getCurrency());
+        $challengeRequest = $this->getRequestOperation($chargeRequest, $orderId, $operation->getAmount(), $operation->getCurrency());
         $this->challenge($challengeRequest, $operation, $request);
-        return $this->sendAuthenticationConfirmationOperation($challengeRequest, $data);
+        return $this->sendAuthenticationConfirmationOperation($challengeRequest, $chargeRequest);
     }
 
     abstract protected function challenge(RESTAuthenticationRequestOperationMessage $challengeRequest, $operation, Request $request): void;
 
-    protected function sendAuthenticationConfirmationOperation($challengeRequest, ChargeRequest $data)
+    protected function sendAuthenticationConfirmationOperation($challengeRequest, ChargeRequest $chargeRequest)
     {
-        if ($data->shouldSaveCard) {
+        if ($chargeRequest->shouldSaveCard) {
             $challengeRequest->createReference();
         }
-        $response   = RedsysRest::make(RESTTrataRequestService::class, $this->config->key, $this->config->test)->sendOperation($challengeRequest);
+        $response   = RedsysRest::make(RESTTrataRequestService::class, $this->config->key)->sendOperation($challengeRequest);
         $result     = $response->getResult();
 
         Log::debug("[REDSYS] Getting webhook authentication response {$result}");
@@ -50,8 +52,8 @@ abstract class Webhook
             return new ChargeResult(false, $this->getResponse($response));
         }
         $operation = $response->getOperation();
-        if ($data->shouldSaveCard && $operation->getMerchantIdentifier()) {
-            Redsys::tokenizeCards($operation, $data->customerToken);
+        if ($chargeRequest->shouldSaveCard && $operation->getMerchantIdentifier()) {
+            Redsys::tokenizeCards($operation, $chargeRequest->customerToken);
         }
         return new ChargeResult(true, $this->getResponse($response));
     }
@@ -64,11 +66,11 @@ abstract class Webhook
         ];
      }
 
-    protected function getRequestOperation(ChargeRequest $data, $posOrderId, $amount, $currency)
+    protected function getRequestOperation(ChargeRequest $chargeRequest, $orderId, $amount, $currency)
     {
         return (new RESTAuthenticationRequestOperationMessage)
             ->setMerchant($this->config->code)
             ->setTerminal($this->config->terminal)
-            ->generate($data, $posOrderId, $amount, $currency);
+            ->generate($chargeRequest, $orderId, $amount, $currency);
     }
 }

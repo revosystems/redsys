@@ -1,9 +1,9 @@
 <?php
 
-namespace Revosystems\RedsysGateway\Http\Livewire;
+namespace Revosystems\RedsysPayment\Http\Livewire;
 
 use Livewire\Component;
-use Revosystems\RedsysGateway\Http\Livewire\Traits\ApplePayEventsTrait;
+use Revosystems\RedsysPayment\Http\Livewire\Traits\ApplePayEventsTrait;
 
 class ApplePayButton extends Component
 {
@@ -16,6 +16,6 @@ class ApplePayButton extends Component
 
     public function render()
     {
-        return view('redsys-gateway::livewire.apple-pay-button');
+        return view('redsys-payment::livewire.apple-pay-button');
     }
 }

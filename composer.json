@@ -1,6 +1,6 @@
 {
-    "name": "revosystems/redsys-gateway",
-    "description": "Redsys PaymentGateway lib",
+    "name": "revosystems/redsys-payment",
+    "description": "Redsys Payment Gateway",
     "type": "library",
     "license": "MIT",
     "authors": [
@@ -11,23 +11,21 @@
     ],
     "require": {
         "php": ">=7.3",
-        "livewire/livewire": "^2.4",
-        "illuminate/http": "8.x-dev",
-        "illuminate/view": ">=8.0.0",
-        "illuminate/support": "8.x-dev",
-        "illuminate/routing": "8.x-dev"
+        "laravel/framework": "8.x",
+        "livewire/livewire": "^2.7",
+        "psr/container": "^1.0"
     },
     "autoload": {
         "psr-4": {
-            "Revosystems\\RedsysGateway\\": "src"
+            "Revosystems\\RedsysPayment\\": "src"
         }
     },
     "extra": {
         "laravel": {
             "providers": [
-                "Revosystems\\RedsysGateway\\RedsysGatewayServiceProvider"
+                "Revosystems\\RedsysPayment\\RedsysPaymentServiceProvider"
             ]
         }
     },
-    "minimum-stability": "dev"
+    "minimum-stability": "stable"
 }

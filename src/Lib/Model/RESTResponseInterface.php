@@ -1,6 +1,6 @@
 <?php
 
-namespace Revosystems\RedsysGateway\Lib\Model;
+namespace Revosystems\RedsysPayment\Lib\Model;
 
 interface RESTResponseInterface
 {

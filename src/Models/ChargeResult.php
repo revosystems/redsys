@@ -1,6 +1,6 @@
 <?php
 
-namespace Revosystems\RedsysGateway\Models;
+namespace Revosystems\RedsysPayment\Models;
 
 class ChargeResult
 {

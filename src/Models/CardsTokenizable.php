@@ -1,7 +1,7 @@
 <?php
 
 
-namespace Revosystems\RedsysGateway\Models;
+namespace Revosystems\RedsysPayment\Models;
 
 use Illuminate\Support\Collection;
 

@@ -1,12 +1,16 @@
 <?php
 
-namespace Revosystems\RedsysGateway\Http\Controllers;
+namespace Revosystems\RedsysPayment\Http\Controllers;
 
+use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
-use Revosystems\RedsysGateway\Models\ChargeRequest;
-use Revosystems\RedsysGateway\RedsysException;
+use Revosystems\RedsysPayment\Exceptions\SessionExpiredException;
+use Revosystems\RedsysPayment\Interfaces\PaymentHandler;
+use Revosystems\RedsysPayment\Services\RedsysException;
+use Revosystems\RedsysPayment\Services\Webhook;
 
 class WebhookController extends Controller
 {
@@ -29,13 +33,13 @@ class WebhookController extends Controller
             return;
         }
 
-        if (! $handler = $this->payHandler($request)) {
+        if (! $handler = $this->paymentHandler($request)) {
             $this->chargeFailed($request, 'Charge unserialize handler failed');
             return;
         }
 
         try {
-            $result = $this->unserialize('redsysWebhook')->handle($operation, $request->get('posOrderId'), $this->unserialize('data'), $request);
+            $result = $this->webhookManager()->handle($operation, $request->get('orderId'), $this->unserialize('paymentHandler'), $request);
             if (! $result->success) {
                 $this->chargeFailed($request, 'Charge authentication failed');
                 return;
@@ -53,23 +57,26 @@ class WebhookController extends Controller
         }
     }
 
-    protected function cachedData(Request $request) : ChargeRequest
+    protected function cachedData(Request $request) : ?array
     {
-        $cachedData = Cache::get("redsys.webhooks.{$request->get('orderIdentifier')}");
-        Cache::forget("redsys.webhooks.{$request->get('orderIdentifier')}");
+        $cachedData = Cache::get("rv-redsys-payment.webhooks.{$request->get('orderReference')}");
+        Cache::forget("rv-redsys-payment.webhooks.{$request->get('orderReference')}");
         return $cachedData;
     }
 
-    protected function payHandler(Request $request)
+    protected function paymentHandler(Request $request) : PaymentHandler
     {
-        $payHandler = unserialize(Cache::get("redsys.{$request->get('orderIdentifier')}"));
-        Cache::forget("redsys.{$request->get('orderIdentifier')}");
-        return $payHandler;
+        $paymentHandler = unserialize(Cache::get("rv-redsys-payment.orders.{$request->get('orderReference')}"));
+        if (! $paymentHandler) {
+            throw new SessionExpiredException;
+        }
+        Cache::forget("rv-redsys-payment.orders.{$request->get('orderReference')}");
+        return $paymentHandler;
     }
 
     protected function validateRequest(Request $request) : bool
     {
-        if (! $request->get('orderIdentifier')) {
+        if (! $request->get('orderReference')) {
             return false;
         }
         return $request->get('cres') || ($request->get('PaRes') && $request->get('MD'));
@@ -78,15 +85,20 @@ class WebhookController extends Controller
     protected function chargeFailed(Request $request, $errorMessage)
     {
         Log::error("[REDSYS] Webhook Error: {$errorMessage}");
-        Cache::put("redsys.webhooks.{$request->get('orderIdentifier')}.result", 'FAILED', now()->addMinutes(30));
+        Cache::put("rv-redsys-payment.webhooks.{$request->get('orderReference')}.result", 'FAILED', Carbon::now()->addMinutes(30));
     }
 
     protected function chargeSucceeded(Request $request)
     {
-        Cache::put("redsys.webhooks.{$request->get('orderIdentifier')}.result", 'SUCCESS', now()->addMinutes(30));
+        Cache::put("rv-redsys-payment.webhooks.{$request->get('orderReference')}.result", 'SUCCESS', Carbon::now()->addMinutes(30));
     }
 
-    protected function unserialize(string $key, $decode = false) : ?ChargeRequest
+    protected function webhookManager() : Webhook
+    {
+        return $this->unserialize('redsysWebhook');
+    }
+
+    protected function unserialize(string $key, $decode = false)
     {
         if (! isset($this->cachedData[$key])) {
             return null;

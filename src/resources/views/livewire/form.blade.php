@@ -3,9 +3,9 @@
         <p  id="errorMessage" class="flex text-m"> {{ $formError }}</p>
     </div>
 
-    <x-redsys-gateway-radio-selector :id="'new-card-mode'" :name="'mode'" :label="__('solo.useNewCard')" :selected="$this->select">
-        @include('redsys-gateway::redsys.iframe', ['iframeUrl' => $this->iframeUrl])
-    </x-redsys-gateway-radio-selector>
+    <x-redsys-payment-radio-selector :id="'new-card-mode'" :name="'mode'" :label="__(config('redsys-payment.translationsPrefix') . 'useNewCard')" :selected="$this->select">
+        @include('redsys-payment::redsys.iframe', ['iframeUrl' => $this->iframeUrl])
+    </x-redsys-payment-radio-selector>
 </div>
 
     <script>
@@ -40,11 +40,6 @@
             let bodyStyle = ''
             let boxStyle = ''
             let inputsStyle = ''
-            console.log('{{ $this->orderReference }}')
-            console.log('{{ $this->merchantCode }}')
-            console.log('{{ $this->merchantTerminal }}')
-            console.log('{{ $this->cardId }}')
-
             getInSiteForm('card-form', buttonStyle, bodyStyle, boxStyle, inputsStyle, "{!!  $this->buttonText !!}",
                 "{{ $this->merchantCode }}", "{{ $this->merchantTerminal }}", "{{ $this->orderReference }}", '{{ $this->cardId }}')
         }
@@ -52,7 +47,7 @@
         function showError(message, reload = true) {
             console.log(message)
             if (message) {
-                document.getElementById("errorMessage").innerHtml = message
+                document.getElementById("errorMessage").innerHTML = message
             }
             let errorContainer = document.getElementById("errorContainer")
             errorContainer.hidden = false
@@ -62,7 +57,7 @@
                 errorContainer.hidden = true
                 // errorContainer.fadeOut()
             }, 3000);
-            // document.getElementsByTagName('iframe').innerHtml = null
+            // document.getElementsByTagName('iframe').innerHTML = null
             document.getElementById('card-form').getElementsByTagName('iframe')[0].remove();
             // $("#card-form > iframe").remove()
             loadRedsysForm();
@@ -79,12 +74,22 @@
             console.log(data.result)
             if (data.result == 'AUT') {
                 console.log(data.displayForm);
-                // window.location.href('http://localhost:8080/webhooks/redsys-go?form=' + data.displayForm)
-                document.getElementById("card-form").html(data.displayForm).css('height', 980)
+                document.getElementById("card-form").innerHTML = data.displayForm
+                document.getElementById("card-form").style.height = '980px'
+                submitForm()
                 return;
             }
             console.log('Emiting onPaymentCompleted event')
             window.livewire.emit("onPaymentCompleted")
+        }
+
+        // FROM CHALLENGE BLADE
+        function submitForm() {
+            document.getElementById("redsys_iframe_acs").onload = function() {
+                document.getElementById("redsysAcsForm").style.display="none";
+                document.getElementById("redsys_iframe_acs").style.display="inline";
+            }
+            document.getElementById("redsysAcsForm").submit();
         }
 
         document.addEventListener("DOMContentLoaded", function(event) {

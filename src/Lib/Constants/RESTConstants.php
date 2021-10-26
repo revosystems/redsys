@@ -1,6 +1,6 @@
 <?php
 
-namespace Revosystems\RedsysGateway\Lib\Constants;
+namespace Revosystems\RedsysPayment\Lib\Constants;
 
 class RESTConstants
 {

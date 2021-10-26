@@ -1,11 +1,12 @@
 <?php
 
 
-namespace Revosystems\RedsysGateway;
+namespace Revosystems\RedsysPayment\Services;
 
-use Revosystems\RedsysGateway\Lib\Model\Message\RESTRequestOperationMessage;
-use Revosystems\RedsysGateway\Lib\Model\Message\RESTResponseMessage;
-use Revosystems\RedsysGateway\Models\ChargeRequest;
+use Revosystems\RedsysPayment\Lib\Model\Message\RESTRequestOperationMessage;
+use Revosystems\RedsysPayment\Lib\Model\Message\RESTResponseMessage;
+use Revosystems\RedsysPayment\Models\ChargeRequest;
+use Revosystems\RedsysPayment\Models\RedsysConfig;
 
 abstract class RedsysRequest
 {
@@ -21,13 +22,13 @@ abstract class RedsysRequest
 
     abstract protected function operationMessageClass();
 
-    protected function requestOperation(ChargeRequest $data, $posOrderId, $amount, $currency) : RESTRequestOperationMessage
+    protected function requestOperation(ChargeRequest $chargeRequest, $orderId, $amount, $currency) : RESTRequestOperationMessage
     {
         $operationMessageClass = $this->operationMessageClass();
         return (new $operationMessageClass)
             ->setMerchant($this->config->code)
             ->setTerminal($this->config->terminal)
-            ->generate($data, $posOrderId, $amount, $currency);
+            ->generate($chargeRequest, $orderId, $amount, $currency);
     }
 
     protected function getResponse(RESTResponseMessage $response)

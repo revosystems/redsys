@@ -1,10 +1,10 @@
 <?php
 
-namespace Revosystems\RedsysGateway\Lib\Service\Impl;
+namespace Revosystems\RedsysPayment\Lib\Service\Impl;
 
-use Revosystems\RedsysGateway\Lib\Constants\RESTConstants;
-use Revosystems\RedsysGateway\Lib\Model\Message\RESTResponseMessage;
-use Revosystems\RedsysGateway\Lib\Service\RESTService;
+use Revosystems\RedsysPayment\Lib\Constants\RESTConstants;
+use Revosystems\RedsysPayment\Lib\Model\Message\RESTResponseMessage;
+use Revosystems\RedsysPayment\Lib\Service\RESTService;
 
 class RESTTrataRequestService extends RESTService
 {

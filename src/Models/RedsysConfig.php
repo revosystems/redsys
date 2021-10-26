@@ -1,7 +1,7 @@
 <?php
 
 
-namespace Revosystems\RedsysGateway;
+namespace Revosystems\RedsysPayment\Models;
 
 class RedsysConfig
 {

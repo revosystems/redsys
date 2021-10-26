@@ -1,9 +1,9 @@
 <?php
 
-namespace Revosystems\RedsysGateway\Lib\Model\Element;
+namespace Revosystems\RedsysPayment\Lib\Model\Element;
 
-use Revosystems\RedsysGateway\Lib\Constants\RESTConstants;
-use Revosystems\RedsysGateway\Lib\Model\RESTGenericXml;
+use Revosystems\RedsysPayment\Lib\Constants\RESTConstants;
+use Revosystems\RedsysPayment\Lib\Model\RESTGenericXml;
 
 /**
  * @XML_ELEM=OPERACION

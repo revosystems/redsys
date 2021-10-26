@@ -1,8 +1,8 @@
 <?php
 
-namespace Revosystems\RedsysGateway\Http\Livewire\Traits;
+namespace Revosystems\RedsysPayment\Http\Livewire\Traits;
 
-use Revosystems\RedsysGateway\Models\ChargeResult;
+use Revosystems\RedsysPayment\Models\ChargeResult;
 
 trait ApplePayEventsTrait
 {
