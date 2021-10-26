@@ -18,7 +18,6 @@ use Revosystems\RedsysPayment\Services\RedsysRequestApplePay;
 use Revosystems\RedsysPayment\Services\RedsysRequestGooglePay;
 use Revosystems\RedsysPayment\Services\RedsysRequestInit;
 use Revosystems\RedsysPayment\Services\RedsysRequestRefund;
-use Revosystems\RedsysPayment\Services\RedsysTokenizableTrait;
 use Revosystems\RedsysPayment\Services\RequestAuthorizationV1;
 use Revosystems\RedsysPayment\Services\RequestAuthorizationV2;
 
@@ -60,7 +59,7 @@ class Redsys implements CardsTokenizable
         return config('services.payment_gateways.redsys.test');
     }
 
-    public function render(PaymentHandler $paymentHandler)
+    public function render(PaymentHandler $paymentHandler, $customerToken, $shouldSaveCard = true, $cardId = null)
     {
         $orderReference = ChargeRequest::generateOrderReference();
         $paymentHandler->persist($orderReference);
@@ -71,6 +70,9 @@ class Redsys implements CardsTokenizable
             'merchantCode'      => $this->merchantCode(),
             'merchantTerminal'  => $this->merchantTerminal(),
             'buttonText'        => __(config('redsys-payment.translationsPrefix') . 'pay') . ' ' . $paymentHandler->order()->price()->format(),
+            'customerToken'     => $customerToken,
+            'shouldSaveCard'    => $shouldSaveCard,
+            'cardId'            => $cardId,
         ])->render();
     }
 
@@ -130,10 +132,15 @@ class Redsys implements CardsTokenizable
 
     public static function get() : self
     {
-        if (! $handler = Session::get(static::PERSIST_KET)) {
+        if (! $redsys = Session::get(static::PERSIST_KET)) {
             throw new SessionExpiredException();
         }
-        return unserialize($handler);
+        return unserialize($redsys);
+    }
+
+    public function getPaymentHandler($orderReference) : PaymentHandler
+    {
+        return $this->paymentHandlerClass::get($orderReference);
     }
 
     //==================================

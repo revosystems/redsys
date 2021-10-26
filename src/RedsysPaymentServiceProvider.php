@@ -8,6 +8,7 @@ use Revosystems\RedsysPayment\Http\Livewire\ApplePayButton;
 use Revosystems\RedsysPayment\Http\Livewire\CheckStatus;
 use Revosystems\RedsysPayment\Http\Livewire\Form;
 use Revosystems\RedsysPayment\Http\Livewire\GooglePayButton;
+use Revosystems\RedsysPayment\Http\Livewire\TokenizedCards;
 use Revosystems\RedsysPayment\View\Components\RadioSelector;
 
 class RedsysPaymentServiceProvider extends ServiceProvider
@@ -23,6 +24,7 @@ class RedsysPaymentServiceProvider extends ServiceProvider
             RadioSelector::class
         ]);
         Livewire::component('form', Form::class);
+        Livewire::component('tokenized-cards', TokenizedCards::class);
         Livewire::component('check-status', CheckStatus::class);
         Livewire::component('apple-pay-button', ApplePayButton::class);
         Livewire::component('google-pay-button', GooglePayButton::class);

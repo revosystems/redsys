@@ -3,9 +3,13 @@
         <p  id="errorMessage" class="flex text-m"> {{ $formError }}</p>
     </div>
 
-    <x-redsys-payment-radio-selector :id="'new-card-mode'" :name="'mode'" :label="__(config('redsys-payment.translationsPrefix') . 'useNewCard')" :selected="$this->select">
+    @if(!$cardId)
+        <x-redsys-payment-radio-selector :id="'new-card-mode'" :name="'mode'" :label="__(config('redsys-payment.translationsPrefix') . 'useNewCard')" :selected="$this->select">
+            @include('redsys-payment::redsys.iframe', ['iframeUrl' => $this->iframeUrl])
+        </x-redsys-payment-radio-selector>
+    @else
         @include('redsys-payment::redsys.iframe', ['iframeUrl' => $this->iframeUrl])
-    </x-redsys-payment-radio-selector>
+    @endif
 </div>
 
     <script>
@@ -27,6 +31,7 @@
         }
 
         function onSuccess(idOper) {
+            console.log('on success')
             window.livewire.emit('onFormSuccess', idOper, {
                 'browser_height' : screen.height,
                 'browser_width' : screen.width,
@@ -93,6 +98,7 @@
         }
 
         document.addEventListener("DOMContentLoaded", function(event) {
+            window.livewire.emit("tokenObtained", '{{ $this->customerToken }}');
             window.livewire.on('showError', function (formError) {
                 showError(formError);
             })

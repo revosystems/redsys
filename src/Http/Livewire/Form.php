@@ -15,7 +15,8 @@ class Form extends Component
     protected $listeners = [
         'onFormErrorReceived',
         'onFormSuccess',
-        'checkoutButtons.cardsFound' => 'shouldSelect',
+        'tokenizedCards.found' => 'shouldSelect',
+        'tokenizedCards.payWithCard' => 'payWithCard',
         'onPaymentCompleted',
     ];
 
@@ -35,13 +36,15 @@ class Form extends Component
      */
     public $error;
 
-    public function mount($iframeUrl, $merchantCode, $merchantTerminal, $orderReference, $buttonText)
+    public function mount($iframeUrl, $merchantCode, $merchantTerminal, $orderReference, $buttonText, $customerToken, $cardId)
     {
         $this->iframeUrl        = $iframeUrl;
         $this->merchantCode     = $merchantCode;
         $this->merchantTerminal = $merchantTerminal;
         $this->orderReference   = $orderReference;
         $this->buttonText       = $buttonText;
+        $this->customerToken    = $customerToken;
+        $this->cardId           = $cardId;
         $this->formError        = null;
     }
 
@@ -58,10 +61,11 @@ class Form extends Component
 
     public function onFormSuccess($idOper, $params)
     {
-        $redsys = Redsys::get();
-        $paymentHandler = $this->getPaymentHandler($redsys);
+        dd('succes');
+        $redsys         = Redsys::get();
+        $paymentHandler = $redsys->getPaymentHandler($this->orderReference);
         $chargeRequest  = ChargeRequest::make($this->orderReference, $idOper, $this->cardId, $this->shouldSaveCard, $this->customerToken, $params);
-        $result = $redsys->charge($chargeRequest, $paymentHandler->order());
+        $result         = $redsys->charge($chargeRequest, $paymentHandler->order());
 
         $paymentHandler->extraInfo['orderReference'] = $this->orderReference;
         Log::debug("[REDSYS] Serializing handler for order id {$this->orderReference} with value:" . json_encode($paymentHandler));
@@ -74,7 +78,7 @@ class Form extends Component
 
     public function onPaymentCompleted($error = null)
     {
-        $this->getPaymentHandler(Redsys::get())->onPaymentCompleted($error);
+        Redsys::get()->getPaymentHandler($this->orderReference)->onPaymentCompleted($error);
     }
 
     public function shouldSelect(bool $select)
@@ -82,8 +86,11 @@ class Form extends Component
         $this->select = $select;
     }
 
-    protected function getPaymentHandler($redsys) : PaymentHandler
+    public function payWithCard($cardId)
     {
-        return $redsys->paymentHandlerClass::get($this->orderReference);
+        $redsys = Redsys::get();
+        $result = $redsys->charge(ChargeRequest::make($this->orderReference, null,
+        $cardId, false, $this->customerToken, []), $redsys->getPaymentHandler($this->orderReference)->order());
+        $this->emit('payResponse', $result);
     }
 }
