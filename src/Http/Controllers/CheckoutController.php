@@ -3,14 +3,16 @@
 
 namespace Revosystems\RedsysPayment\Http\Controllers;
 
+use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
-use Revosystems\RedsysPayment\Models\Redsys;
+use Revosystems\RedsysPayment\Models\PaymentHandler;
+use Revosystems\RedsysPayment\Models\RedsysPaymentGateway;
 
 class CheckoutController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $redsys = Redsys::get();
-        return $redsys->render($redsys->getPaymentHandler(request('orderReference')), request('customerToken'), false, request('cardId'));
+        $paymentHandler = PaymentHandler::get($request->input('orderReference'));
+        return RedsysPaymentGateway::get()->render($paymentHandler, $request->input('customerToken'), false, $request->input('cardId'));
     }
 }

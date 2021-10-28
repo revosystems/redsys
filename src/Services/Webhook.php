@@ -9,13 +9,15 @@ use Revosystems\RedsysPayment\Lib\Constants\RESTConstants;
 use Revosystems\RedsysPayment\Lib\Model\Message\RESTAuthenticationRequestOperationMessage;
 use Revosystems\RedsysPayment\Lib\Model\Message\RESTResponseMessage;
 use Revosystems\RedsysPayment\Lib\Service\Impl\RESTTrataRequestService;
+use Revosystems\RedsysPayment\Models\CardsTokenizable;
 use Revosystems\RedsysPayment\Models\ChargeRequest;
 use Revosystems\RedsysPayment\Models\ChargeResult;
-use Revosystems\RedsysPayment\Models\Redsys;
+use Revosystems\RedsysPayment\Models\GatewayCard;
 use Revosystems\RedsysPayment\Models\RedsysConfig;
 
 abstract class Webhook
 {
+    const ORDERS_CACHE_KEY = 'rv-redsys-payment-gateway.orders.';
     /**
      * @var RedsysConfig
      */
@@ -53,7 +55,7 @@ abstract class Webhook
         }
         $operation = $response->getOperation();
         if ($chargeRequest->shouldSaveCard && $operation->getMerchantIdentifier()) {
-            Redsys::tokenizeCards($operation, $chargeRequest->customerToken);
+            CardsTokenizable::tokenize(GatewayCard::makeFromOperation($operation), $chargeRequest->customerToken);
         }
         return new ChargeResult(true, $this->getResponse($response));
     }
@@ -64,7 +66,7 @@ abstract class Webhook
             "result"    => $response->getResult(),
             "operation" => $response->getResult() !== 'KO' ? $response->getOperation() : null,
         ];
-     }
+    }
 
     protected function getRequestOperation(ChargeRequest $chargeRequest, $orderId, $amount, $currency)
     {

@@ -3,33 +3,31 @@
 namespace Revosystems\RedsysPayment\Http\Livewire;
 
 use Livewire\Component;
+use Revosystems\RedsysPayment\Models\CardsTokenizable;
+use Revosystems\RedsysPayment\Models\PaymentHandler;
 use Revosystems\RedsysPayment\Models\GatewayCard;
-use Revosystems\RedsysPayment\Models\Redsys;
 
 class TokenizedCards extends Component
 {
     public $cards            = null;
-    public $hasCards         = true;
     public $customerToken;
-
-    protected $listeners = ['tokenObtained'];
-
-    public function mount($orderReference, $customerToken)
-    {
-        $paymentHandler = Redsys::get()->getPaymentHandler($orderReference);
-        $this->account   = $paymentHandler->account();
-        $this->amount    = $paymentHandler->order()->price()->amount;
-        $this->customerToken = $customerToken;
-//        LivewirePayHandler::fromSession()->registerPaymentGateway();
-    }
 
     public $account;
     public $amount;
+    public $orderReference;
+
+    public function mount($orderReference, $customerToken, $cards)
+    {
+        $this->orderReference = $orderReference;
+        $this->customerToken = $customerToken;
+        $paymentHandler     = PaymentHandler::get($orderReference);
+        $this->account      = $paymentHandler->account;
+        $this->amount       = $paymentHandler->order->price()->format();
+        $this->cards        = $cards;
+    }
 
     public function render()
     {
-//        $this->updateCanProccedToCheckout();
-//        LivewirePayHandler::fromSession()->registerPaymentGateway();
         return view('redsys-payment::livewire.tokenized-cards');
     }
 
@@ -40,22 +38,8 @@ class TokenizedCards extends Component
         });
     }
 
-    public function proceedToCheckout($shouldSaveCard = false)
-    {
-        dd('is it required');
-        $this->dispatchBrowserEvent('proceedToCheckout', compact('shouldSaveCard'));
-    }
-
     public function payWithCard($cardId)
     {
         $this->emit('tokenizedCards.payWithCard', $cardId);
-//        $this->dispatchBrowserEvent('proceedToCheckout', compact('cardId'));
-    }
-
-    public function tokenObtained($customerToken)
-    {
-        $this->cards        = Redsys::get()->getCardsForCustomer($customerToken);
-        $this->hasCards     = $this->cards->isNotEmpty();
-        $this->emit('tokenizedCards.found', ! $this->hasCards);
     }
 }

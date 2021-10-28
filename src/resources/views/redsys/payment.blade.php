@@ -15,9 +15,7 @@
 @section('content')
 
 <div class="w-full flex flex-col space-y-4 h-full" style="height: 100%; min-height: 200px; margin-top: 24px">
-    @if(!$cardId)
-        @livewire('tokenized-cards', compact('orderReference', 'customerToken'))
-    @endif
+    @livewire('tokenized-cards', compact('orderReference', 'customerToken', 'cards'))
     @livewire('form', [
         'iframeUrl'         => $iframeUrl,
         'merchantCode'      => $merchantCode,
@@ -25,14 +23,12 @@
         'orderReference'    => $orderReference,
         'buttonText'        => $buttonText,
         'customerToken'     => $customerToken,
-        'cardId'            => $cardId,
+        'isSelected'        => $cards->isEmpty()
     ])
 
     @livewire('check-status', compact('orderReference'))
-    @if(!$cardId)
-        @livewire('apple-pay-button')
-        @livewire('google-pay-button')
-    @endif
+    @livewire('apple-pay-button')
+    @livewire('google-pay-button')
 </div>
 
 {{--    @livewireScripts--}}

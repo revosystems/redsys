@@ -6,7 +6,7 @@ namespace Revosystems\RedsysPayment\Services;
 use Revosystems\RedsysPayment\Lib\Constants\RESTConstants;
 use Revosystems\RedsysPayment\Lib\Model\Message\RESTResponseMessage;
 use Revosystems\RedsysPayment\Lib\Service\RESTService;
-use Revosystems\RedsysPayment\Models\Redsys;
+use Revosystems\RedsysPayment\Models\RedsysPaymentGateway;
 
 class RedsysRest
 {
@@ -17,7 +17,7 @@ class RedsysRest
 
     public function __construct($class, $claveComercio)
     {
-        $this->service = new $class($claveComercio, Redsys::isTestEnvironment() ? RESTConstants::$ENV_SANDBOX : RESTConstants::$ENV_PRODUCTION);
+        $this->service = new $class($claveComercio, RedsysPaymentGateway::isTestEnvironment() ? RESTConstants::$ENV_SANDBOX : RESTConstants::$ENV_PRODUCTION);
     }
 
     public static function make($class, $key) : RedsysRest

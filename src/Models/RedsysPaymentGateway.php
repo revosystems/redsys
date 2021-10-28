@@ -3,17 +3,11 @@
 
 namespace Revosystems\RedsysPayment\Models;
 
-use Carbon\Carbon;
-use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Session;
 use Revosystems\RedsysPayment\Exceptions\SessionExpiredException;
 use Revosystems\RedsysPayment\Interfaces\Order;
-use Revosystems\RedsysPayment\Interfaces\PaymentHandler;
 use Revosystems\RedsysPayment\Lib\Constants\RESTConstants;
-use Revosystems\RedsysPayment\Lib\Model\Element\RESTOperationElement;
-use Revosystems\RedsysPayment\Models\Prices\Price;
 use Revosystems\RedsysPayment\Services\RedsysRequestApplePay;
 use Revosystems\RedsysPayment\Services\RedsysRequestGooglePay;
 use Revosystems\RedsysPayment\Services\RedsysRequestInit;
@@ -21,27 +15,25 @@ use Revosystems\RedsysPayment\Services\RedsysRequestRefund;
 use Revosystems\RedsysPayment\Services\RequestAuthorizationV1;
 use Revosystems\RedsysPayment\Services\RequestAuthorizationV2;
 
-class Redsys implements CardsTokenizable
+class RedsysPaymentGateway
 {
-    const PERSIST_KET = 'rv-redsys-payment';
+    const PERSIST_KET = 'rv-redsys-payment-gateway.redsys';
 
     public $iframeUrl;
     /**
      * @var RedsysConfig
      */
     protected $config;
-    public $paymentHandlerClass;
 
-    public function __construct(RedsysConfig $config, $paymentHandlerClass)
+    public function __construct(RedsysConfig $config)
     {
         $this->iframeUrl            = static::isTestEnvironment() ? 'https://sis-t.redsys.es:25443/sis/NC/sandbox/redsysV2.js' : 'https://sis.redsys.es/sis/NC/redsysV2.js';
         $this->config               = $config;
-        $this->paymentHandlerClass  = $paymentHandlerClass;
     }
 
-    public static function make(RedsysConfig $config, $paymentHandlerClass)
+    public static function make(RedsysConfig $config)
     {
-        return (new self($config, $paymentHandlerClass))->persist();
+        return (new self($config))->persist();
     }
 
     public function merchantCode() : string
@@ -65,22 +57,23 @@ class Redsys implements CardsTokenizable
         $paymentHandler->persist($orderReference);
         return view('redsys-payment::redsys.payment', [
             'orderReference'    => $orderReference,
-            'orderId'   => $paymentHandler->order()->id(),
+            'orderId'           => $paymentHandler->order->id(),
             'iframeUrl'         => $this->iframeUrl,
             'merchantCode'      => $this->merchantCode(),
             'merchantTerminal'  => $this->merchantTerminal(),
-            'buttonText'        => __(config('redsys-payment.translationsPrefix') . 'pay') . ' ' . $paymentHandler->order()->price()->format(),
+            'buttonText'        => __(config('redsys-payment.translationsPrefix') . 'pay') . ' ' . $paymentHandler->order->price()->format(),
             'customerToken'     => $customerToken,
             'shouldSaveCard'    => $shouldSaveCard,
-            'cardId'            => $cardId,
+//            'cardId'            => $cardId,
+            'cards'             => CardsTokenizable::get($customerToken)
         ])->render();
     }
 
     public function charge(ChargeRequest $chargeRequest, Order $order) : ChargeResult
     {
-        $idOper      = $chargeRequest->idOper;
+        $operationId = $chargeRequest->operationId;
         $cardId      = $chargeRequest->cardId;
-        if ($idOper == -1 || (! $idOper && ! $cardId)) {
+        if ($operationId == -1 || (! $operationId && ! $cardId)) {
             return new ChargeResult(false, "No operation Id");
         }
         $response = (new RedsysRequestInit($this->config))
@@ -132,42 +125,9 @@ class Redsys implements CardsTokenizable
 
     public static function get() : self
     {
-        if (! $redsys = Session::get(static::PERSIST_KET)) {
+        if (! $paymentGateway = Session::get(static::PERSIST_KET)) {
             throw new SessionExpiredException();
         }
-        return unserialize($redsys);
-    }
-
-    public function getPaymentHandler($orderReference) : PaymentHandler
-    {
-        return $this->paymentHandlerClass::get($orderReference);
-    }
-
-    //==================================
-    // METHODS TO TOKENIZE CARDS SECTION
-    //==================================
-    public function getCardsForCustomer($customerToken) : Collection
-    {
-        try {
-            if (! $cachedCards = Cache::get("redsys.cards.{$customerToken}")) {
-                return collect();
-            }
-            return collect(unserialize($cachedCards));
-        } catch (\Exception $e) {
-            Log::error("[REDSYS] Unserialize cards exception: {$e->getMessage()}");
-            return collect();
-        }
-    }
-
-    public static function tokenizeCards(RESTOperationElement $operation, $customerToken)
-    {
-        try {
-            $tokenizedCards = unserialize(Cache::get("redsys.cards.{$customerToken}", []));
-        } catch (\Exception $e) {
-            Log::error("[REDSYS] Unserialize old cards exception: {$e->getMessage()}");
-            $tokenizedCards = [];
-        }
-        $tokenizedCards[$operation->getCardNumber()] = new GatewayCard($operation->getMerchantIdentifier(), $operation->getCardNumber(), $operation->getExpiryDate());
-        Cache::put("redsys.cards.{$customerToken}", serialize($tokenizedCards), Carbon::now()->addMonths(4));
+        return unserialize($paymentGateway);
     }
 }

@@ -26,7 +26,7 @@ abstract class RESTRequestOperationMessage extends RESTGenericXml
         if ($data->cardId) {
             $this->useReference($data->cardId);
         } else {
-            $this->setOperID($data->idOper);
+            $this->setOperID($data->operationId);
         }
     }
 

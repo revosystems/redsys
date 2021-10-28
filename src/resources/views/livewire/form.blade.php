@@ -3,13 +3,9 @@
         <p  id="errorMessage" class="flex text-m"> {{ $formError }}</p>
     </div>
 
-    @if(!$cardId)
-        <x-redsys-payment-radio-selector :id="'new-card-mode'" :name="'mode'" :label="__(config('redsys-payment.translationsPrefix') . 'useNewCard')" :selected="$this->select">
-            @include('redsys-payment::redsys.iframe', ['iframeUrl' => $this->iframeUrl])
-        </x-redsys-payment-radio-selector>
-    @else
+    <x-redsys-payment-radio-selector :id="'new-card-mode'" :name="'mode'" :label="__(config('redsys-payment.translationsPrefix') . 'useNewCard')" :selected="$this->isSelected">
         @include('redsys-payment::redsys.iframe', ['iframeUrl' => $this->iframeUrl])
-    @endif
+    </x-redsys-payment-radio-selector>
 </div>
 
     <script>
@@ -30,9 +26,8 @@
             window.livewire.emit('onFormErrorReceived', error)
         }
 
-        function onSuccess(idOper) {
-            console.log('on success')
-            window.livewire.emit('onFormSuccess', idOper, {
+        function onSuccess(operationId) {
+            window.livewire.emit('onFormSuccess', operationId, {
                 'browser_height' : screen.height,
                 'browser_width' : screen.width,
                 'browser_tz' : (new Date()).getTimezoneOffset(),
@@ -50,7 +45,7 @@
         }
 
         function showError(message, reload = true) {
-            console.log(message)
+            console.error(message)
             if (message) {
                 document.getElementById("errorMessage").innerHTML = message
             }
@@ -79,8 +74,10 @@
             console.log(data.result)
             if (data.result == 'AUT') {
                 console.log(data.displayForm);
+                // document.getElementById("tokenized-cards-section").hidden = true
                 document.getElementById("card-form").innerHTML = data.displayForm
                 document.getElementById("card-form").style.height = '980px'
+                document.getElementById("card-form").click()
                 submitForm()
                 return;
             }
@@ -98,7 +95,7 @@
         }
 
         document.addEventListener("DOMContentLoaded", function(event) {
-            window.livewire.emit("tokenObtained", '{{ $this->customerToken }}');
+            {{--window.livewire.emit("tokenObtained", '{{ $this->customerToken }}');--}}
             window.livewire.on('showError', function (formError) {
                 showError(formError);
             })

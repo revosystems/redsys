@@ -12,7 +12,7 @@ class ChargeResult
     public $reference;
     public $gatewayResponse;
 
-    public function __construct($success, $gatewayResponse, $amount = null, $reference = null)
+    public function __construct($success, ?array $gatewayResponse, $amount = null, $reference = null)
     {
         $this->success          = $success;
         $this->amount           = $amount;

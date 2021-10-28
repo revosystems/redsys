@@ -3,6 +3,8 @@
 
 namespace Revosystems\RedsysPayment\Models;
 
+use Revosystems\RedsysPayment\Lib\Model\Element\RESTOperationElement;
+
 class GatewayCard
 {
     public $id;
@@ -14,5 +16,10 @@ class GatewayCard
         $this->id           = $id;
         $this->alias        = $alias;
         $this->expiration   = $expiration;
+    }
+
+    public static function makeFromOperation(RESTOperationElement $operation) : self
+    {
+        return new GatewayCard($operation->getMerchantIdentifier(), $operation->getCardNumber(), $operation->getExpiryDate());
     }
 }

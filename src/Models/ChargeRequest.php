@@ -4,7 +4,7 @@ namespace Revosystems\RedsysPayment\Models;
 
 class ChargeRequest
 {
-    public $idOper;
+    public $operationId;
     public $cardId;
     public $orderReference;
     public $shouldSaveCard;
@@ -16,10 +16,10 @@ class ChargeRequest
         $this->orderReference       = $orderReference ?? static::generateOrderReference();
     }
 
-    public static function make($orderReference, ?string $idOper, ?string $cardId, bool $shouldSaveCard, ?string $customerToken, array $extraInfo) : self
+    public static function make($orderReference, ?string $operationId, ?string $cardId, bool $shouldSaveCard, ?string $customerToken, array $extraInfo) : self
     {
         $chargeRequest = new self($orderReference);
-        $chargeRequest->idOper          = $idOper;
+        $chargeRequest->operationId     = $operationId;
         $chargeRequest->cardId          = $cardId;
         $chargeRequest->shouldSaveCard  = $shouldSaveCard;
         $chargeRequest->customerToken   = $customerToken;

@@ -4,6 +4,9 @@ namespace Revosystems\RedsysPayment\Http\Livewire;
 
 use Illuminate\Support\Facades\Cache;
 use Livewire\Component;
+use Revosystems\RedsysPayment\Models\PaymentHandler;
+use Revosystems\RedsysPayment\Models\RedsysPaymentGateway;
+use Revosystems\RedsysPayment\Services\Webhook;
 
 class CheckStatus extends Component
 {
@@ -21,14 +24,15 @@ class CheckStatus extends Component
 
     public function checkStatus()
     {
-        $result = Cache::get("rv-redsys-payment.webhooks.{$this->orderReference}.result");
-        logger('result status');
-        logger($result);
-        if ($result == 'FAILED') {
-            return $this->emit('onPaymentCompleted', "Redsys payment failed");
+        if(! $result = Cache::get(Webhook::ORDERS_CACHE_KEY . "{$this->orderReference}.result")) {
+            return;
         }
-        if ($result == 'SUCCESS') {
-            return $this->emit('onPaymentCompleted');
+        if ($result === 'FAILED') {
+            PaymentHandler::get($this->orderReference)->onPaymentCompleted('Redsys payment failed');
+            return;
+        }
+        if ($result === 'SUCCESS') {
+            PaymentHandler::get($this->orderReference)->onPaymentCompleted();
         }
     }
 }

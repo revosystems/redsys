@@ -2,12 +2,11 @@
 
 namespace Revosystems\RedsysPayment\Http\Livewire;
 
-use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\Log;
 use Livewire\Component;
-use Revosystems\RedsysPayment\Interfaces\PaymentHandler;
+use Revosystems\RedsysPayment\Models\CardsTokenizable;
+use Revosystems\RedsysPayment\Models\PaymentHandler;
 use Revosystems\RedsysPayment\Models\ChargeRequest;
-use Revosystems\RedsysPayment\Models\Redsys;
+use Revosystems\RedsysPayment\Models\RedsysPaymentGateway;
 use Revosystems\RedsysPayment\Services\RedsysError;
 
 class Form extends Component
@@ -15,9 +14,9 @@ class Form extends Component
     protected $listeners = [
         'onFormErrorReceived',
         'onFormSuccess',
-        'tokenizedCards.found' => 'shouldSelect',
+        'tabSelected',
         'tokenizedCards.payWithCard' => 'payWithCard',
-        'onPaymentCompleted',
+//        'onPaymentCompleted',
     ];
 
     public $shouldSaveCard = false;
@@ -28,15 +27,12 @@ class Form extends Component
     protected $merchantCode;
     protected $merchantTerminal;
     protected $buttonText;
-    protected $select = false;
+    protected $isSelected = false;
 
     public $formError;
-    /**
-     * @var mixed
-     */
     public $error;
 
-    public function mount($iframeUrl, $merchantCode, $merchantTerminal, $orderReference, $buttonText, $customerToken, $cardId)
+    public function mount($iframeUrl, $merchantCode, $merchantTerminal, $orderReference, $buttonText, $customerToken, $isSelected)
     {
         $this->iframeUrl        = $iframeUrl;
         $this->merchantCode     = $merchantCode;
@@ -44,8 +40,8 @@ class Form extends Component
         $this->orderReference   = $orderReference;
         $this->buttonText       = $buttonText;
         $this->customerToken    = $customerToken;
-        $this->cardId           = $cardId;
         $this->formError        = null;
+        $this->isSelected       = $isSelected;
     }
 
     public function render()
@@ -59,38 +55,18 @@ class Form extends Component
         $this->emit('showError', $this->formError);
     }
 
-    public function onFormSuccess($idOper, $params)
+    public function onFormSuccess($operationId, $params)
     {
-        dd('succes');
-        $redsys         = Redsys::get();
-        $paymentHandler = $redsys->getPaymentHandler($this->orderReference);
-        $chargeRequest  = ChargeRequest::make($this->orderReference, $idOper, $this->cardId, $this->shouldSaveCard, $this->customerToken, $params);
-        $result         = $redsys->charge($chargeRequest, $paymentHandler->order());
-
-        $paymentHandler->extraInfo['orderReference'] = $this->orderReference;
-        Log::debug("[REDSYS] Serializing handler for order id {$this->orderReference} with value:" . json_encode($paymentHandler));
-        Cache::put("rv-redsys-payment.orders.{$this->orderReference}", serialize($paymentHandler), now()->addMinutes(30));
-
-        //        $this->paymentReference = $result->reference;
-        $this->emit('payResponse', $result->gatewayResponse);    // Gateway render Javascript handles this result
-//        $this->emit('onPayPressed', serialize(ChargeRequest::make($this->orderReference, $idOper, $this->cardId, $this->shouldSaveCard, $this->customerToken, $params)));
-    }
-
-    public function onPaymentCompleted($error = null)
-    {
-        Redsys::get()->getPaymentHandler($this->orderReference)->onPaymentCompleted($error);
-    }
-
-    public function shouldSelect(bool $select)
-    {
-        $this->select = $select;
+        $paymentHandler = PaymentHandler::get($this->orderReference);
+        $chargeRequest  = ChargeRequest::make($this->orderReference, $operationId, $this->cardId, $this->shouldSaveCard, $this->customerToken, $params);
+        $this->emit('payResponse', RedsysPaymentGateway::get()->charge($chargeRequest, $paymentHandler->order)->gatewayResponse);    // Gateway render Javascript handles this result
     }
 
     public function payWithCard($cardId)
     {
-        $redsys = Redsys::get();
-        $result = $redsys->charge(ChargeRequest::make($this->orderReference, null,
-        $cardId, false, $this->customerToken, []), $redsys->getPaymentHandler($this->orderReference)->order());
-        $this->emit('payResponse', $result);
+        $chargeRequest = ChargeRequest::make($this->orderReference, null, $cardId, false, $this->customerToken, []);
+        $order = PaymentHandler::get($this->orderReference)->order;
+        $result = RedsysPaymentGateway::get()->charge($chargeRequest, $order);
+        $this->emit('payResponse', $result->gatewayResponse);
     }
 }

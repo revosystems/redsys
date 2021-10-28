@@ -5,6 +5,7 @@ namespace Revosystems\RedsysPayment\Services;
 
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Cache;
+use Revosystems\RedsysPayment\Http\Livewire\Form;
 use Revosystems\RedsysPayment\Lib\Model\Message\RESTResponseMessage;
 use Revosystems\RedsysPayment\Models\ChargeRequest;
 use Revosystems\RedsysPayment\Models\ChargeResult;
@@ -13,19 +14,15 @@ class RedsysChallengeForm
 {
     protected $webhook;
 
-    public function __construct($webhook)
+    public function __construct(Webhook $webhook)
     {
         $this->webhook = $webhook;
     }
 
-    public function display(ChargeRequest $paymentHandler, RESTResponseMessage $response, $termUrl, $amount) : ChargeResult
+    public function display(ChargeRequest $chargeRequest, RESTResponseMessage $response, $termUrl, $amount) : ChargeResult
     {
-        $operation  = base64_encode(serialize($response->getOperation()));
-        Cache::put("rv-redsys-payment.webhooks.{$paymentHandler->orderReference}", [
-            'paymentHandler'=> serialize($paymentHandler),
-            'operation'     => $operation,
-            'redsysWebhook' => serialize($this->webhook),
-        ], Carbon::now()->addMinutes(30));
+        $operation  = $response->getOperation();
+        WebhookManager::save($this->webhook, $chargeRequest, $operation);
         return new ChargeResult(true, [
             "result"        => $response->getResult(),
             "displayForm"   => view('redsys-payment::redsys.challenge', [
@@ -36,6 +33,6 @@ class RedsysChallengeForm
                 'termUrl'   => $termUrl,
             ])->toHtml(),
             "operation"     => $operation,
-        ], $amount, "redsys:{$paymentHandler->orderReference}");
+        ], $amount, "redsys:{$chargeRequest->orderReference}");
     }
 }
