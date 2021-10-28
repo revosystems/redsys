@@ -13,9 +13,9 @@
     }
 </style>
 
-<x-redsys-payment-radio-selector :id="'apple-pay-mode'" :name="'mode'" :label="'Apple Pay'">
+<x-redsys-radio-selector :id="'apple-pay-mode'" :name="'mode'" :label="'Apple Pay'">
     <button type="button" id="applePay" class="apple-pay-button apple-pay-button-white-with-line block w-full h-16 flex-row justify-center text-center items-center outline-none p-4 mb-1 rounded" onclick="onApplePayClicked()"></button>
-</x-redsys-payment-radio-selector>
+</x-redsys-radio-selector>
 <script src="https://applepay.cdn-apple.com/jsapi/v1/apple-pay-sdk.js"></script>
 
 {{--@push('inner-scripts')--}}

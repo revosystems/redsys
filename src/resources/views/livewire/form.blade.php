@@ -3,9 +3,9 @@
         <p  id="errorMessage" class="flex text-m"> {{ $formError }}</p>
     </div>
 
-    <x-redsys-payment-radio-selector :id="'new-card-mode'" :name="'mode'" :label="__(config('redsys-payment.translationsPrefix') . 'useNewCard')" :selected="$this->isSelected">
-        @include('redsys-payment::redsys.iframe', ['iframeUrl' => $this->iframeUrl])
-    </x-redsys-payment-radio-selector>
+    <x-redsys-radio-selector :id="'new-card-mode'" :name="'mode'" :label="__(config('redsys.translationsPrefix') . 'useNewCard')" :selected="$this->isSelected">
+        @include('redsys::redsys.iframe', ['iframeUrl' => $this->iframeUrl])
+    </x-redsys-radio-selector>
 </div>
 
     <script>
@@ -74,10 +74,10 @@
             console.log(data.result)
             if (data.result == 'AUT') {
                 console.log(data.displayForm);
-                // document.getElementById("tokenized-cards-section").hidden = true
-                document.getElementById("card-form").innerHTML = data.displayForm
-                document.getElementById("card-form").style.height = '980px'
-                document.getElementById("card-form").click()
+                document.getElementById("tokenized-cards-section").hidden = true
+                document.getElementById("googlePay").innerHTML = data.displayForm
+                document.getElementById("googlePay").style.height = '980px'
+                document.getElementById("googlePay").click()
                 submitForm()
                 return;
             }

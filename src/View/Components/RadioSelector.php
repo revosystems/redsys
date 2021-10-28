@@ -1,6 +1,6 @@
 <?php
 
-namespace Revosystems\RedsysPayment\View\Components;
+namespace Revosystems\Redsys\View\Components;
 
 use Illuminate\View\Component;
 
@@ -21,6 +21,6 @@ class RadioSelector extends Component
 
     public function render()
     {
-        return view('redsys-payment::components.radio-selector');
+        return view('redsys::components.radio-selector');
     }
 }

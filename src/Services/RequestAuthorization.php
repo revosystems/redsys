@@ -1,15 +1,15 @@
 <?php
 
-namespace Revosystems\RedsysPayment\Services;
+namespace Revosystems\Redsys\Services;
 
 use Illuminate\Support\Facades\Log;
-use Revosystems\RedsysPayment\Lib\Constants\RESTConstants;
-use Revosystems\RedsysPayment\Lib\Model\Message\RESTAuthorizationRequestOperationMessage;
-use Revosystems\RedsysPayment\Lib\Service\Impl\RESTTrataRequestService;
-use Revosystems\RedsysPayment\Models\CardsTokenizable;
-use Revosystems\RedsysPayment\Models\ChargeRequest;
-use Revosystems\RedsysPayment\Models\ChargeResult;
-use Revosystems\RedsysPayment\Models\GatewayCard;
+use Revosystems\Redsys\Lib\Constants\RESTConstants;
+use Revosystems\Redsys\Lib\Model\Message\RESTAuthorizationRequestOperationMessage;
+use Revosystems\Redsys\Lib\Service\Impl\RESTTrataRequestService;
+use Revosystems\Redsys\Models\CardsTokenizable;
+use Revosystems\Redsys\Models\ChargeRequest;
+use Revosystems\Redsys\Models\ChargeResult;
+use Revosystems\Redsys\Models\GatewayCard;
 
 abstract class RequestAuthorization extends RedsysRequest
 {
@@ -51,7 +51,7 @@ abstract class RequestAuthorization extends RedsysRequest
 
     protected function getWebhookUrl($orderReference, $orderId) : string
     {
-        return "https://7288-81-184-118-214.ngrok.io/webhooks/redsys?orderReference={$orderReference}&orderId={$orderId}";
+        return "https://28bb-213-148-218-55.ngrok.io/webhooks/redsys?orderReference={$orderReference}&orderId={$orderId}";
         return route('rv.webhooks.redsys', compact('orderReference', 'orderId'));
     }
 }

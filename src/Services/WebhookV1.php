@@ -1,9 +1,9 @@
 <?php
 
 
-namespace Revosystems\RedsysPayment\Services;
+namespace Revosystems\Redsys\Services;
 
-use Revosystems\RedsysPayment\Lib\Model\Message\RESTAuthenticationRequestOperationMessage;
+use Revosystems\Redsys\Lib\Model\Message\RESTAuthenticationRequestOperationMessage;
 use Illuminate\Http\Request;
 
 class WebhookV1 extends Webhook

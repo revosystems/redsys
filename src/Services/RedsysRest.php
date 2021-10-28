@@ -1,12 +1,12 @@
 <?php
 
 
-namespace Revosystems\RedsysPayment\Services;
+namespace Revosystems\Redsys\Services;
 
-use Revosystems\RedsysPayment\Lib\Constants\RESTConstants;
-use Revosystems\RedsysPayment\Lib\Model\Message\RESTResponseMessage;
-use Revosystems\RedsysPayment\Lib\Service\RESTService;
-use Revosystems\RedsysPayment\Models\RedsysPaymentGateway;
+use Revosystems\Redsys\Lib\Constants\RESTConstants;
+use Revosystems\Redsys\Lib\Model\Message\RESTResponseMessage;
+use Revosystems\Redsys\Lib\Service\RESTService;
+use Revosystems\Redsys\Models\RedsysPaymentGateway;
 
 class RedsysRest
 {

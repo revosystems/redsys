@@ -1,12 +1,12 @@
 <?php
 
-namespace Revosystems\RedsysPayment\Http\Livewire;
+namespace Revosystems\Redsys\Http\Livewire;
 
 use Illuminate\Support\Facades\Cache;
 use Livewire\Component;
-use Revosystems\RedsysPayment\Models\PaymentHandler;
-use Revosystems\RedsysPayment\Models\RedsysPaymentGateway;
-use Revosystems\RedsysPayment\Services\Webhook;
+use Revosystems\Redsys\Models\PaymentHandler;
+use Revosystems\Redsys\Models\RedsysPaymentGateway;
+use Revosystems\Redsys\Services\Webhook;
 
 class CheckStatus extends Component
 {
@@ -19,7 +19,7 @@ class CheckStatus extends Component
 
     public function render()
     {
-        return view('redsys-payment::livewire.check-status');
+        return view('redsys::livewire.check-status');
     }
 
     public function checkStatus()

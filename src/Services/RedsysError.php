@@ -1,7 +1,7 @@
 <?php
 
 
-namespace Revosystems\RedsysPayment\Services;
+namespace Revosystems\Redsys\Services;
 
 class RedsysError
 {

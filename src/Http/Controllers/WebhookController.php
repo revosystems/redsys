@@ -1,15 +1,15 @@
 <?php
 
-namespace Revosystems\RedsysPayment\Http\Controllers;
+namespace Revosystems\Redsys\Http\Controllers;
 
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
-use Revosystems\RedsysPayment\Services\RedsysException;
-use Revosystems\RedsysPayment\Services\Webhook;
-use Revosystems\RedsysPayment\Services\WebhookManager;
+use Revosystems\Redsys\Services\RedsysException;
+use Revosystems\Redsys\Services\Webhook;
+use Revosystems\Redsys\Services\WebhookManager;
 
 class WebhookController extends Controller
 {

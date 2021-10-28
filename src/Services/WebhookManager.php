@@ -1,16 +1,16 @@
 <?php
 
 
-namespace Revosystems\RedsysPayment\Services;
+namespace Revosystems\Redsys\Services;
 
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Cache;
-use Revosystems\RedsysPayment\Lib\Model\Element\RESTOperationElement;
-use Revosystems\RedsysPayment\Models\ChargeRequest;
+use Revosystems\Redsys\Lib\Model\Element\RESTOperationElement;
+use Revosystems\Redsys\Models\ChargeRequest;
 
 class WebhookManager
 {
-    const ORDERS_CACHE_KEY = 'rv-redsys-payment-gateway.orders.';
+    const ORDERS_CACHE_KEY = 'redsys.orders.';
 
     //    public function saveToCache(ChargeRequest $chargeRequest, string $operation)
     public static function save(Webhook $webhook, ChargeRequest $chargeRequest, RESTOperationElement $operation)

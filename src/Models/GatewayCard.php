@@ -1,9 +1,9 @@
 <?php
 
 
-namespace Revosystems\RedsysPayment\Models;
+namespace Revosystems\Redsys\Models;
 
-use Revosystems\RedsysPayment\Lib\Model\Element\RESTOperationElement;
+use Revosystems\Redsys\Lib\Model\Element\RESTOperationElement;
 
 class GatewayCard
 {

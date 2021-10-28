@@ -1,6 +1,6 @@
 <?php
 
-namespace Revosystems\RedsysPayment\Http\Livewire\Traits;
+namespace Revosystems\Redsys\Http\Livewire\Traits;
 
 trait GooglePayEventsTrait
 {

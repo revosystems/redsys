@@ -1,6 +1,6 @@
 <?php
 
-namespace Revosystems\RedsysPayment\Lib\Utils;
+namespace Revosystems\Redsys\Lib\Utils;
 
 class RESTAnnotation
 {

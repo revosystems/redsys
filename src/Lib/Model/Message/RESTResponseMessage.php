@@ -1,11 +1,11 @@
 <?php
 
-namespace Revosystems\RedsysPayment\Lib\Model\Message;
+namespace Revosystems\Redsys\Lib\Model\Message;
 
-use Revosystems\RedsysPayment\Lib\Constants\RESTConstants;
-use Revosystems\RedsysPayment\Lib\Model\Element\RESTOperationElement;
-use Revosystems\RedsysPayment\Lib\Model\RESTGenericXml;
-use Revosystems\RedsysPayment\Lib\Model\RESTResponseInterface;
+use Revosystems\Redsys\Lib\Constants\RESTConstants;
+use Revosystems\Redsys\Lib\Model\Element\RESTOperationElement;
+use Revosystems\Redsys\Lib\Model\RESTGenericXml;
+use Revosystems\Redsys\Lib\Model\RESTResponseInterface;
 
 /**
  * @XML_ELEM=RETORNOXML

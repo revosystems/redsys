@@ -1,11 +1,11 @@
 <?php
 
 
-namespace Revosystems\RedsysPayment\Lib\Model\Message;
+namespace Revosystems\Redsys\Lib\Model\Message;
 
-use Revosystems\RedsysPayment\Lib\Constants\RESTConstants;
-use Revosystems\RedsysPayment\Lib\Model\RESTGenericXml;
-use Revosystems\RedsysPayment\Models\ChargeRequest;
+use Revosystems\Redsys\Lib\Constants\RESTConstants;
+use Revosystems\Redsys\Lib\Model\RESTGenericXml;
+use Revosystems\Redsys\Models\ChargeRequest;
 
 abstract class RESTRequestOperationMessage extends RESTGenericXml
 {

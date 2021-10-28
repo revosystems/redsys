@@ -1,8 +1,8 @@
 <?php
 
-namespace Revosystems\RedsysPayment\Lib\Model\Message;
+namespace Revosystems\Redsys\Lib\Model\Message;
 
-use Revosystems\RedsysPayment\Lib\Constants\RESTConstants;
+use Revosystems\Redsys\Lib\Constants\RESTConstants;
 use Illuminate\Support\Facades\Log;
 
 /**

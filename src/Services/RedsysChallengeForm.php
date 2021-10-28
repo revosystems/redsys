@@ -1,14 +1,14 @@
 <?php
 
 
-namespace Revosystems\RedsysPayment\Services;
+namespace Revosystems\Redsys\Services;
 
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Cache;
-use Revosystems\RedsysPayment\Http\Livewire\Form;
-use Revosystems\RedsysPayment\Lib\Model\Message\RESTResponseMessage;
-use Revosystems\RedsysPayment\Models\ChargeRequest;
-use Revosystems\RedsysPayment\Models\ChargeResult;
+use Revosystems\Redsys\Http\Livewire\Form;
+use Revosystems\Redsys\Lib\Model\Message\RESTResponseMessage;
+use Revosystems\Redsys\Models\ChargeRequest;
+use Revosystems\Redsys\Models\ChargeResult;
 
 class RedsysChallengeForm
 {
@@ -25,7 +25,7 @@ class RedsysChallengeForm
         WebhookManager::save($this->webhook, $chargeRequest, $operation);
         return new ChargeResult(true, [
             "result"        => $response->getResult(),
-            "displayForm"   => view('redsys-payment::redsys.challenge', [
+            "displayForm"   => view('redsys::redsys.challenge', [
                 'acsURL'    => $response->getAcsURLParameter(),
                 'creq'      => $response->getCreqParameter(),
                 'PaReq'     => $response->getPAReqParameter(),

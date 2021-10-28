@@ -1,6 +1,6 @@
-<x-redsys-payment-radio-selector :id="'google-pay-mode'" :name="'mode'" :label="'Google Pay'">
+<x-redsys-radio-selector :id="'google-pay-mode'" :name="'mode'" :label="'Google Pay'">
     <div id="googlePay" class="block w-full h-16 flex-row justify-center text-center items-center outline-none rounded"></div>
-</x-redsys-payment-radio-selector>
+</x-redsys-radio-selector>
 
 {{--@push('inner-scripts')--}}
     <script>

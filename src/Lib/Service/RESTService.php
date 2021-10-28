@@ -1,12 +1,12 @@
 <?php
 
-namespace Revosystems\RedsysPayment\Lib\Service;
+namespace Revosystems\Redsys\Lib\Service;
 
-use Revosystems\RedsysPayment\Lib\Constants\RESTConstants;
-use Revosystems\RedsysPayment\Lib\Model\Element\RESTOperationElement;
-use Revosystems\RedsysPayment\Lib\Model\Message\RESTInitialRequestOperationMessage;
-use Revosystems\RedsysPayment\Lib\Model\Message\RESTResponseMessage;
-use Revosystems\RedsysPayment\Lib\Utils\RESTSignatureUtils;
+use Revosystems\Redsys\Lib\Constants\RESTConstants;
+use Revosystems\Redsys\Lib\Model\Element\RESTOperationElement;
+use Revosystems\Redsys\Lib\Model\Message\RESTInitialRequestOperationMessage;
+use Revosystems\Redsys\Lib\Model\Message\RESTResponseMessage;
+use Revosystems\Redsys\Lib\Utils\RESTSignatureUtils;
 use Illuminate\Support\Facades\Log;
 
 abstract class RESTService

@@ -1,8 +1,8 @@
 <?php
 
-namespace Revosystems\RedsysPayment\Lib\Model;
+namespace Revosystems\Redsys\Lib\Model;
 
-use Revosystems\RedsysPayment\Lib\Utils\RESTAnnotation;
+use Revosystems\Redsys\Lib\Utils\RESTAnnotation;
 use Exception;
 use ReflectionClass;
 use ReflectionMethod;

@@ -1,9 +1,9 @@
 <?php
 
-namespace Revosystems\RedsysPayment\Lib\Model\Message;
+namespace Revosystems\Redsys\Lib\Model\Message;
 
-use Revosystems\RedsysPayment\Lib\Constants\RESTConstants;
-use Revosystems\RedsysPayment\Lib\Model\RESTRequestInterface;
+use Revosystems\Redsys\Lib\Constants\RESTConstants;
+use Revosystems\Redsys\Lib\Model\RESTRequestInterface;
 
 /**
  * @XML_ELEM=DATOSENTRADA

@@ -1,6 +1,6 @@
 <?php
 
-namespace Revosystems\RedsysPayment\Lib\Model;
+namespace Revosystems\Redsys\Lib\Model;
 
 interface RESTRequestInterface
 {

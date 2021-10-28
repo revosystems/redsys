@@ -1,13 +1,13 @@
 <?php
 
 
-namespace Revosystems\RedsysPayment\Services;
+namespace Revosystems\Redsys\Services;
 
-use Revosystems\RedsysPayment\Models\ChargeResult;
-use Revosystems\RedsysPayment\Lib\Constants\RESTConstants;
-use Revosystems\RedsysPayment\Lib\Model\Message\RESTInitialRequestOperationMessage;
-use Revosystems\RedsysPayment\Lib\Service\Impl\RESTInitialRequestService;
-use Revosystems\RedsysPayment\Models\ChargeRequest;
+use Revosystems\Redsys\Models\ChargeResult;
+use Revosystems\Redsys\Lib\Constants\RESTConstants;
+use Revosystems\Redsys\Lib\Model\Message\RESTInitialRequestOperationMessage;
+use Revosystems\Redsys\Lib\Service\Impl\RESTInitialRequestService;
+use Revosystems\Redsys\Models\ChargeRequest;
 use Illuminate\Support\Facades\Log;
 
 class RedsysRequestInit extends RedsysRequest

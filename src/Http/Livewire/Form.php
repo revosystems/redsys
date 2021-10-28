@@ -1,13 +1,13 @@
 <?php
 
-namespace Revosystems\RedsysPayment\Http\Livewire;
+namespace Revosystems\Redsys\Http\Livewire;
 
 use Livewire\Component;
-use Revosystems\RedsysPayment\Models\CardsTokenizable;
-use Revosystems\RedsysPayment\Models\PaymentHandler;
-use Revosystems\RedsysPayment\Models\ChargeRequest;
-use Revosystems\RedsysPayment\Models\RedsysPaymentGateway;
-use Revosystems\RedsysPayment\Services\RedsysError;
+use Revosystems\Redsys\Models\CardsTokenizable;
+use Revosystems\Redsys\Models\PaymentHandler;
+use Revosystems\Redsys\Models\ChargeRequest;
+use Revosystems\Redsys\Models\RedsysPaymentGateway;
+use Revosystems\Redsys\Services\RedsysError;
 
 class Form extends Component
 {
@@ -46,7 +46,7 @@ class Form extends Component
 
     public function render()
     {
-        return view('redsys-payment::livewire.form');
+        return view('redsys::livewire.form');
     }
 
     public function onFormErrorReceived($formErrorCode)

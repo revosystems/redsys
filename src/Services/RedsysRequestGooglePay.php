@@ -1,13 +1,13 @@
 <?php
 
 
-namespace Revosystems\RedsysPayment\Services;
+namespace Revosystems\Redsys\Services;
 
-use Revosystems\RedsysPayment\Models\ChargeResult;
-use Revosystems\RedsysPayment\Lib\Constants\RESTConstants;
-use Revosystems\RedsysPayment\Lib\Model\Message\RESTAuthorizationRequestOperationMessage;
-use Revosystems\RedsysPayment\Lib\Service\Impl\RESTTrataRequestService;
-use Revosystems\RedsysPayment\Models\ChargeRequest;
+use Revosystems\Redsys\Models\ChargeResult;
+use Revosystems\Redsys\Lib\Constants\RESTConstants;
+use Revosystems\Redsys\Lib\Model\Message\RESTAuthorizationRequestOperationMessage;
+use Revosystems\Redsys\Lib\Service\Impl\RESTTrataRequestService;
+use Revosystems\Redsys\Models\ChargeRequest;
 use Illuminate\Support\Facades\Log;
 
 class RedsysRequestGooglePay extends RedsysRequest

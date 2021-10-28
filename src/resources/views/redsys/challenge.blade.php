@@ -12,6 +12,6 @@
         @else
             <input type="hidden" name="creq" value="{{$creq}}">
         @endif
-        @include('redsys-payment::livewire.includes.loading-ring')
+        @include('redsys::livewire.includes.loading-ring')
     </table>
 </form>

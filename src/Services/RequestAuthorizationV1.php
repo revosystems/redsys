@@ -1,9 +1,9 @@
 <?php
 
 
-namespace Revosystems\RedsysPayment\Services;
+namespace Revosystems\Redsys\Services;
 
-use Revosystems\RedsysPayment\Models\ChargeRequest;
+use Revosystems\Redsys\Models\ChargeRequest;
 
 class RequestAuthorizationV1 extends RequestAuthorization
 {

@@ -1,7 +1,7 @@
 <?php
 
 
-namespace Revosystems\RedsysPayment\Models;
+namespace Revosystems\Redsys\Models;
 
 use Carbon\Carbon;
 use Illuminate\Support\Collection;
@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Log;
 
 class CardsTokenizable
 {
-    const CACHE_KEY = 'rv-redsys-payment-gateway.cards.';
+    const CACHE_KEY = 'redsys.cards.';
 
     public static function get(string $customerToken) : Collection
     {

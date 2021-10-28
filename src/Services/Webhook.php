@@ -1,23 +1,23 @@
 <?php
 
 
-namespace Revosystems\RedsysPayment\Services;
+namespace Revosystems\Redsys\Services;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
-use Revosystems\RedsysPayment\Lib\Constants\RESTConstants;
-use Revosystems\RedsysPayment\Lib\Model\Message\RESTAuthenticationRequestOperationMessage;
-use Revosystems\RedsysPayment\Lib\Model\Message\RESTResponseMessage;
-use Revosystems\RedsysPayment\Lib\Service\Impl\RESTTrataRequestService;
-use Revosystems\RedsysPayment\Models\CardsTokenizable;
-use Revosystems\RedsysPayment\Models\ChargeRequest;
-use Revosystems\RedsysPayment\Models\ChargeResult;
-use Revosystems\RedsysPayment\Models\GatewayCard;
-use Revosystems\RedsysPayment\Models\RedsysConfig;
+use Revosystems\Redsys\Lib\Constants\RESTConstants;
+use Revosystems\Redsys\Lib\Model\Message\RESTAuthenticationRequestOperationMessage;
+use Revosystems\Redsys\Lib\Model\Message\RESTResponseMessage;
+use Revosystems\Redsys\Lib\Service\Impl\RESTTrataRequestService;
+use Revosystems\Redsys\Models\CardsTokenizable;
+use Revosystems\Redsys\Models\ChargeRequest;
+use Revosystems\Redsys\Models\ChargeResult;
+use Revosystems\Redsys\Models\GatewayCard;
+use Revosystems\Redsys\Models\RedsysConfig;
 
 abstract class Webhook
 {
-    const ORDERS_CACHE_KEY = 'rv-redsys-payment-gateway.orders.';
+    const ORDERS_CACHE_KEY = 'redsys.orders.';
     /**
      * @var RedsysConfig
      */

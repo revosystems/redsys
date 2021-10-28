@@ -1,5 +1,5 @@
 {
-    "name": "revosystems/redsys-payment",
+    "name": "revosystems/redsys",
     "description": "Redsys Payment Gateway",
     "type": "library",
     "license": "MIT",
@@ -17,13 +17,13 @@
     },
     "autoload": {
         "psr-4": {
-            "Revosystems\\RedsysPayment\\": "src"
+            "Revosystems\\Redsys\\": "src"
         }
     },
     "extra": {
         "laravel": {
             "providers": [
-                "Revosystems\\RedsysPayment\\RedsysPaymentServiceProvider"
+                "Revosystems\\Redsys\\RedsysServiceProvider"
             ]
         }
     },

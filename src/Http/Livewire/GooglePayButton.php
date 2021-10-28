@@ -1,9 +1,9 @@
 <?php
 
-namespace Revosystems\RedsysPayment\Http\Livewire;
+namespace Revosystems\Redsys\Http\Livewire;
 
 use Livewire\Component;
-use Revosystems\RedsysPayment\Http\Livewire\Traits\GooglePayEventsTrait;
+use Revosystems\Redsys\Http\Livewire\Traits\GooglePayEventsTrait;
 
 class GooglePayButton extends Component
 {
@@ -11,6 +11,6 @@ class GooglePayButton extends Component
     
     public function render()
     {
-        return view('redsys-payment::livewire.google-pay-button');
+        return view('redsys::livewire.google-pay-button');
     }
 }

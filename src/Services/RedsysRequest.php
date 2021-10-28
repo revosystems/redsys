@@ -1,12 +1,12 @@
 <?php
 
 
-namespace Revosystems\RedsysPayment\Services;
+namespace Revosystems\Redsys\Services;
 
-use Revosystems\RedsysPayment\Lib\Model\Message\RESTRequestOperationMessage;
-use Revosystems\RedsysPayment\Lib\Model\Message\RESTResponseMessage;
-use Revosystems\RedsysPayment\Models\ChargeRequest;
-use Revosystems\RedsysPayment\Models\RedsysConfig;
+use Revosystems\Redsys\Lib\Model\Message\RESTRequestOperationMessage;
+use Revosystems\Redsys\Lib\Model\Message\RESTResponseMessage;
+use Revosystems\Redsys\Models\ChargeRequest;
+use Revosystems\Redsys\Models\RedsysConfig;
 
 abstract class RedsysRequest
 {

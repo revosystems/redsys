@@ -1,16 +1,16 @@
 <?php
 
-namespace Revosystems\RedsysPayment\Models;
+namespace Revosystems\Redsys\Models;
 
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Session;
-use Revosystems\RedsysPayment\Exceptions\SessionExpiredException;
-use Revosystems\RedsysPayment\Interfaces\Order;
+use Revosystems\Redsys\Exceptions\SessionExpiredException;
+use Revosystems\Redsys\Interfaces\RedsysOrder;
 
 abstract class PaymentHandler
 {
-    const CACHE_KEY = 'rv-redsys-payment-gateway.handler.';
+    const CACHE_KEY = 'redsys.handler.';
 
     public $order;
     public $account;
@@ -19,7 +19,7 @@ abstract class PaymentHandler
 //    abstract public function onSuccess();
 //    abstract public function onFailure();
 
-    public function __construct(Order $order, string $account)
+    public function __construct(RedsysOrder $order, string $account)
     {
         $this->account  = $account;
         $this->order    = $order;

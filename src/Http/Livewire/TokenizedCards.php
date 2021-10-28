@@ -1,11 +1,11 @@
 <?php
 
-namespace Revosystems\RedsysPayment\Http\Livewire;
+namespace Revosystems\Redsys\Http\Livewire;
 
 use Livewire\Component;
-use Revosystems\RedsysPayment\Models\CardsTokenizable;
-use Revosystems\RedsysPayment\Models\PaymentHandler;
-use Revosystems\RedsysPayment\Models\GatewayCard;
+use Revosystems\Redsys\Models\CardsTokenizable;
+use Revosystems\Redsys\Models\PaymentHandler;
+use Revosystems\Redsys\Models\GatewayCard;
 
 class TokenizedCards extends Component
 {
@@ -28,7 +28,7 @@ class TokenizedCards extends Component
 
     public function render()
     {
-        return view('redsys-payment::livewire.tokenized-cards');
+        return view('redsys::livewire.tokenized-cards');
     }
 
     public function hydrate()

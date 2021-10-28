@@ -1,23 +1,23 @@
 <?php
 
 
-namespace Revosystems\RedsysPayment\Models;
+namespace Revosystems\Redsys\Models;
 
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Session;
-use Revosystems\RedsysPayment\Exceptions\SessionExpiredException;
-use Revosystems\RedsysPayment\Interfaces\Order;
-use Revosystems\RedsysPayment\Lib\Constants\RESTConstants;
-use Revosystems\RedsysPayment\Services\RedsysRequestApplePay;
-use Revosystems\RedsysPayment\Services\RedsysRequestGooglePay;
-use Revosystems\RedsysPayment\Services\RedsysRequestInit;
-use Revosystems\RedsysPayment\Services\RedsysRequestRefund;
-use Revosystems\RedsysPayment\Services\RequestAuthorizationV1;
-use Revosystems\RedsysPayment\Services\RequestAuthorizationV2;
+use Revosystems\Redsys\Exceptions\SessionExpiredException;
+use Revosystems\Redsys\Interfaces\RedsysOrder;
+use Revosystems\Redsys\Lib\Constants\RESTConstants;
+use Revosystems\Redsys\Services\RedsysRequestApplePay;
+use Revosystems\Redsys\Services\RedsysRequestGooglePay;
+use Revosystems\Redsys\Services\RedsysRequestInit;
+use Revosystems\Redsys\Services\RedsysRequestRefund;
+use Revosystems\Redsys\Services\RequestAuthorizationV1;
+use Revosystems\Redsys\Services\RequestAuthorizationV2;
 
 class RedsysPaymentGateway
 {
-    const PERSIST_KET = 'rv-redsys-payment-gateway.redsys';
+    const PERSIST_KET = 'redsys.payment-gateway';
 
     public $iframeUrl;
     /**
@@ -55,21 +55,20 @@ class RedsysPaymentGateway
     {
         $orderReference = ChargeRequest::generateOrderReference();
         $paymentHandler->persist($orderReference);
-        return view('redsys-payment::redsys.payment', [
+        return view('redsys::redsys.payment', [
             'orderReference'    => $orderReference,
             'orderId'           => $paymentHandler->order->id(),
             'iframeUrl'         => $this->iframeUrl,
             'merchantCode'      => $this->merchantCode(),
             'merchantTerminal'  => $this->merchantTerminal(),
-            'buttonText'        => __(config('redsys-payment.translationsPrefix') . 'pay') . ' ' . $paymentHandler->order->price()->format(),
+            'buttonText'        => __(config('redsys.translationsPrefix') . 'pay') . ' ' . $paymentHandler->order->price()->format(),
             'customerToken'     => $customerToken,
             'shouldSaveCard'    => $shouldSaveCard,
-//            'cardId'            => $cardId,
             'cards'             => CardsTokenizable::get($customerToken)
         ])->render();
     }
 
-    public function charge(ChargeRequest $chargeRequest, Order $order) : ChargeResult
+    public function charge(ChargeRequest $chargeRequest, RedsysOrder $order) : ChargeResult
     {
         $operationId = $chargeRequest->operationId;
         $cardId      = $chargeRequest->cardId;

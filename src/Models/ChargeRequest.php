@@ -1,6 +1,6 @@
 <?php
 
-namespace Revosystems\RedsysPayment\Models;
+namespace Revosystems\Redsys\Models;
 
 class ChargeRequest
 {

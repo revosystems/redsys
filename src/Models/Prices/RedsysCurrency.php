@@ -1,8 +1,9 @@
 <?php
 
-namespace Revosystems\RedsysPayment\Models\Prices;
+namespace Revosystems\Redsys\Models\Prices;
 
-class Currency {
+class RedsysCurrency
+{
     public $code;
 
     public function __construct($code)
@@ -13,21 +14,21 @@ class Currency {
     public function symbol($value = null)
     {
         $symbols = include(__DIR__. '/../../resources/currencies/currency_symbols.php');
-        $symbol = $symbols[$this->code] ?? "";
+        $symbol  = $symbols[$this->code] ?? "";
 
         return $value ? ($this->isSymbolBeforeValue() ? $symbol.' '.$value : $value.' '.$symbol) : $symbol;
     }
 
     public function isSymbolBeforeValue()
     {
-        return $this->code == 'USD'|| $this->code == 'GBP';
+        return $this->code == 'USD' || $this->code == 'GBP';
     }
 
     public function toArray()
     {
         return [
-          'code' => $this->code,
-          'symbol' => $this->symbol(),  
+          'code'   => $this->code,
+          'symbol' => $this->symbol(),
         ];
     }
 
