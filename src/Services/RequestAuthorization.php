@@ -51,7 +51,7 @@ abstract class RequestAuthorization extends RedsysRequest
 
     protected function getWebhookUrl($orderReference, $orderId) : string
     {
-        return "https://28bb-213-148-218-55.ngrok.io/webhooks/redsys?orderReference={$orderReference}&orderId={$orderId}";
+        return "https://47f0-213-148-218-55.ngrok.io/webhooks/redsys?orderReference={$orderReference}&orderId={$orderId}";
         return route('rv.webhooks.redsys', compact('orderReference', 'orderId'));
     }
 }

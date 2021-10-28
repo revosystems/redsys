@@ -36,34 +36,23 @@ class RedsysPaymentGateway
         return (new self($config))->persist();
     }
 
-    public function merchantCode() : string
-    {
-        return $this->config->code;
-    }
-
-    public function merchantTerminal() : string
-    {
-        return $this->config->terminal;
-    }
-
     public static function isTestEnvironment() : bool
     {
         return config('services.payment_gateways.redsys.test');
     }
 
-    public function render(PaymentHandler $paymentHandler, $customerToken, $shouldSaveCard = true, $cardId = null)
+    public function render(PaymentHandler $paymentHandler, $customerToken)
     {
         $orderReference = ChargeRequest::generateOrderReference();
         $paymentHandler->persist($orderReference);
-        return view('redsys::redsys.payment', [
+        return view('redsys::redsys.main', [
             'orderReference'    => $orderReference,
+            'paymentHandler'    => $paymentHandler,
             'orderId'           => $paymentHandler->order->id(),
             'iframeUrl'         => $this->iframeUrl,
-            'merchantCode'      => $this->merchantCode(),
-            'merchantTerminal'  => $this->merchantTerminal(),
-            'buttonText'        => __(config('redsys.translationsPrefix') . 'pay') . ' ' . $paymentHandler->order->price()->format(),
+            'merchantCode'      => $this->config->code,
+            'merchantTerminal'  => $this->config->terminal,
             'customerToken'     => $customerToken,
-            'shouldSaveCard'    => $shouldSaveCard,
             'cards'             => CardsTokenizable::get($customerToken)
         ])->render();
     }
@@ -95,6 +84,7 @@ class RedsysPaymentGateway
             ->handle($chargeRequest, $orderId, $amount, $currency, $response);
     }
 
+    /*
     public function chargeWithApple($orderId, $amount, $currency, $applePayData)
     {
         return (new RedsysRequestApplePay($this->config))
@@ -112,6 +102,7 @@ class RedsysPaymentGateway
         return (new RedsysRequestRefund($this->config))
             ->handle($reference, $amount, $currency);
     }
+    */
 
     //==================================
     // METHODS TO PERSIST SECTION

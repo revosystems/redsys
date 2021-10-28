@@ -10,13 +10,17 @@ class RadioSelector extends Component
     public $name;
     public $label;
     public $selected;
-    
-    public function __construct(string $id, string $name, ?string $label = null, ?bool $selected = false)
+    public $hidden;
+    public $hideInput;
+
+    public function __construct(string $id, string $name, ?string $label = null, ?bool $selected = false, $hidden = false, $hideInput = false)
     {
         $this->id       = $id;
         $this->name     = $name;
         $this->label    = $label;
+        $this->hidden   = $hidden;
         $this->selected = $selected;
+        $this->hideInput= $hideInput;
     }
 
     public function render()

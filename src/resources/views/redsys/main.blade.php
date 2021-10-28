@@ -15,23 +15,18 @@
 @section('content')
 
 <div class="w-full flex flex-col space-y-4 h-full" style="height: 100%; min-height: 200px; margin-top: 24px">
-    @livewire('tokenized-cards', compact('orderReference', 'customerToken', 'cards'))
-    @livewire('form', [
+    @livewire('redsys', [
         'iframeUrl'         => $iframeUrl,
         'merchantCode'      => $merchantCode,
         'merchantTerminal'  => $merchantTerminal,
+        'paymentHandler'    => $paymentHandler,
         'orderReference'    => $orderReference,
-        'buttonText'        => $buttonText,
         'customerToken'     => $customerToken,
-        'isSelected'        => $cards->isEmpty()
+        'cards'             => $cards
     ])
 
-    @livewire('check-status', compact('orderReference'))
-    @livewire('apple-pay-button')
-    @livewire('google-pay-button')
 </div>
 
 {{--    @livewireScripts--}}
 
 @endsection
-

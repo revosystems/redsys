@@ -24,8 +24,8 @@
             // Check that client is connected using Safari
             checkApplePayAvailability();
 
-            window.addEventListener('payWithCard', event => {
-                document.getElementById("cardPaymentForm").submit();
+            window.addEventListener('onTokenizedCardPressed', event => {
+                // document.getElementById("cardPaymentForm").submit();
             })
 
             window.livewire.on('applePayPaymentCompleted', function (data) {
