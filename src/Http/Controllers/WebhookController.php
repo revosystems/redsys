@@ -13,12 +13,10 @@ use Revosystems\Redsys\Services\WebhookManager;
 
 class WebhookController extends Controller
 {
-    protected $cachedData;
-
     public function webhook(Request $request) : void
     {
         Log::debug("[REDSYS] Payload received");
-        logger($request->toArray());
+//        Log::debug($request->toArray());
         if (! $this->validateRequest($request)) {
             $this->chargeFailed($request, 'Charge request validation failed');
             return;

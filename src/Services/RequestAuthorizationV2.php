@@ -23,7 +23,7 @@ class RequestAuthorizationV2 extends RequestAuthorization
         $protocolVersion      = $response->protocolVersionAnalysis();
         // TODO: REVIEW threeDSMethodUrl is not received with card 4918019199883839
         // TODO: only recevied with card: 4918019160034602 (frictionless). What should we do in this case?
-        logger("BASIC DATA: {$threeDSInfo}, {$protocolVersion}, {$threeDSMethodURL}");
+//        Log::debug("BASIC DATA: {$threeDSInfo}, {$protocolVersion}, {$threeDSMethodURL}");
         if ($threeDSMethodURL) {
             // implementar nou flux
         }

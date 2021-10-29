@@ -102,7 +102,7 @@ abstract class RESTService
     {
         $calcSignature = RESTSignatureUtils::createMerchantSignatureNotif($this->getSignatureKey(), $sentData);
         if ($remoteSignature != $calcSignature) {
-            logger("Signature doesnt match: '{$remoteSignature}' <> '{$calcSignature}'");
+            Log::error("Signature doesnt match: '{$remoteSignature}' <> '{$calcSignature}'");
             return false;
         }
         return true;

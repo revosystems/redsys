@@ -55,7 +55,7 @@ abstract class RESTGenericXml
 
     public function parseJson($json)
     {
-        logger("[REDSYS] Response JSON: {$json}");
+//        Log::debug("[REDSYS] Response JSON: {$json}");
         $arr = json_decode($json, true);
         foreach ((new ReflectionClass(get_class($this)))->getProperties() as $prop) {
             $xmlClass = RESTAnnotation::getXmlClass($prop);

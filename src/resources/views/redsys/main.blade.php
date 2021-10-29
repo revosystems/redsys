@@ -21,6 +21,7 @@
         <div id="challenge-form" class="block w-full h-16 flex-row justify-center text-center items-center outline-none rounded"></div>
     </x-redsys-radio-selector>
 </div>
+
 <script>
     function loadRedsysForm(buttonStyle = 'background-color:#E35732', bodyStyle = '', boxStyle = '', inputsStyle = '') {
         // Redsys iframe available method to load card form
@@ -63,10 +64,10 @@
         if (data.result === 'AUT') {
             loadChallengeForm(data.displayForm)
             submitChallengeForm()
-            return;
         }
-        console.log('Emiting onPaymentCompleted event')
-        window.livewire.emit("onPaymentCompleted")  // TODO: Add on payment completed event
+        if (data.result === 'OK') {
+            window.livewire.emit("onPaymentCompleted")
+        }
     }
 
     function loadChallengeForm(displayForm) {

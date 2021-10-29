@@ -14,6 +14,7 @@ use Revosystems\Redsys\Models\GatewayCard;
 abstract class RequestAuthorization extends RedsysRequest
 {
     abstract protected function getWebhookClass();
+
     protected function operationMessageClass()
     {
         return RESTAuthorizationRequestOperationMessage::class;
@@ -32,14 +33,17 @@ abstract class RequestAuthorization extends RedsysRequest
             Log::error("[REDSYS] Operation authorization was not OK");
             return new ChargeResult(false, $this->getResponse($response));
         }
-        $operation = $response->getOperation();
-        if ($chargeRequest->customerToken && $operation->getMerchantIdentifier()) {
-            CardsTokenizable::tokenize(GatewayCard::makeFromOperation($operation), $chargeRequest->customerToken);
-        }
+
         if ($result == RESTConstants::$RESP_LITERAL_OK) {
             Log::debug("[REDSYS] Operation authorization was OK (frictionless)");
+            $operation = $response->getOperation();
+            if ($chargeRequest->customerToken && $operation->getMerchantIdentifier()) {
+                CardsTokenizable::tokenize(GatewayCard::makeFromOperation($operation), $chargeRequest->customerToken);
+            }
+
             return new ChargeResult(true, $this->getResponse($response), $operationRequest->getAmount(), "redsys:{$chargeRequest->orderReference}");
         }
+        
         return (new RedsysChallengeForm($this->webhookManager()))->display($chargeRequest, $response, $this->getWebhookUrl($chargeRequest->orderReference, $orderId), $operationRequest->getAmount());
     }
 

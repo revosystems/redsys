@@ -16,8 +16,6 @@ abstract class PaymentHandler
     public $account;
 
     abstract public function onPaymentCompleted(?string $error = null);
-//    abstract public function onSuccess();
-//    abstract public function onFailure();
 
     public function __construct(RedsysOrder $order, string $account)
     {

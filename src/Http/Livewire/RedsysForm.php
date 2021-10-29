@@ -13,7 +13,7 @@ class RedsysForm extends Component
     protected $listeners = [
         'onCardFormSubmit',
         'onTokenizedCardPressed',
-//        'onPaymentCompleted',
+        'onPaymentCompleted',
     ];
 
     public $shouldSaveCard = false;
@@ -39,7 +39,12 @@ class RedsysForm extends Component
         return view('redsys::livewire.redsys-form');
     }
 
-    public function onCardFormSubmit($operationId, $extraInfo)
+    public function onPaymentCompleted() : void
+    {
+        PaymentHandler::get($this->orderReference)->onPaymentCompleted();
+    }
+    
+    public function onCardFormSubmit($operationId, $extraInfo) : void
     {
         $chargeRequest = ChargeRequest::makeWithOperationId($this->orderReference, $operationId, $extraInfo);
         if ($this->shouldSaveCard) {
@@ -48,7 +53,7 @@ class RedsysForm extends Component
         $this->emit('payResponse', $this->chargeToRedsys($chargeRequest)->gatewayResponse);
     }
 
-    public function onTokenizedCardPressed($cardId, $extraInfo)
+    public function onTokenizedCardPressed($cardId, $extraInfo) : void
     {
         $chargeRequest = ChargeRequest::makeWithCard($this->orderReference, $cardId, $extraInfo);
         $this->emit('payResponse', $this->chargeToRedsys($chargeRequest)->gatewayResponse);
