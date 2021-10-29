@@ -39,18 +39,18 @@ class RedsysForm extends Component
         return view('redsys::livewire.redsys-form');
     }
 
-    public function onCardFormSubmit($operationId, $params)
+    public function onCardFormSubmit($operationId, $extraInfo)
     {
-        $chargeRequest = ChargeRequest::makeWithOperationId($this->orderReference, $operationId, $params);
+        $chargeRequest = ChargeRequest::makeWithOperationId($this->orderReference, $operationId, $extraInfo);
         if ($this->shouldSaveCard) {
             $chargeRequest->customerToken = $this->customerToken;
         }
         $this->emit('payResponse', $this->chargeToRedsys($chargeRequest)->gatewayResponse);
     }
 
-    public function onTokenizedCardPressed($cardId)
+    public function onTokenizedCardPressed($cardId, $extraInfo)
     {
-        $chargeRequest = ChargeRequest::makeWithCard($this->orderReference, $cardId, []);
+        $chargeRequest = ChargeRequest::makeWithCard($this->orderReference, $cardId, $extraInfo);
         $this->emit('payResponse', $this->chargeToRedsys($chargeRequest)->gatewayResponse);
     }
 
