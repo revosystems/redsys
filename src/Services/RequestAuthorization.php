@@ -21,7 +21,7 @@ abstract class RequestAuthorization extends RedsysRequest
 
     protected function getAuthorizationChargeResult(ChargeRequest $chargeRequest, RESTAuthorizationRequestOperationMessage $operationRequest, $orderId): ChargeResult
     {
-        if ($chargeRequest->shouldSaveCard) {
+        if ($chargeRequest->customerToken) {
             $operationRequest->createReference();
         }
 
@@ -33,7 +33,7 @@ abstract class RequestAuthorization extends RedsysRequest
             return new ChargeResult(false, $this->getResponse($response));
         }
         $operation = $response->getOperation();
-        if ($chargeRequest->shouldSaveCard && $operation->getMerchantIdentifier()) {
+        if ($chargeRequest->customerToken && $operation->getMerchantIdentifier()) {
             CardsTokenizable::tokenize(GatewayCard::makeFromOperation($operation), $chargeRequest->customerToken);
         }
         if ($result == RESTConstants::$RESP_LITERAL_OK) {

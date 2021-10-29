@@ -42,7 +42,7 @@ abstract class Webhook
 
     protected function sendAuthenticationConfirmationOperation($challengeRequest, ChargeRequest $chargeRequest)
     {
-        if ($chargeRequest->shouldSaveCard) {
+        if ($chargeRequest->customerToken) {
             $challengeRequest->createReference();
         }
         $response   = RedsysRest::make(RESTTrataRequestService::class, $this->config->key)->sendOperation($challengeRequest);
@@ -54,7 +54,7 @@ abstract class Webhook
             return new ChargeResult(false, $this->getResponse($response));
         }
         $operation = $response->getOperation();
-        if ($chargeRequest->shouldSaveCard && $operation->getMerchantIdentifier()) {
+        if ($chargeRequest->customerToken && $operation->getMerchantIdentifier()) {
             CardsTokenizable::tokenize(GatewayCard::makeFromOperation($operation), $chargeRequest->customerToken);
         }
         return new ChargeResult(true, $this->getResponse($response));

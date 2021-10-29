@@ -41,13 +41,16 @@ class RedsysForm extends Component
 
     public function onCardFormSubmit($operationId, $params)
     {
-        $chargeRequest = ChargeRequest::makeWithOperationId($this->orderReference, $operationId, $this->shouldSaveCard, $this->customerToken, $params);
+        $chargeRequest = ChargeRequest::makeWithOperationId($this->orderReference, $operationId, $params);
+        if ($this->shouldSaveCard) {
+            $chargeRequest->customerToken = $this->customerToken;
+        }
         $this->emit('payResponse', $this->chargeToRedsys($chargeRequest)->gatewayResponse);
     }
 
     public function onTokenizedCardPressed($cardId)
     {
-        $chargeRequest = ChargeRequest::makeWithCard($this->orderReference, $cardId, $this->customerToken, []);
+        $chargeRequest = ChargeRequest::makeWithCard($this->orderReference, $cardId, []);
         $this->emit('payResponse', $this->chargeToRedsys($chargeRequest)->gatewayResponse);
     }
 
