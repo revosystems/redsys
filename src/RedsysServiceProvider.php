@@ -4,12 +4,11 @@ namespace Revosystems\Redsys;
 
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\ServiceProvider;
-use Khill\FontAwesome\FontAwesome;
 use Livewire\Livewire;
 use Revosystems\Redsys\Http\Livewire\CheckStatus;
-use Revosystems\Redsys\Http\Livewire\Redsys;
 use Revosystems\Redsys\Http\Livewire\RedsysForm;
 use Revosystems\Redsys\View\Components\RadioSelector;
+use FA;
 
 class RedsysServiceProvider extends ServiceProvider
 {
@@ -37,7 +36,7 @@ class RedsysServiceProvider extends ServiceProvider
     public function register()
     {
         Blade::directive("icon", function ($icon) {
-            return FontAwesome::fixedWidth($icon);
+            return FA::fixedWidth($icon);
         });
     }
 }
