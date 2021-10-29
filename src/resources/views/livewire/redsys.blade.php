@@ -2,7 +2,7 @@
     <div id="errorContainer" class="hidden flex items-center text-center text-white font-bold px-3 py-3 rounded shadow-xl bg-red-600" style="background-color: #e46e6a">
         <p id="errorMessage" class="flex text-m"></p>
     </div>
-    @include('redsys::redsys.tokenized-cards', compact('cards', 'amount'))
+    @include('redsys::livewire.includes.tokenized-cards', compact('cards', 'amount'))
 
     <x-redsys-radio-selector :id="'new-card-mode'" :name="'mode'" :label="__(config('redsys.translationsPrefix') . 'useNewCard')" :selected="$this->cards->isEmpty()">
         @include('redsys::redsys.iframe', compact('iframeUrl'))
@@ -24,7 +24,7 @@
             "{{ $this->merchantCode }}", "{{ $this->merchantTerminal }}", "{{ $this->orderReference }}", false)
     }
 
-    function showErrorToast(message) {
+    function showError(message) {
         console.error(message)
         if (message) {
             document.getElementById("errorMessage").innerHTML = message
@@ -33,14 +33,6 @@
         setTimeout(function () {
             document.getElementById("errorContainer").classList.add('hidden')
         }, 3000);
-    }
-
-    function onCardFormError(errorCode) {
-        window.livewire.emit('onCardFormSubmit', null, null, errorCode);
-    }
-
-    function onCardFormSuccess(operationId) {
-        window.livewire.emit('onCardFormSubmit', operationId, browserData())
     }
 
     function onTokenizedCardPressed(cardId) {
@@ -59,7 +51,7 @@
     function handleResponse(data) {
         console.debug(data)
         if (! data || ['OK', 'AUT'].indexOf(data.result) === -1) {
-            showErrorToast("Something went wrong, redirecting…")
+            showError("Something went wrong, redirecting…")
             return setTimeout(function () {
                 location.reload();
             }, 3000)
@@ -93,21 +85,38 @@
     window.addEventListener("message", function receiveMessage(event) {
         storeIdOper(event, "token", "errorCode", function merchantValidation() { return true });
         if (event.data.error || event.data.idOper === -1) {
-            onCardFormError( event.data.error );
+            showError(redsysErrors[event.data.error] ?? 'Redsys error');
             return;
         }
         if (event.data.idOper && event.data.idOper !== -1) {
-            onCardFormSuccess( event.data.idOper );
+            window.livewire.emit('onCardFormSubmit', event.data.idOper, browserData())
         }
     });
 
     document.addEventListener("DOMContentLoaded", function(event) {
-        window.livewire.on('showErrorEvent', function (formError) {
-            showErrorToast(formError);
-        })
         window.livewire.on('payResponse', function (data) {
             handleResponse(data);
         })
         loadRedsysForm()
     })
+
+    let redsysErrors = {
+        "msg1": "Ha de rellenar los datos de la tarjeta",
+        "msg2": "La tarjeta es obligatoria",
+        "msg3": "La tarjeta ha de ser numérica",
+        "msg4": "La tarjeta no puede ser negativa",
+        "msg5": "El mes de caducidad de la tarjeta es obligatorio",
+        "msg6": "El mes de caducidad de la tarjeta ha de ser numérico",
+        "msg7": "El mes de caducidad de la tarjeta es incorrecto",
+        "msg8": "El año de caducidad de la tarjeta es obligatorio",
+        "msg9": "El año de caducidad de la tarjeta ha de ser numérico",
+        "msg10": "El año de caducidad de la tarjeta no puede ser negativo",
+        "msg11": "El código de seguridad de la tarjeta no tiene la longitud correcta",
+        "msg12": "El código de seguridad de la tarjeta ha de ser numérico",
+        "msg13": "El código de seguridad de la tarjeta no puede ser negativo",
+        "msg14": "El código de seguridad no es necesario para su tarjeta",
+        "msg15": "La longitud de la tarjeta no es correcta",
+        "msg16": "Debe Introducir un número de tarjeta válido (sin espacios ni guiones).",
+        "msg17": "Validación incorrecta por parte del comercio"
+    }
 </script>

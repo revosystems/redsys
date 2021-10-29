@@ -55,10 +55,6 @@ class Redsys extends Component
 
     public function onCardFormSubmit($operationId, $params, $formErrorCode = null)
     {
-        if ($formErrorCode) {
-            $this->emit('showErrorEvent', RedsysError::getMessageFromError($formErrorCode));
-            return;
-        }
         $chargeRequest = ChargeRequest::makeWithOperationId($this->orderReference, $operationId, $this->shouldSaveCard, $this->customerToken, $params);
         $this->emit('payResponse', $this->chargeToRedsys($chargeRequest)->gatewayResponse);
     }

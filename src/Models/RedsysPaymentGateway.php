@@ -45,7 +45,7 @@ class RedsysPaymentGateway
     {
         $orderReference = ChargeRequest::generateOrderReference();
         $paymentHandler->persist($orderReference);
-        return view('redsys::redsys.main', [
+        return view('redsys::app.index', [
             'orderReference'    => $orderReference,
             'paymentHandler'    => $paymentHandler,
             'orderId'           => $paymentHandler->order->id(),
