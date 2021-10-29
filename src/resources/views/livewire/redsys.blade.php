@@ -2,11 +2,11 @@
     <div id="errorContainer" class="hidden flex items-center text-center text-white font-bold px-3 py-3 rounded shadow-xl bg-red-600" style="background-color: #e46e6a">
         <p id="errorMessage" class="flex text-m"></p>
     </div>
-    @include('redsys::livewire.includes.tokenized-cards', compact('cards', 'amount'))
+    <div>
+        @include('redsys::livewire.includes.tokenized-cards', compact('cards', 'amount'))
+    </div>
 
-    <x-redsys-radio-selector :id="'new-card-mode'" :name="'mode'" :label="__(config('redsys.translationsPrefix') . 'useNewCard')" :selected="$this->cards->isEmpty()">
-        @include('redsys::redsys.iframe', compact('iframeUrl'))
-    </x-redsys-radio-selector>
+    @livewire('redsys-form', compact('iframeUrl', 'redsysFormId', 'amount', 'orderReference', 'customerToken', 'hasCards'))
 
     @livewire('check-status', compact('orderReference'))
 
@@ -20,7 +20,7 @@
 </div>
 <script>
     function loadRedsysForm(buttonStyle = 'background-color:#E35732', bodyStyle = '', boxStyle = '', inputsStyle = '') {
-        getInSiteForm('redsys-init-form', buttonStyle, bodyStyle, boxStyle, inputsStyle, "{!!  $this->buttonText . ' ' . $this->amount !!}",
+        getInSiteForm('{{ $redsysFormId }}', buttonStyle, bodyStyle, boxStyle, inputsStyle, "{!! __(config('redsys.translationsPrefix') . 'pay') . ' ' . $this->amount !!}",
             "{{ $this->merchantCode }}", "{{ $this->merchantTerminal }}", "{{ $this->orderReference }}", false)
     }
 

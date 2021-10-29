@@ -1,9 +1,9 @@
 @extends(config('redsys.indexLayout'))
 
 @section('head')
-{{--    <script src="https://cdn.jsdelivr.net/gh/alpinejs/alpine@v2.8.2/dist/alpine.min.js" defer></script>--}}
-{{--    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>--}}
-{{--    @livewireStyles--}}
+    <script src="https://cdn.jsdelivr.net/gh/alpinejs/alpine@v2.8.2/dist/alpine.min.js" defer></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    @livewireStyles
 @endsection
 
 @section('header')
@@ -27,6 +27,8 @@
 
 </div>
 
-{{--    @livewireScripts--}}
-
 @endsection
+
+@section('scripts')
+    @livewireScripts
+@stop

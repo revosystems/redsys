@@ -8,23 +8,22 @@ use Revosystems\Redsys\Models\ChargeResult;
 use Revosystems\Redsys\Models\GatewayCard;
 use Revosystems\Redsys\Models\PaymentHandler;
 use Revosystems\Redsys\Models\RedsysPaymentGateway;
-use Revosystems\Redsys\Services\RedsysError;
 
 class Redsys extends Component
 {
     protected $listeners = [
-        'onCardFormSubmit',
+//        'onCardFormSubmit',
         'onTokenizedCardPressed',
 //        'onPaymentCompleted',
     ];
 
-    public $shouldSaveCard = false;
     public $orderReference;
     public $customerToken;
     public $cards;
     public $iframeUrl;
-    public $buttonText;
     public $amount;
+    public $hasCards;
+    public $redsysFormId = 'redsys-init-form';
 
     protected $merchantCode;
     protected $merchantTerminal;
@@ -36,9 +35,9 @@ class Redsys extends Component
         $this->merchantTerminal = $merchantTerminal;
         $this->orderReference   = $orderReference;
         $this->amount           = $paymentHandler->order->price()->format();
-        $this->buttonText       = __(config('redsys.translationsPrefix') . 'pay');
         $this->customerToken    = $customerToken;
         $this->cards            = $cards;
+        $this->hasCards         = $cards->isNotEmpty();
     }
 
     public function render()
@@ -53,11 +52,11 @@ class Redsys extends Component
         });
     }
 
-    public function onCardFormSubmit($operationId, $params, $formErrorCode = null)
-    {
-        $chargeRequest = ChargeRequest::makeWithOperationId($this->orderReference, $operationId, $this->shouldSaveCard, $this->customerToken, $params);
-        $this->emit('payResponse', $this->chargeToRedsys($chargeRequest)->gatewayResponse);
-    }
+//    public function onCardFormSubmit($operationId, $params)
+//    {
+//        $chargeRequest = ChargeRequest::makeWithOperationId($this->orderReference, $operationId, $this->shouldSaveCard, $this->customerToken, $params);
+//        $this->emit('payResponse', $this->chargeToRedsys($chargeRequest)->gatewayResponse);
+//    }
 
     public function onTokenizedCardPressed($cardId)
     {
