@@ -3,10 +3,13 @@
         <p id="errorMessage" class="flex text-m"></p>
     </div>
     <div>
-        @include('redsys::livewire.includes.tokenized-cards', compact('cards', 'amount'))
+        @include('redsys::app.cards.tokenized-cards', compact('cards'))
     </div>
 
-    @livewire('redsys-form', compact('iframeUrl', 'redsysFormId', 'amount', 'orderReference', 'customerToken', 'hasCards'))
+    @livewire('redsys-form', array_merge(
+        compact('redsysFormId', 'orderReference', 'amount', 'customerToken'),
+        ['hasCards' => $cards->isNotEmpty()]
+    ))
 
     @livewire('check-status', compact('orderReference'))
 
@@ -20,8 +23,9 @@
 </div>
 <script>
     function loadRedsysForm(buttonStyle = 'background-color:#E35732', bodyStyle = '', boxStyle = '', inputsStyle = '') {
-        getInSiteForm('{{ $redsysFormId }}', buttonStyle, bodyStyle, boxStyle, inputsStyle, "{!! __(config('redsys.translationsPrefix') . 'pay') . ' ' . $this->amount !!}",
-            "{{ $this->merchantCode }}", "{{ $this->merchantTerminal }}", "{{ $this->orderReference }}", false)
+        // Redsys iframe available method to load card form
+        getInSiteForm('{{ $redsysFormId }}', buttonStyle, bodyStyle, boxStyle, inputsStyle, "{!! __(config('redsys.translationsPrefix') . 'pay') . ' ' . $amount !!}",
+            "{{ $redsysConfig->code }}", "{{ $redsysConfig->terminal }}", "{{ $orderReference }}", false)
     }
 
     function showError(message) {
@@ -82,7 +86,9 @@
         document.getElementById("redsysAcsForm").submit();
     }
 
+    // Redsys iframe triggered event
     window.addEventListener("message", function receiveMessage(event) {
+        // Redsys iframe available method to validate card submitted event was received
         storeIdOper(event, "token", "errorCode", function merchantValidation() { return true });
         if (event.data.error || event.data.idOper === -1) {
             showError(redsysErrors[event.data.error] ?? 'Redsys error');

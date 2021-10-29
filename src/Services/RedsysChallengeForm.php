@@ -3,9 +3,6 @@
 
 namespace Revosystems\Redsys\Services;
 
-use Carbon\Carbon;
-use Illuminate\Support\Facades\Cache;
-use Revosystems\Redsys\Http\Livewire\Redsys;
 use Revosystems\Redsys\Lib\Model\Message\RESTResponseMessage;
 use Revosystems\Redsys\Models\ChargeRequest;
 use Revosystems\Redsys\Models\ChargeResult;

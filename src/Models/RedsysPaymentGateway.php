@@ -19,16 +19,14 @@ class RedsysPaymentGateway
 {
     const PERSIST_KET = 'redsys.payment-gateway';
 
-    public $iframeUrl;
     /**
      * @var RedsysConfig
      */
-    protected $config;
+    protected $redsysConfig;
 
-    public function __construct(RedsysConfig $config)
+    public function __construct(RedsysConfig $redsysConfig)
     {
-        $this->iframeUrl            = static::isTestEnvironment() ? 'https://sis-t.redsys.es:25443/sis/NC/sandbox/redsysV2.js' : 'https://sis.redsys.es/sis/NC/redsysV2.js';
-        $this->config               = $config;
+        $this->redsysConfig = $redsysConfig;
     }
 
     public static function make(RedsysConfig $config)
@@ -47,11 +45,9 @@ class RedsysPaymentGateway
         $paymentHandler->persist($orderReference);
         return view('redsys::app.index', [
             'orderReference'    => $orderReference,
-            'paymentHandler'    => $paymentHandler,
+            'amount'            => $paymentHandler->order->price()->format(),
             'orderId'           => $paymentHandler->order->id(),
-            'iframeUrl'         => $this->iframeUrl,
-            'merchantCode'      => $this->config->code,
-            'merchantTerminal'  => $this->config->terminal,
+            'redsysConfig'      => $this->redsysConfig,
             'customerToken'     => $customerToken,
             'cards'             => CardsTokenizable::get($customerToken)
         ])->render();
@@ -64,7 +60,7 @@ class RedsysPaymentGateway
         if ($operationId == -1 || (! $operationId && ! $cardId)) {
             return new ChargeResult(false, "No operation Id");
         }
-        $response = (new RedsysRequestInit($this->config))
+        $response = (new RedsysRequestInit($this->redsysConfig))
             ->handle($chargeRequest, $order->id(), $order->price()->amount/100, $order->price()->currency->numericCode());
         return $this->parseResult($response, $chargeRequest, $order->id(), $order->price()->amount, $order->price()->currency->numericCode());
     }
@@ -76,11 +72,11 @@ class RedsysPaymentGateway
         }
         if ($response->protocolVersionAnalysis() == RESTConstants::$REQUEST_MERCHANT_EMV3DS_PROTOCOLVERSION_102) {
             Log::debug('[REDSYS] Operation `Inicia Petición` requires authentication V1');
-            return (new RequestAuthorizationV1($this->config))
+            return (new RequestAuthorizationV1($this->redsysConfig))
                 ->handle($chargeRequest, $orderId, $amount, $currency);
         }
         Log::debug('[REDSYS] Operation `Inicia Petición` requires authentication V2');
-        return (new RequestAuthorizationV2($this->config))
+        return (new RequestAuthorizationV2($this->redsysConfig))
             ->handle($chargeRequest, $orderId, $amount, $currency, $response);
     }
 

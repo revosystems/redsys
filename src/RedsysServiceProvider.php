@@ -2,14 +2,13 @@
 
 namespace Revosystems\Redsys;
 
+use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\ServiceProvider;
+use Khill\FontAwesome\FontAwesome;
 use Livewire\Livewire;
-use Revosystems\Redsys\Http\Livewire\ApplePayButton;
 use Revosystems\Redsys\Http\Livewire\CheckStatus;
 use Revosystems\Redsys\Http\Livewire\Redsys;
-use Revosystems\Redsys\Http\Livewire\GooglePayButton;
 use Revosystems\Redsys\Http\Livewire\RedsysForm;
-use Revosystems\Redsys\Http\Livewire\TokenizedCards;
 use Revosystems\Redsys\View\Components\RadioSelector;
 
 class RedsysServiceProvider extends ServiceProvider
@@ -22,9 +21,9 @@ class RedsysServiceProvider extends ServiceProvider
         $this->loadTranslationsFrom(__DIR__ . '/resources/lang', 'redsys');
         $this->loadRoutesFrom(__DIR__.'/routes.php');
         $this->loadViewComponentsAs('redsys', [
-            RadioSelector::class
+            RadioSelector::class,
         ]);
-        Livewire::component('redsys', Redsys::class);
+
         Livewire::component('redsys-form', RedsysForm::class);
         Livewire::component('check-status', CheckStatus::class);
 //        Livewire::component('apple-pay-button', ApplePayButton::class);
@@ -37,5 +36,8 @@ class RedsysServiceProvider extends ServiceProvider
 
     public function register()
     {
+        Blade::directive("icon", function ($icon) {
+            return FontAwesome::fixedWidth($icon);
+        });
     }
 }

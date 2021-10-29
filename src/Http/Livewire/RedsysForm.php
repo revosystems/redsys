@@ -12,25 +12,26 @@ class RedsysForm extends Component
 {
     protected $listeners = [
         'onCardFormSubmit',
+        'onTokenizedCardPressed',
+//        'onPaymentCompleted',
     ];
 
     public $shouldSaveCard = false;
     public $orderReference;
     public $customerToken;
-    public $cards;
     public $iframeUrl;
     public $amount;
     public $hasCards;
     public $redsysFormId;
 
-    public function mount($iframeUrl, $redsysFormId, $amount, $orderReference, $customerToken, $hasCards)
+    public function mount(string $redsysFormId, string $orderReference, string $amount, string $customerToken, bool $hasCards)
     {
         $this->amount           = $amount;
-        $this->iframeUrl        = $iframeUrl;
         $this->redsysFormId     = $redsysFormId;
         $this->orderReference   = $orderReference;
         $this->customerToken    = $customerToken;
         $this->hasCards         = $hasCards;
+        $this->iframeUrl        = RedsysPaymentGateway::isTestEnvironment() ? 'https://sis-t.redsys.es:25443/sis/NC/sandbox/redsysV2.js' : 'https://sis.redsys.es/sis/NC/redsysV2.js';
     }
 
     public function render()
@@ -41,6 +42,12 @@ class RedsysForm extends Component
     public function onCardFormSubmit($operationId, $params)
     {
         $chargeRequest = ChargeRequest::makeWithOperationId($this->orderReference, $operationId, $this->shouldSaveCard, $this->customerToken, $params);
+        $this->emit('payResponse', $this->chargeToRedsys($chargeRequest)->gatewayResponse);
+    }
+
+    public function onTokenizedCardPressed($cardId)
+    {
+        $chargeRequest = ChargeRequest::makeWithCard($this->orderReference, $cardId, $this->customerToken, []);
         $this->emit('payResponse', $this->chargeToRedsys($chargeRequest)->gatewayResponse);
     }
 
