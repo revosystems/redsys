@@ -28,11 +28,11 @@ class CheckStatus extends Component
             return;
         }
         if ($result === 'FAILED') {
-            PaymentHandler::get($this->orderReference)->onPaymentCompleted('Redsys payment failed');
+            PaymentHandler::get($this->orderReference)->onPaymentFailed('Redsys payment failed');
             return;
         }
         if ($result === 'SUCCESS') {
-            PaymentHandler::get($this->orderReference)->onPaymentCompleted();
+            PaymentHandler::get($this->orderReference)->onPaymentSucceed($this->orderReference);
         }
     }
 }

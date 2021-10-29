@@ -41,7 +41,7 @@ class RedsysForm extends Component
 
     public function onPaymentCompleted() : void
     {
-        PaymentHandler::get($this->orderReference)->onPaymentCompleted();
+        PaymentHandler::get($this->orderReference)->onPaymentSucceed($this->orderReference);
     }
     
     public function onCardFormSubmit($operationId, $extraInfo) : void

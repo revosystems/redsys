@@ -8,8 +8,7 @@ use Illuminate\Support\Facades\Session;
 use Revosystems\Redsys\Exceptions\SessionExpiredException;
 use Revosystems\Redsys\Interfaces\RedsysOrder;
 use Revosystems\Redsys\Lib\Constants\RESTConstants;
-use Revosystems\Redsys\Services\RedsysRequestApplePay;
-use Revosystems\Redsys\Services\RedsysRequestGooglePay;
+use Revosystems\Redsys\Models\Prices\RedsysPrice;
 use Revosystems\Redsys\Services\RedsysRequestInit;
 use Revosystems\Redsys\Services\RedsysRequestRefund;
 use Revosystems\Redsys\Services\RequestAuthorizationV1;
@@ -80,6 +79,12 @@ class RedsysPaymentGateway
             ->handle($chargeRequest, $orderId, $amount, $currency, $response);
     }
 
+    public function refund(string $reference, RedsysPrice $price) : ChargeResult
+    {
+        return (new RedsysRequestRefund($this->redsysConfig))
+            ->handle($reference, $price->amount, $price->currency->numericCode());
+    }
+
     /*
     public function chargeWithApple($orderId, $amount, $currency, $applePayData)
     {
@@ -91,12 +96,6 @@ class RedsysPaymentGateway
     {
         return (new RedsysRequestGooglePay($this->config))
             ->handle(new ChargeRequest, $orderId, $amount, $currency, $googlePayData);
-    }
-
-    public function refundOrder($reference, $amount, $currency) : ChargeResult
-    {
-        return (new RedsysRequestRefund($this->config))
-            ->handle($reference, $amount, $currency);
     }
     */
 
