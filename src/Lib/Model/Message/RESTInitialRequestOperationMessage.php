@@ -4,15 +4,19 @@ namespace Revosystems\Redsys\Lib\Model\Message;
 
 use Revosystems\Redsys\Lib\Constants\RESTConstants;
 use Illuminate\Support\Facades\Log;
+use Revosystems\Redsys\Lib\Utils\Price;
+use Revosystems\Redsys\Models\RedsysConfig;
 
 /**
  * @XML_ELEM=REQUEST
  */
 class RESTInitialRequestOperationMessage extends RESTRequestOperationMessage
 {
-    public function __construct()
+    public function generate(RedsysConfig $config, string $reference, ?string $orderId, ?Price $price = null) : RESTRequestOperationMessage
     {
+        parent::generate($config, $reference, $orderId, $price);
         $this->signatureVersion = RESTConstants::$REQUEST_SIGNATUREVERSION_VALUE;
+        return $this;
     }
 
     /**
@@ -106,7 +110,7 @@ class RESTInitialRequestOperationMessage extends RESTRequestOperationMessage
      */
     protected $signature = null;
 
-    public function demandCardData()
+    public function demandCardData() : self
     {
         $this->addEmvParameter(RESTConstants::$REQUEST_MERCHANT_EMV3DS_THREEDSINFO, RESTConstants::$REQUEST_MERCHANT_EMV3DS_CARDDATA);
         return $this;

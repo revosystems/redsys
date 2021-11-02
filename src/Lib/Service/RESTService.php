@@ -67,12 +67,12 @@ abstract class RESTService
         ]);
     }
 
-    public function createRequestMessage($message)
+    public function createRequestMessage($message) : RESTInitialRequestOperationMessage
     {
-        return tap((new RESTInitialRequestOperationMessage), function (RESTInitialRequestOperationMessage $requestMessage) use ($message) {
-            $requestMessage->setDatosEntrada($message);
-            $requestMessage->setSignature(RESTSignatureUtils::createMerchantSignature($this->getSignatureKey(), $requestMessage->getDatosEntradaB64()));
-        });
+        $requestMessage = new RESTInitialRequestOperationMessage;
+        $requestMessage->setDatosEntrada($message);
+        $requestMessage->setSignature(RESTSignatureUtils::createMerchantSignature($this->getSignatureKey(), $requestMessage->getDatosEntradaB64()));
+        return $requestMessage;
     }
 
     public function createResponseMessage($trataPeticionResponse)

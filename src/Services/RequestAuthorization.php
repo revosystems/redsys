@@ -4,23 +4,17 @@ namespace Revosystems\Redsys\Services;
 
 use Illuminate\Support\Facades\Log;
 use Revosystems\Redsys\Lib\Constants\RESTConstants;
-use Revosystems\Redsys\Lib\Model\Message\RESTAuthorizationRequestOperationMessage;
+use Revosystems\Redsys\Lib\Model\Message\RESTRequestOperationMessage;
 use Revosystems\Redsys\Lib\Service\Impl\RESTTrataRequestService;
 use Revosystems\Redsys\Models\CardsTokenizable;
-use Revosystems\Redsys\Models\ChargeRequest;
 use Revosystems\Redsys\Models\ChargeResult;
 use Revosystems\Redsys\Models\GatewayCard;
 
 abstract class RequestAuthorization extends RedsysRequest
 {
-    abstract protected function getWebhookClass();
+    protected $webhookHandler;
 
-    protected function operationMessageClass()
-    {
-        return RESTAuthorizationRequestOperationMessage::class;
-    }
-
-    protected function getAuthorizationChargeResult(ChargeRequest $chargeRequest, RESTAuthorizationRequestOperationMessage $operationRequest, $orderId): ChargeResult
+    protected function getAuthorizationChargeResult(RedsysChargeRequest $chargeRequest, RESTRequestOperationMessage $operationRequest, string $orderId) : ChargeResult
     {
         if ($chargeRequest->customerToken) {
             $operationRequest->createReference();
@@ -44,18 +38,12 @@ abstract class RequestAuthorization extends RedsysRequest
             return new ChargeResult(true, $this->getResponse($response), $operationRequest->getAmount(), "redsys:{$chargeRequest->orderReference}");
         }
         
-        return (new RedsysChallengeForm($this->webhookManager()))->display($chargeRequest, $response, $this->getWebhookUrl($chargeRequest->orderReference, $orderId), $operationRequest->getAmount());
-    }
-
-    protected function webhookManager() : Webhook
-    {
-        $webhookClass = $this->getWebhookClass();
-        return new $webhookClass($this->config);
+        return (new RedsysChallengeForm($this->webhookHandler))->display($chargeRequest, $response, $this->getWebhookUrl($chargeRequest->orderReference, $orderId), $operationRequest->getAmount());
     }
 
     protected function getWebhookUrl($orderReference, $orderId) : string
     {
-//        return "https://f831-213-148-199-203.ngrok.io/webhooks/redsys?orderReference={$orderReference}&orderId={$orderId}";
+        return "https://9a35-213-148-199-203.ngrok.io/webhooks/redsys?orderReference={$orderReference}&orderId={$orderId}";
         return route('webhooks.redsys', compact('orderReference', 'orderId'));
     }
 }

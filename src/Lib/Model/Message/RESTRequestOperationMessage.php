@@ -5,29 +5,43 @@ namespace Revosystems\Redsys\Lib\Model\Message;
 
 use Revosystems\Redsys\Lib\Constants\RESTConstants;
 use Revosystems\Redsys\Lib\Model\RESTGenericXml;
-use Revosystems\Redsys\Models\ChargeRequest;
+use Revosystems\Redsys\Lib\Utils\Currency;
+use Revosystems\Redsys\Lib\Utils\Price;
+use Revosystems\Redsys\Models\RedsysConfig;
+use Revosystems\Redsys\Services\RedsysChargeRequest;
 
 abstract class RESTRequestOperationMessage extends RESTGenericXml
 {
-    public function generate(ChargeRequest $chargeRequest, ?string $orderId, int $amount, string $currency)
+    protected $config;
+    protected $reference;
+    protected $orderId;
+    protected $amount;
+    protected $currency;
+
+    public function generate(RedsysConfig $config, string $reference, ?string $orderId, ?Price $price = null) : RESTRequestOperationMessage
     {
-        $this->setAmount($amount); // i.e. 1,23 (decimal point depends on currency code)
-        $this->setCurrency($currency); // ISO-4217 numeric currency code
-        $this->setOrder($chargeRequest->orderReference);
-        $this->setTransactionType(RESTConstants::$AUTHORIZATION);
-        $this->setCard($chargeRequest);
+        $this->setMerchant($config->code)
+            ->setTerminal($config->terminal)
+            ->setOrder($reference)
+            ->setTransactionType(RESTConstants::$AUTHORIZATION);
+        if ($price) {
+            $this->setAmount($price->amount/100) // i.e. 1,23 (decimal point depends on currency code)
+                ->setCurrency($price->currency->numericCode()); // ISO-4217 numeric currency code
+        }
+
         // Other optional parameters example can be added by "addParameter" method
-        $this->addParameter("DS_MERCHANT_PRODUCTDESCRIPTION", $orderId);
+        $this->addParameter("DS_MERCHANT_REVO_ORDER_ID", $orderId);
         return $this;
     }
 
-    protected function setCard(ChargeRequest $data): void
+    public function setCard(RedsysChargeRequest $redsysChargeRequest) : self
     {
-        if ($data->cardId) {
-            $this->useReference($data->cardId);
+        if ($redsysChargeRequest->cardId) {
+            $this->useReference($redsysChargeRequest->cardId);
         } else {
-            $this->setOperID($data->operationId);
+            $this->setOperID($redsysChargeRequest->operationId);
         }
+        return $this;
     }
 
     public function getMerchant()
@@ -90,7 +104,7 @@ abstract class RESTRequestOperationMessage extends RESTGenericXml
         return $this->currency;
     }
 
-    public function setCurrency($currency)
+    public function setCurrency(string $currency)
     {
         $this->currency = $currency;
         return $this;
@@ -101,7 +115,7 @@ abstract class RESTRequestOperationMessage extends RESTGenericXml
         return $this->amount;
     }
 
-    public function setAmount($amount)
+    public function setAmount(float $amount)
     {
         $this->amount = $amount;
         return $this;

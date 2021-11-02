@@ -3,19 +3,24 @@
 
 namespace Revosystems\Redsys\Services;
 
-use Revosystems\Redsys\Models\ChargeRequest;
+use Revosystems\Redsys\Lib\Model\Message\RESTAuthorizationRequestOperationMessage;
+use Revosystems\Redsys\Lib\Utils\Price;
+use Revosystems\Redsys\Models\RedsysConfig;
 
 class RequestAuthorizationV1 extends RequestAuthorization
 {
-    public function handle(ChargeRequest $chargeRequest, $orderId, $amount, $currency)
+    public function __construct(RedsysConfig $config)
     {
-        $operationRequest = $this->requestOperation($chargeRequest, $orderId, $amount, $currency);
-        $operationRequest->setEMV3DSParamsV1();
-        return $this->getAuthorizationChargeResult($chargeRequest, $operationRequest, $orderId);
+        parent::__construct($config);
+        $this->webhookHandler = new WebhookHandlerV1($config);
     }
 
-    protected function getWebhookClass()
+    public function handle(RedsysChargeRequest $chargeRequest, string $orderId, Price $price)
     {
-        return WebhookV1::class;
+        $requestOperation = (new RESTAuthorizationRequestOperationMessage)
+            ->generate($this->config, $chargeRequest->orderReference, $orderId, $price)
+            ->setCard($chargeRequest)
+            ->setEMV3DSParamsV1();
+        return $this->getAuthorizationChargeResult($chargeRequest, $requestOperation, $orderId);
     }
 }

@@ -3,24 +3,23 @@
 
 namespace Revosystems\Redsys\Services;
 
+use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 use Revosystems\Redsys\Lib\Constants\RESTConstants;
+use Revosystems\Redsys\Lib\Model\Element\RESTOperationElement;
 use Revosystems\Redsys\Lib\Model\Message\RESTAuthenticationRequestOperationMessage;
 use Revosystems\Redsys\Lib\Model\Message\RESTResponseMessage;
 use Revosystems\Redsys\Lib\Service\Impl\RESTTrataRequestService;
 use Revosystems\Redsys\Models\CardsTokenizable;
-use Revosystems\Redsys\Models\ChargeRequest;
 use Revosystems\Redsys\Models\ChargeResult;
 use Revosystems\Redsys\Models\GatewayCard;
 use Revosystems\Redsys\Models\RedsysConfig;
 
-abstract class Webhook
+abstract class WebhookHandler
 {
     const ORDERS_CACHE_KEY = 'redsys.orders.';
-    /**
-     * @var RedsysConfig
-     */
     protected $config;
 
     public function __construct(RedsysConfig $config)
@@ -31,16 +30,20 @@ abstract class Webhook
     /**
      * @throws RedsysException
      */
-    public function handle($operation, $orderId, ChargeRequest $chargeRequest, Request $request)
+    public function handle(RedsysChargeRequest $chargeRequest, Request $request, RESTOperationElement $operation) : ChargeResult
     {
-        $challengeRequest = $this->getRequestOperation($chargeRequest, $orderId, $operation->getAmount(), $operation->getCurrency());
-        $this->challenge($challengeRequest, $operation, $request);
+        $challengeRequest = (new RESTAuthenticationRequestOperationMessage)
+            ->generate($this->config, $chargeRequest->orderReference, $request->get('orderId'))
+            ->setAmount($operation->getAmount())
+            ->setCurrency($operation->getCurrency())
+            ->setCard($chargeRequest);
+        $this->challenge($challengeRequest, $request, $operation);
         return $this->sendAuthenticationConfirmationOperation($challengeRequest, $chargeRequest);
     }
 
-    abstract protected function challenge(RESTAuthenticationRequestOperationMessage $challengeRequest, $operation, Request $request): void;
+    abstract protected function challenge(RESTAuthenticationRequestOperationMessage $challengeRequest, Request $request, RESTOperationElement $operation) : void;
 
-    protected function sendAuthenticationConfirmationOperation($challengeRequest, ChargeRequest $chargeRequest)
+    protected function sendAuthenticationConfirmationOperation($challengeRequest, RedsysChargeRequest $chargeRequest) : ChargeResult
     {
         if ($chargeRequest->customerToken) {
             $challengeRequest->createReference();
@@ -68,11 +71,19 @@ abstract class Webhook
         ];
     }
 
-    protected function getRequestOperation(ChargeRequest $chargeRequest, $orderId, $amount, $currency)
+    public function persist(RedsysChargeRequest $chargeRequest, RESTOperationElement $operation)
     {
-        return (new RESTAuthenticationRequestOperationMessage)
-            ->setMerchant($this->config->code)
-            ->setTerminal($this->config->terminal)
-            ->generate($chargeRequest, $orderId, $amount, $currency);
+        Cache::put(static::ORDERS_CACHE_KEY . $chargeRequest->orderReference, [
+            'chargeRequest' => serialize($chargeRequest),
+            'operation'     => base64_encode(serialize($operation)),
+            'webhookHandler'=> serialize($this),
+        ], Carbon::now()->addMinutes(30));
+    }
+
+    public static function get(string $orderReference) : ?array
+    {
+        $cachedData = Cache::get(static::ORDERS_CACHE_KEY . $orderReference);
+        Cache::forget(static::ORDERS_CACHE_KEY . $orderReference);
+        return $cachedData;
     }
 }

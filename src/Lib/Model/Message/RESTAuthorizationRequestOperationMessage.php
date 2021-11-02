@@ -84,12 +84,13 @@ class RESTAuthorizationRequestOperationMessage extends RESTRequestOperationMessa
     /**
      * Method for set the EMV3DS protocolVersionV1 parameters
      */
-    public function setEMV3DSParamsV1()
+    public function setEMV3DSParamsV1() : self
     {
         $this->addEmvParameter(RESTConstants::$REQUEST_MERCHANT_EMV3DS_THREEDSINFO, RESTConstants::$REQUEST_MERCHANT_EMV3DS_AUTHENTICACIONDATA);
         $this->addEmvParameter(RESTConstants::$REQUEST_MERCHANT_EMV3DS_PROTOCOLVERSION, RESTConstants::$REQUEST_MERCHANT_EMV3DS_PROTOCOLVERSION_102);
         $this->addEmvParameter(RESTConstants::$REQUEST_MERCHANT_EMV3DS_BROWSER_ACCEPT_HEADER, RESTConstants::$REQUEST_MERCHANT_EMV3DS_BROWSER_ACCEPT_HEADER_VALUE);
         $this->addEmvParameter(RESTConstants::$REQUEST_MERCHANT_EMV3DS_BROWSER_USER_AGENT, RESTConstants::$REQUEST_MERCHANT_EMV3DS_BROWSER_USER_AGENT_VALUE);
+        return $this;
     }
 
     public function setEMV3DSParamsV2(

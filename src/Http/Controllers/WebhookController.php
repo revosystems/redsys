@@ -7,9 +7,10 @@ use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
+use Revosystems\Redsys\Lib\Model\Element\RESTOperationElement;
+use Revosystems\Redsys\Services\RedsysChargeRequest;
 use Revosystems\Redsys\Services\RedsysException;
-use Revosystems\Redsys\Services\Webhook;
-use Revosystems\Redsys\Services\WebhookManager;
+use Revosystems\Redsys\Services\WebhookHandler;
 
 class WebhookController extends Controller
 {
@@ -21,18 +22,19 @@ class WebhookController extends Controller
             $this->chargeFailed($request, 'Charge request validation failed');
             return;
         }
-        if (! $cachedData = WebhookManager::get($request->get('orderReference'))) {
+        if (! $cachedData = WebhookHandler::get($request->get('orderReference'))) {
             $this->chargeFailed($request, 'Charge retrieve cached data failed');
             return;
         }
-        if (! $operation = $this->unserialize($cachedData, 'operation', true)) {
+        if (! $operation = $this->unserializeOperation($cachedData)) {
             $this->chargeFailed($request, 'Charge unserialize operation failed');
             return;
         }
 
         try {
-            $result = $this->unserialize($cachedData, 'webhook')
-                ->handle($operation, $request->get('orderId'), $this->unserialize($cachedData, 'chargeRequest'), $request);
+            $result = $this->unserializeWebhookHandler($cachedData)->handle(
+                $this->unserializeChargeRequest($cachedData), $request, $operation
+            );
             if (! $result->success) {
                 $this->chargeFailed($request, 'Charge authentication failed');
                 return;
@@ -60,12 +62,12 @@ class WebhookController extends Controller
     protected function chargeFailed(Request $request, $errorMessage)
     {
         Log::error("[REDSYS] Webhook Error: {$errorMessage}");
-        Cache::put(Webhook::ORDERS_CACHE_KEY . "{$request->get('orderReference')}.result", 'FAILED', Carbon::now()->addMinutes(30));
+        Cache::put(WebhookHandler::ORDERS_CACHE_KEY . "{$request->get('orderReference')}.result", 'FAILED', Carbon::now()->addMinutes(30));
     }
 
     protected function chargeSucceeded(Request $request)
     {
-        Cache::put(Webhook::ORDERS_CACHE_KEY . "{$request->get('orderReference')}.result", 'SUCCESS', Carbon::now()->addMinutes(30));
+        Cache::put(WebhookHandler::ORDERS_CACHE_KEY . "{$request->get('orderReference')}.result", 'SUCCESS', Carbon::now()->addMinutes(30));
     }
 
     protected function unserialize(array $cachedData, string $key, $decode = false)
@@ -74,5 +76,20 @@ class WebhookController extends Controller
             return null;
         }
         return unserialize($decode ? base64_decode($cachedData[$key]) : $cachedData[$key]);
+    }
+
+    protected function unserializeWebhookHandler(?array $cachedData) : WebhookHandler
+    {
+        return $this->unserialize($cachedData, 'webhookHandler');
+    }
+
+    protected function unserializeChargeRequest(?array $cachedData) : RedsysChargeRequest
+    {
+        return $this->unserialize($cachedData, 'chargeRequest');
+    }
+
+    protected function unserializeOperation(?array $cachedData) : ?RESTOperationElement
+    {
+        return $this->unserialize($cachedData, 'operation', true);
     }
 }

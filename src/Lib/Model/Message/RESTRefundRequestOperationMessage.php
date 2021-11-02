@@ -3,20 +3,18 @@
 namespace Revosystems\Redsys\Lib\Model\Message;
 
 use Revosystems\Redsys\Lib\Constants\RESTConstants;
-use Revosystems\Redsys\Models\ChargeRequest;
+use Revosystems\Redsys\Lib\Utils\Price;
+use Revosystems\Redsys\Models\RedsysConfig;
 
 /**
  * @XML_ELEM=REQUEST
  */
 class RESTRefundRequestOperationMessage extends RESTInitialRequestOperationMessage
 {
-    public function generate(ChargeRequest $chargeRequest, ?string $orderId, int $amount, string $currency)
+    public function generate(RedsysConfig $config, string $reference, ?string $orderId, ?Price $price = null) : RESTRequestOperationMessage
     {
-        $this->setAmount($amount); // i.e. 1,23 (decimal point depends on currency code)
-        $this->setCurrency($currency); // ISO-4217 numeric currency code
-        $this->setOrder($chargeRequest->orderReference);
+        parent::generate($config, $reference, $orderId, $price);
         $this->setTransactionType(RESTConstants::$REFUND);
-        $this->addParameter("DS_MERCHANT_REVO_ORDER_ID", $orderId);
         return $this;
     }
 

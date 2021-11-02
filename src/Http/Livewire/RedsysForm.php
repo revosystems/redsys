@@ -3,10 +3,10 @@
 namespace Revosystems\Redsys\Http\Livewire;
 
 use Livewire\Component;
-use Revosystems\Redsys\Models\ChargeRequest;
-use Revosystems\Redsys\Models\ChargeResult;
+use Revosystems\Redsys\Services\RedsysChargeRequest;
 use Revosystems\Redsys\Models\PaymentHandler;
 use Revosystems\Redsys\Models\RedsysPaymentGateway;
+use Revosystems\Redsys\Services\RedsysCharge;
 
 class RedsysForm extends Component
 {
@@ -20,13 +20,13 @@ class RedsysForm extends Component
     public $orderReference;
     public $customerToken;
     public $iframeUrl;
-    public $amount;
+    public $price;
     public $hasCards;
     public $redsysFormId;
 
-    public function mount(string $redsysFormId, string $orderReference, string $amount, string $customerToken, bool $hasCards)
+    public function mount(string $redsysFormId, string $orderReference, string $price, string $customerToken, bool $hasCards)
     {
-        $this->amount           = $amount;
+        $this->price            = $price;
         $this->redsysFormId     = $redsysFormId;
         $this->orderReference   = $orderReference;
         $this->customerToken    = $customerToken;
@@ -41,27 +41,27 @@ class RedsysForm extends Component
 
     public function onPaymentCompleted() : void
     {
-        PaymentHandler::get($this->orderReference)->onPaymentSucceed($this->orderReference);
+        RedsysCharge::get($this->orderReference)->payHandler->onPaymentSucceed($this->orderReference);
     }
     
-    public function onCardFormSubmit($operationId, $extraInfo) : void
+    public function onCardFormSubmit(string $operationId, array $extraInfo) : void
     {
-        $chargeRequest = ChargeRequest::makeWithOperationId($this->orderReference, $operationId, $extraInfo);
+        $redsysChargeRequest = RedsysChargeRequest::makeWithOperationId($this->orderReference, $operationId, $extraInfo);
         if ($this->shouldSaveCard) {
-            $chargeRequest->customerToken = $this->customerToken;
+            $redsysChargeRequest->customerToken = $this->customerToken;
         }
-        $this->emit('payResponse', $this->chargeToRedsys($chargeRequest)->gatewayResponse);
+        $this->emit('payResponse', RedsysPaymentGateway::get()->charge(
+            RedsysCharge::get($this->orderReference),
+            $redsysChargeRequest
+        )->gatewayResponse);
     }
 
-    public function onTokenizedCardPressed($cardId, $extraInfo) : void
+    public function onTokenizedCardPressed(string $cardId, array $extraInfo) : void
     {
-        $chargeRequest = ChargeRequest::makeWithCard($this->orderReference, $cardId, $extraInfo);
-        $this->emit('payResponse', $this->chargeToRedsys($chargeRequest)->gatewayResponse);
-    }
-
-    protected function chargeToRedsys(ChargeRequest $chargeRequest) : ChargeResult
-    {
-        $order = PaymentHandler::get($this->orderReference)->order;
-        return RedsysPaymentGateway::get()->charge($chargeRequest, $order);
+        $redsysChargeRequest = RedsysChargeRequest::makeWithCard($this->orderReference, $cardId, $extraInfo);
+        $this->emit('payResponse', RedsysPaymentGateway::get()->charge(
+            RedsysCharge::get($this->orderReference),
+            $redsysChargeRequest
+        )->gatewayResponse);
     }
 }

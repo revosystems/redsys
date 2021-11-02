@@ -1,8 +1,8 @@
 <?php
 
-namespace Revosystems\Redsys\Models;
+namespace Revosystems\Redsys\Services;
 
-class ChargeRequest
+class RedsysChargeRequest
 {
     public $operationId;
     public $cardId;
@@ -10,7 +10,7 @@ class ChargeRequest
     public $customerToken;
     public $extraInfo;
 
-    public function __construct($orderReference = null)
+    public function __construct(?string $orderReference = null)
     {
         $this->orderReference       = $orderReference ?? static::generateOrderReference();
     }

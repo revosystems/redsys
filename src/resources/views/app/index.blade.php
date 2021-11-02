@@ -19,7 +19,7 @@
     @include('redsys::redsys.main', [
         'redsysFormId'      => 'redsys-init-form',
         'redsysConfig'      => $redsysConfig,
-        'amount'            => $amount,
+        'price'             => $price,
         'orderReference'    => $orderReference,
         'customerToken'     => $customerToken,
         'cards'             => $cards,

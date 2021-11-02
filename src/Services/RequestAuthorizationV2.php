@@ -4,19 +4,30 @@
 namespace Revosystems\Redsys\Services;
 
 use Revosystems\Redsys\Lib\Model\Message\RESTAuthorizationRequestOperationMessage;
+use Revosystems\Redsys\Lib\Model\Message\RESTRequestOperationMessage;
 use Revosystems\Redsys\Lib\Model\Message\RESTResponseMessage;
-use Revosystems\Redsys\Models\ChargeRequest;
+use Revosystems\Redsys\Lib\Utils\Price;
+use Revosystems\Redsys\Models\ChargeResult;
+use Revosystems\Redsys\Models\RedsysConfig;
 
 class RequestAuthorizationV2 extends RequestAuthorization
 {
-    public function handle(ChargeRequest $chargeRequest, $orderId, $amount, $currency, RESTResponseMessage $response)
+    public function __construct(RedsysConfig $config)
     {
-        $operationRequest = $this->requestOperation($chargeRequest, $orderId, $amount, $currency);
-        $this->setEMV3DSParamsV2($chargeRequest, $operationRequest, $response, $orderId);
-        return $this->getAuthorizationChargeResult($chargeRequest, $operationRequest, $orderId);
+        parent::__construct($config);
+        $this->webhookHandler = new WebhookHandlerV2($config);
     }
 
-    protected function setEMV3DSParamsV2(ChargeRequest $chargeRequest, RESTAuthorizationRequestOperationMessage $operationRequest, $response, $orderId): void
+    public function handle(RedsysChargeRequest $chargeRequest, string $orderId, Price $price, RESTResponseMessage $response) : ChargeResult
+    {
+        $requestOperation = (new RESTAuthorizationRequestOperationMessage)
+            ->generate($this->config, $chargeRequest->orderReference, $orderId, $price)
+            ->setCard($chargeRequest);
+        $this->setEMV3DSParamsV2($chargeRequest, $requestOperation, $response, $orderId);
+        return $this->getAuthorizationChargeResult($chargeRequest, $requestOperation, $orderId);
+    }
+
+    protected function setEMV3DSParamsV2(RedsysChargeRequest $chargeRequest, RESTRequestOperationMessage $operationRequest, RESTResponseMessage $response, string $orderId): void
     {
         $threeDSInfo          = $response->getThreeDSInfo();
         $threeDSMethodURL     = $response->getThreeDSMethodURL();
@@ -46,10 +57,5 @@ class RequestAuthorizationV2 extends RequestAuthorization
 //        if (auth()->user()->email) {
 //            $operationRequest->addEmvParameter(RESTConstants::$REQUEST_MERCHANT_EMV3DS_EMAIL, auth()->user()->email);
 //        }
-    }
-
-    protected function getWebhookClass()
-    {
-        return WebhookV2::class;
     }
 }

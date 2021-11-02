@@ -3,16 +3,13 @@
 
 namespace Revosystems\Redsys\Models;
 
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Session;
 use Revosystems\Redsys\Exceptions\SessionExpiredException;
-use Revosystems\Redsys\Interfaces\RedsysOrder;
-use Revosystems\Redsys\Lib\Constants\RESTConstants;
-use Revosystems\Redsys\Models\Prices\RedsysPrice;
+use Revosystems\Redsys\Services\RedsysCharge;
+use Revosystems\Redsys\Services\RedsysChargeRequest;
+use Revosystems\Redsys\Services\RedsysRefund;
 use Revosystems\Redsys\Services\RedsysRequestInit;
 use Revosystems\Redsys\Services\RedsysRequestRefund;
-use Revosystems\Redsys\Services\RequestAuthorizationV1;
-use Revosystems\Redsys\Services\RequestAuthorizationV2;
 
 class RedsysPaymentGateway
 {
@@ -21,14 +18,14 @@ class RedsysPaymentGateway
     /**
      * @var RedsysConfig
      */
-    protected $redsysConfig;
+    protected $config;
 
     public function __construct(RedsysConfig $redsysConfig)
     {
-        $this->redsysConfig = $redsysConfig;
+        $this->config = $redsysConfig;
     }
 
-    public static function make(RedsysConfig $config)
+    public static function make(RedsysConfig $config) : self
     {
         return (new self($config))->persist();
     }
@@ -38,51 +35,35 @@ class RedsysPaymentGateway
         return config('services.payment_gateways.redsys.test');
     }
 
-    public function render(PaymentHandler $paymentHandler, $customerToken)
+    public function render(RedsysCharge $redsysCharge, $customerToken)
     {
-        $orderReference = ChargeRequest::generateOrderReference();
-        $paymentHandler->persist($orderReference);
+        $orderReference = RedsysChargeRequest::generateOrderReference();
+        $redsysCharge->persist($orderReference);
         return view('redsys::app.index', [
             'orderReference'    => $orderReference,
-            'amount'            => $paymentHandler->order->price()->format(),
-            'orderId'           => $paymentHandler->order->id(),
-            'redsysConfig'      => $this->redsysConfig,
+            'price'             => $redsysCharge->price->format(),
+            'orderId'           => $redsysCharge->orderId,
+            'redsysConfig'      => $this->config,
             'customerToken'     => $customerToken,
             'cards'             => CardsTokenizable::get($customerToken)
         ])->render();
     }
 
-    public function charge(ChargeRequest $chargeRequest, RedsysOrder $order) : ChargeResult
+    public function refund(RedsysRefund $redsysRefund) : ChargeResult
     {
-        $operationId = $chargeRequest->operationId;
-        $cardId      = $chargeRequest->cardId;
+        return (new RedsysRequestRefund($this->config))
+            ->handle($redsysRefund->paymentReference, $redsysRefund->price);
+    }
+
+    public function charge(RedsysCharge $redsysCharge, RedsysChargeRequest $redsysChargeRequest) : ChargeResult
+    {
+        $operationId = $redsysChargeRequest->operationId;
+        $cardId      = $redsysChargeRequest->cardId;
         if ($operationId == -1 || (! $operationId && ! $cardId)) {
             return new ChargeResult(false, "No operation Id");
         }
-        $response = (new RedsysRequestInit($this->redsysConfig))
-            ->handle($chargeRequest, $order->id(), $order->price()->amount/100, $order->price()->currency->numericCode());
-        return $this->parseResult($response, $chargeRequest, $order->id(), $order->price()->amount, $order->price()->currency->numericCode());
-    }
-
-    protected function parseResult($response, ChargeRequest $chargeRequest, $orderId, $amount, $currency)
-    {
-        if ($response instanceof ChargeResult) {
-            return $response;
-        }
-        if ($response->protocolVersionAnalysis() == RESTConstants::$REQUEST_MERCHANT_EMV3DS_PROTOCOLVERSION_102) {
-            Log::debug('[REDSYS] Operation `Inicia Petición` requires authentication V1');
-            return (new RequestAuthorizationV1($this->redsysConfig))
-                ->handle($chargeRequest, $orderId, $amount, $currency);
-        }
-        Log::debug('[REDSYS] Operation `Inicia Petición` requires authentication V2');
-        return (new RequestAuthorizationV2($this->redsysConfig))
-            ->handle($chargeRequest, $orderId, $amount, $currency, $response);
-    }
-
-    public function refund(string $reference, RedsysPrice $price) : ChargeResult
-    {
-        return (new RedsysRequestRefund($this->redsysConfig))
-            ->handle($reference, $price->amount, $price->currency->numericCode());
+        return (new RedsysRequestInit($this->config))
+            ->handle($redsysChargeRequest, $redsysCharge->orderId, $redsysCharge->price);
     }
 
     /*

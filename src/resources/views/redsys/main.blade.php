@@ -7,7 +7,7 @@
     </div>
 
     @livewire('redsys-form', array_merge(
-        compact('redsysFormId', 'orderReference', 'amount', 'customerToken'),
+        compact('redsysFormId', 'orderReference', 'price', 'customerToken'),
         ['hasCards' => $cards->isNotEmpty()]
     ))
 
@@ -25,7 +25,7 @@
 <script>
     function loadRedsysForm(buttonStyle = 'background-color:#E35732', bodyStyle = '', boxStyle = '', inputsStyle = '') {
         // Redsys iframe available method to load card form
-        getInSiteForm('{{ $redsysFormId }}', buttonStyle, bodyStyle, boxStyle, inputsStyle, "{!! __(config('redsys.translationsPrefix') . 'pay') . ' ' . $amount !!}",
+        getInSiteForm('{{ $redsysFormId }}', buttonStyle, bodyStyle, boxStyle, inputsStyle, "{!! __(config('redsys.translationsPrefix') . 'pay') . ' ' . $price !!}",
             "{{ $redsysConfig->code }}", "{{ $redsysConfig->terminal }}", "{{ $orderReference }}", false)
     }
 

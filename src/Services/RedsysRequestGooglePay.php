@@ -3,23 +3,20 @@
 
 namespace Revosystems\Redsys\Services;
 
+use Revosystems\Redsys\Lib\Utils\Price;
 use Revosystems\Redsys\Models\ChargeResult;
 use Revosystems\Redsys\Lib\Constants\RESTConstants;
 use Revosystems\Redsys\Lib\Model\Message\RESTAuthorizationRequestOperationMessage;
 use Revosystems\Redsys\Lib\Service\Impl\RESTTrataRequestService;
-use Revosystems\Redsys\Models\ChargeRequest;
 use Illuminate\Support\Facades\Log;
 
 class RedsysRequestGooglePay extends RedsysRequest
 {
-    protected function operationMessageClass()
+    public function handle(RedsysChargeRequest $chargeRequest, string $orderId, Price $price, $payData)
     {
-        return RESTAuthorizationRequestOperationMessage::class;
-    }
-
-    public function handle(ChargeRequest $chargeRequest, $orderId, $amount, $currency, $payData)
-    {
-        $requestOperation = $this->requestOperation($chargeRequest, $orderId, $amount, $currency);
+        $requestOperation = (new RESTAuthorizationRequestOperationMessage)
+            ->generate($this->config, $chargeRequest->orderReference, $orderId, $price);
+        // Set card needed?
         $requestOperation->useDirectPayment();
         $requestOperation->addParameter("DS_XPAYDATA", base64_encode($payData));
         $requestOperation->addParameter("DS_XPAYTYPE", "Google");

@@ -4,22 +4,21 @@
 namespace Revosystems\Redsys\Services;
 
 use Revosystems\Redsys\Lib\Model\Message\RESTResponseMessage;
-use Revosystems\Redsys\Models\ChargeRequest;
 use Revosystems\Redsys\Models\ChargeResult;
 
 class RedsysChallengeForm
 {
-    protected $webhook;
+    protected $webhookHandler;
 
-    public function __construct(Webhook $webhook)
+    public function __construct(WebhookHandler $webhookHandler)
     {
-        $this->webhook = $webhook;
+        $this->webhookHandler = $webhookHandler;
     }
 
-    public function display(ChargeRequest $chargeRequest, RESTResponseMessage $response, $termUrl, $amount) : ChargeResult
+    public function display(RedsysChargeRequest $chargeRequest, RESTResponseMessage $response, $termUrl, $amount) : ChargeResult
     {
         $operation  = $response->getOperation();
-        WebhookManager::save($this->webhook, $chargeRequest, $operation);
+        $this->webhookHandler->persist($chargeRequest, $operation);
         return new ChargeResult(true, [
             "result"        => $response->getResult(),
             "displayForm"   => view('redsys::redsys.challenge', [
