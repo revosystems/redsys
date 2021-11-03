@@ -58,10 +58,10 @@ class RedsysForm extends Component
 
     public function onTokenizedCardPressed(string $cardId, array $extraInfo) : void
     {
-        $redsysChargeRequest = RedsysChargeRequest::makeWithCard($this->orderReference, $cardId, $extraInfo);
+        $chargeRequest = RedsysChargeRequest::makeWithCard($this->orderReference, $cardId, $extraInfo);
         $this->emit('payResponse', RedsysPaymentGateway::get()->charge(
             RedsysCharge::get($this->orderReference),
-            $redsysChargeRequest
+            $chargeRequest
         )->gatewayResponse);
     }
 }

@@ -20,9 +20,9 @@ class RedsysPaymentGateway
      */
     protected $config;
 
-    public function __construct(RedsysConfig $redsysConfig)
+    public function __construct(RedsysConfig $config)
     {
-        $this->config = $redsysConfig;
+        $this->config = $config;
     }
 
     public static function make(RedsysConfig $config) : self
@@ -53,7 +53,7 @@ class RedsysPaymentGateway
     {
         $operationId = $chargeRequest->operationId;
         $cardId      = $chargeRequest->cardId;
-        if ($operationId == -1 || (! $operationId && ! $cardId)) {
+        if ($operationId === -1 || (! $operationId && ! $cardId)) {
             return new ChargeResult(false, "No operation Id");
         }
         return (new RedsysRequestInit($this->config))

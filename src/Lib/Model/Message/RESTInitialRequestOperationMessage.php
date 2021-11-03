@@ -4,8 +4,6 @@ namespace Revosystems\Redsys\Lib\Model\Message;
 
 use Revosystems\Redsys\Lib\Constants\RESTConstants;
 use Illuminate\Support\Facades\Log;
-use Revosystems\Redsys\Lib\Utils\Price;
-use Revosystems\Redsys\Models\RedsysConfig;
 
 /**
  * @XML_ELEM=REQUEST

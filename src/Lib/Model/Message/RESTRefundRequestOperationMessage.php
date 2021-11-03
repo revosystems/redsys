@@ -13,12 +13,17 @@ class RESTRefundRequestOperationMessage extends RESTInitialRequestOperationMessa
 {
     public function generate(RedsysConfig $config, string $reference, ?string $orderId, ?Price $price = null) : RESTRequestOperationMessage
     {
-//        parent::generate($config, $reference, $orderId, $price);
-        $this->setAmount($price->amount/100); // i.e. 1,23 (decimal point depends on currency code)
-        $this->setCurrency($price->currency->numericCode()); // ISO-4217 numeric currency code
-        $this->setOrder($reference);
-        $this->setTransactionType(RESTConstants::$REFUND);
-        $this->addParameter("DS_MERCHANT_REVO_ORDER_ID", $orderId);
+        // TODO: it works without merchantCode???
+        parent::generate($config, $reference, $orderId, $price);
+        $this
+//            ->setMerchant($config->code)
+//            ->setTerminal($config->terminal)
+//            ->setOrder($reference)
+            ->setTransactionType(RESTConstants::$REFUND)
+//            ->setAmount($price->amount/100) // i.e. 1,23 (decimal point depends on currency code)
+//            ->setCurrency($price->currency->numericCode()) // ISO-4217 numeric currency code
+//            ->addParameter("DS_MERCHANT_REVO_ORDER_ID", $orderId)
+        ;
         return $this;
     }
 

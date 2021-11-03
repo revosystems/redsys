@@ -54,7 +54,7 @@
     }
 
     function handleResponse(data) {
-        console.debug(data)
+        console.log(data)
         if (! data || ['OK', 'AUT'].indexOf(data.result) === -1) {
             showError("Something went wrong, redirecting…")
             return setTimeout(function () {

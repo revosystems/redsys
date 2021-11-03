@@ -22,7 +22,6 @@ class RedsysRequestInit extends RedsysRequest
 
         $response = RedsysRest::make(RESTInitialRequestService::class, $this->config->key)
             ->sendOperation($requestOperation);
-
         return $this->parseResult($chargeRequest, $orderId, $price, $response);
     }
 

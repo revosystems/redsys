@@ -3,7 +3,6 @@
 
 namespace Revosystems\Redsys\Services;
 
-use Revosystems\Redsys\Lib\Model\Message\RESTRequestOperationMessage;
 use Revosystems\Redsys\Lib\Model\Message\RESTResponseMessage;
 use Revosystems\Redsys\Models\RedsysConfig;
 
