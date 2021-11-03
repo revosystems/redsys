@@ -49,21 +49,21 @@ class RedsysPaymentGateway
         ])->render();
     }
 
-    public function refund(RedsysRefund $redsysRefund) : ChargeResult
+    public function charge(RedsysCharge $redsysCharge, RedsysChargeRequest $chargeRequest) : ChargeResult
     {
-        return (new RedsysRequestRefund($this->config))
-            ->handle($redsysRefund->paymentReference, $redsysRefund->price);
-    }
-
-    public function charge(RedsysCharge $redsysCharge, RedsysChargeRequest $redsysChargeRequest) : ChargeResult
-    {
-        $operationId = $redsysChargeRequest->operationId;
-        $cardId      = $redsysChargeRequest->cardId;
+        $operationId = $chargeRequest->operationId;
+        $cardId      = $chargeRequest->cardId;
         if ($operationId == -1 || (! $operationId && ! $cardId)) {
             return new ChargeResult(false, "No operation Id");
         }
         return (new RedsysRequestInit($this->config))
-            ->handle($redsysChargeRequest, $redsysCharge->orderId, $redsysCharge->price);
+            ->handle($chargeRequest, $redsysCharge->orderId, $redsysCharge->price);
+    }
+
+    public function refund(RedsysRefund $redsysRefund) : ChargeResult
+    {
+        return (new RedsysRequestRefund($this->config))
+            ->handle($redsysRefund->paymentReference, $redsysRefund->price);
     }
 
     /*

@@ -12,12 +12,6 @@ use Revosystems\Redsys\Services\RedsysChargeRequest;
 
 abstract class RESTRequestOperationMessage extends RESTGenericXml
 {
-    protected $config;
-    protected $reference;
-    protected $orderId;
-    protected $amount;
-    protected $currency;
-
     public function generate(RedsysConfig $config, string $reference, ?string $orderId, ?Price $price = null) : RESTRequestOperationMessage
     {
         $this->setMerchant($config->code)
@@ -28,6 +22,8 @@ abstract class RESTRequestOperationMessage extends RESTGenericXml
             $this->setAmount($price->amount/100) // i.e. 1,23 (decimal point depends on currency code)
                 ->setCurrency($price->currency->numericCode()); // ISO-4217 numeric currency code
         }
+
+//        $this->setCard($chargeRequest);
 
         // Other optional parameters example can be added by "addParameter" method
         $this->addParameter("DS_MERCHANT_REVO_ORDER_ID", $orderId);

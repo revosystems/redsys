@@ -12,11 +12,9 @@ use Revosystems\Redsys\Models\RedsysConfig;
  */
 class RESTInitialRequestOperationMessage extends RESTRequestOperationMessage
 {
-    public function generate(RedsysConfig $config, string $reference, ?string $orderId, ?Price $price = null) : RESTRequestOperationMessage
+    public function __construct()
     {
-        parent::generate($config, $reference, $orderId, $price);
         $this->signatureVersion = RESTConstants::$REQUEST_SIGNATUREVERSION_VALUE;
-        return $this;
     }
 
     /**
