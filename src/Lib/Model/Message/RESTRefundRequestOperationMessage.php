@@ -3,20 +3,15 @@
 namespace Revosystems\Redsys\Lib\Model\Message;
 
 use Revosystems\Redsys\Lib\Constants\RESTConstants;
-use Revosystems\Redsys\Models\RedsysConfig;
-use Revosystems\Redsys\Services\RedsysChargeRequest;
-use Revosystems\Redsys\Services\RedsysPayment;
 
 /**
  * @XML_ELEM=REQUEST
  */
-class RESTRefundRequestOperationMessage extends RESTInitialRequestOperationMessage
+class RESTRefundRequestOperationMessage  extends RESTInitialRequestOperationMessage
 {
-    public function generate(RedsysConfig $config, RedsysPayment $chargePayment, RedsysChargeRequest $chargeRequest) : RESTRequestOperationMessage
+    protected function transactionType() : string
     {
-        parent::generate($config, $chargePayment, $chargeRequest)
-            ->setTransactionType(RESTConstants::$REFUND);
-        return $this;
+        return RESTConstants::$REFUND;
     }
 
     /**

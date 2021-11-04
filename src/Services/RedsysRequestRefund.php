@@ -12,15 +12,13 @@ use Illuminate\Support\Facades\Log;
 
 class RedsysRequestRefund extends RedsysRequest
 {
-    public function handle(RedsysPayment $chargePayment) : ChargeResult
+    public function handle(RedsysPayment $chargePayment, RedsysChargeRequest $chargeRequest) : ChargeResult
     {
-        $chargeRequest      = new RedsysChargeRequest();
-        $requestOperation   = (new RESTRefundRequestOperationMessage)
-            ->generate($this->config, $chargePayment, $chargeRequest);
-        $response = RedsysRest::make(RESTTrataRequestService::class, $this->config->key)
-            ->sendOperation($requestOperation);
-
-        $result   = $response->getResult();
+        $requestOperation   = (new RESTRefundRequestOperationMessage)->generate($this->config, $chargePayment, $chargeRequest);
+        Log::debug("[REDSYS] Operation");
+        $response           = RedsysRest::make(RESTTrataRequestService::class, $this->config->key)->sendOperation($requestOperation);
+        Log::debug("[REDSYS] Response");
+        $result             = $response->getResult();
         Log::debug("[REDSYS] Getting refund response {$result}");
         if ($result == RESTConstants::$RESP_LITERAL_KO) {
             Log::error("[REDSYS] Operation `REFUND` was not OK");

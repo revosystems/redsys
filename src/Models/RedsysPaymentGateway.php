@@ -57,14 +57,12 @@ class RedsysPaymentGateway
         if ($operationId === -1 || (! $operationId && ! $cardId)) {
             return new ChargeResult(false);
         }
-        return (new RedsysRequestInit($this->config))
-            ->handle($chargePayment, $chargeRequest);
+        return (new RedsysRequestInit($this->config))->handle($chargePayment, $chargeRequest);
     }
 
-    public function refund(RedsysPayment $chargePayment) : ChargeResult
+    public function refund(RedsysPayment $chargePayment, RedsysChargeRequest $chargeRequest) : ChargeResult
     {
-        return (new RedsysRequestRefund($this->config))
-            ->handle($chargePayment);
+        return (new RedsysRequestRefund($this->config))->handle($chargePayment, $chargeRequest);
     }
 
     /*

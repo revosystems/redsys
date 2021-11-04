@@ -32,16 +32,14 @@ abstract class WebhookHandler
      */
     public function handle(RedsysPayment $chargePayment, RedsysChargeRequest $chargeRequest) : ChargeResult
     {
-        $challengeRequest = (new RESTAuthenticationRequestOperationMessage)
-            ->generate($this->config, $chargePayment, $chargeRequest)
-            ->setCard($chargeRequest);
+        $challengeRequest = (new RESTAuthenticationRequestOperationMessage)->generate($this->config, $chargePayment, $chargeRequest);
         $this->challenge($chargePayment, $challengeRequest);
         return $this->sendAuthenticationConfirmationOperation($challengeRequest, $chargeRequest);
     }
 
     abstract protected function challenge(RedsysPayment $chargePayment, RESTAuthenticationRequestOperationMessage $challengeRequest) : void;
 
-    protected function sendAuthenticationConfirmationOperation($challengeRequest, RedsysChargeRequest $chargeRequest) : ChargeResult
+    protected function sendAuthenticationConfirmationOperation(RESTAuthenticationRequestOperationMessage $challengeRequest, RedsysChargeRequest $chargeRequest) : ChargeResult
     {
         if ($chargeRequest->customerToken) {
             $challengeRequest->createReference();

@@ -5,7 +5,6 @@ namespace Revosystems\Redsys\Services;
 
 use Illuminate\Support\Facades\Session;
 use Revosystems\Redsys\Exceptions\SessionExpiredException;
-use Revosystems\Redsys\Lib\Utils\Price;
 use Revosystems\Redsys\Models\RedsysPaymentHandler;
 
 class RedsysChargePayment extends RedsysPayment

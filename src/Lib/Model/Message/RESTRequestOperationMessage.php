@@ -16,15 +16,11 @@ abstract class RESTRequestOperationMessage extends RESTGenericXml
         $this->setMerchant($config->code)
             ->setTerminal($config->terminal)
             ->setOrder($chargeRequest->paymentReference)
-            ->setTransactionType(RESTConstants::$AUTHORIZATION);
-        if ($chargePayment->price) {
-            $this->setAmount($chargePayment->price->amount)
-                ->setCurrency($chargePayment->price->currency->numericCode()); // ISO-4217 numeric currency code
-        }
+            ->setTransactionType($this->transactionType())
+            ->setAmount($chargePayment->price->amount)
+            ->setCurrency($chargePayment->price->currency->numericCode()); // ISO-4217 numeric currency code
 
-        if ($chargePayment->externalReference) {
-            $this->addParameter("DS_MERCHANT_REVO_ORDER_ID", $chargePayment->externalReference);
-        }
+        $this->addParameter("DS_MERCHANT_REVO_ORDER_ID", $chargePayment->externalReference);
         $this->addParameter("DS_MERCHANT_REVO_TENANT", $chargePayment->tenant);
         return $this;
     }
@@ -37,6 +33,11 @@ abstract class RESTRequestOperationMessage extends RESTGenericXml
             $this->setOperID($chargePaymentRequest->operationId);
         }
         return $this;
+    }
+
+    protected function transactionType() : string
+    {
+        return RESTConstants::$AUTHORIZATION;
     }
 
     public function getMerchant()
@@ -268,5 +269,4 @@ abstract class RESTRequestOperationMessage extends RESTGenericXml
             $this->addParameter(RESTConstants::$REQUEST_MERCHANT_EXEMPTION, RESTConstants::$REQUEST_MERCHANT_EXEMPTION_VALUE_NDF);
         }
     }
-
 }
