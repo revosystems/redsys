@@ -15,7 +15,7 @@ class RedsysChallengeForm
         $this->webhookHandler = $webhookHandler;
     }
 
-    public function display(RedsysChargeRequest $chargeRequest, RESTResponseMessage $response, $termUrl, $amount) : ChargeResult
+    public function display(RedsysChargeRequest $chargeRequest, RESTResponseMessage $response, $termUrl) : ChargeResult
     {
         $operation  = $response->getOperation();
         $this->webhookHandler->persist($chargeRequest, $operation);
@@ -29,6 +29,6 @@ class RedsysChallengeForm
                 'termUrl'   => $termUrl,
             ])->toHtml(),
             "operation"     => $operation,
-        ], $amount, "redsys:{$chargeRequest->orderReference}");
+        ], "redsys:{$chargeRequest->paymentReference}");
     }
 }

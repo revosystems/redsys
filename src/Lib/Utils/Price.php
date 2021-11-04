@@ -8,7 +8,7 @@ class Price
     public $amount;
     public $currency;
 
-    public function __construct($amount = null, $code = 'EUR')
+    public function __construct(int $amount, $code = 'EUR')
     {
         $this->amount   = $amount;
         $this->currency = new Currency($code);
@@ -16,6 +16,6 @@ class Price
 
     public function format()
     {
-        return $this->currency->symbol($this->amount !== null ? number_format($this->amount / 100, 2, '.', '') : null);
+        return $this->currency->symbol(number_format($this->amount / 100, 2, '.', ''));
     }
 }

@@ -30,18 +30,16 @@ abstract class WebhookHandler
     /**
      * @throws RedsysException
      */
-    public function handle(RedsysChargeRequest $chargeRequest, Request $request, RESTOperationElement $operation) : ChargeResult
+    public function handle(RedsysPayment $chargePayment, RedsysChargeRequest $chargeRequest) : ChargeResult
     {
         $challengeRequest = (new RESTAuthenticationRequestOperationMessage)
-            ->generate($this->config, $chargeRequest->orderReference, $request->get('orderId'))
-            ->setAmount($operation->getAmount())
-            ->setCurrency($operation->getCurrency())
+            ->generate($this->config, $chargePayment, $chargeRequest)
             ->setCard($chargeRequest);
-        $this->challenge($challengeRequest, $request, $operation);
+        $this->challenge($chargePayment, $challengeRequest);
         return $this->sendAuthenticationConfirmationOperation($challengeRequest, $chargeRequest);
     }
 
-    abstract protected function challenge(RESTAuthenticationRequestOperationMessage $challengeRequest, Request $request, RESTOperationElement $operation) : void;
+    abstract protected function challenge(RedsysPayment $chargePayment, RESTAuthenticationRequestOperationMessage $challengeRequest) : void;
 
     protected function sendAuthenticationConfirmationOperation($challengeRequest, RedsysChargeRequest $chargeRequest) : ChargeResult
     {
@@ -73,17 +71,17 @@ abstract class WebhookHandler
 
     public function persist(RedsysChargeRequest $chargeRequest, RESTOperationElement $operation)
     {
-        Cache::put(static::ORDERS_CACHE_KEY . $chargeRequest->orderReference, [
+        Cache::put(static::ORDERS_CACHE_KEY . $chargeRequest->paymentReference, [
             'chargeRequest' => serialize($chargeRequest),
             'operation'     => base64_encode(serialize($operation)),
             'webhookHandler'=> serialize($this),
         ], Carbon::now()->addMinutes(30));
     }
 
-    public static function get(string $orderReference) : ?array
+    public static function get(string $paymentReference) : ?array
     {
-        $cachedData = Cache::get(static::ORDERS_CACHE_KEY . $orderReference);
-        Cache::forget(static::ORDERS_CACHE_KEY . $orderReference);
+        $cachedData = Cache::get(static::ORDERS_CACHE_KEY . $paymentReference);
+        Cache::forget(static::ORDERS_CACHE_KEY . $paymentReference);
         return $cachedData;
     }
 }

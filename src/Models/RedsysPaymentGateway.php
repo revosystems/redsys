@@ -5,8 +5,9 @@ namespace Revosystems\Redsys\Models;
 
 use Illuminate\Support\Facades\Session;
 use Revosystems\Redsys\Exceptions\SessionExpiredException;
-use Revosystems\Redsys\Services\RedsysCharge;
+use Revosystems\Redsys\Services\RedsysChargePayment;
 use Revosystems\Redsys\Services\RedsysChargeRequest;
+use Revosystems\Redsys\Services\RedsysPayment;
 use Revosystems\Redsys\Services\RedsysRefund;
 use Revosystems\Redsys\Services\RedsysRequestInit;
 use Revosystems\Redsys\Services\RedsysRequestRefund;
@@ -35,35 +36,35 @@ class RedsysPaymentGateway
         return config('services.payment_gateways.redsys.test');
     }
 
-    public function render(RedsysCharge $redsysCharge, $customerToken)
+    public function render(RedsysChargePayment $chargePayment, $customerToken)
     {
-        $orderReference = RedsysChargeRequest::generateOrderReference();
-        $redsysCharge->persist($orderReference);
+        $paymentReference = RedsysChargeRequest::generatePaymentReference();
+        $chargePayment->persist($paymentReference);
         return view('redsys::app.index', [
-            'orderReference'    => $orderReference,
-            'price'             => $redsysCharge->price->format(),
-            'orderId'           => $redsysCharge->orderId,
+            'paymentReference'  => $paymentReference,
+            'price'             => $chargePayment->price->format(),
+            'externalReference' => $chargePayment->externalReference,
             'redsysConfig'      => $this->config,
             'customerToken'     => $customerToken,
             'cards'             => CardsTokenizable::get($customerToken)
         ])->render();
     }
 
-    public function charge(RedsysCharge $redsysCharge, RedsysChargeRequest $chargeRequest) : ChargeResult
+    public function charge(RedsysChargePayment $chargePayment, RedsysChargeRequest $chargeRequest) : ChargeResult
     {
         $operationId = $chargeRequest->operationId;
         $cardId      = $chargeRequest->cardId;
         if ($operationId === -1 || (! $operationId && ! $cardId)) {
-            return new ChargeResult(false, "No operation Id");
+            return new ChargeResult(false);
         }
         return (new RedsysRequestInit($this->config))
-            ->handle($chargeRequest, $redsysCharge->orderId, $redsysCharge->price);
+            ->handle($chargePayment, $chargeRequest);
     }
 
-    public function refund(RedsysRefund $redsysRefund) : ChargeResult
+    public function refund(RedsysPayment $chargePayment) : ChargeResult
     {
         return (new RedsysRequestRefund($this->config))
-            ->handle($redsysRefund->paymentReference, $redsysRefund->price);
+            ->handle($chargePayment);
     }
 
     /*

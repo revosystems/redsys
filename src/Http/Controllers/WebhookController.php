@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Log;
 use Revosystems\Redsys\Lib\Model\Element\RESTOperationElement;
 use Revosystems\Redsys\Services\RedsysChargeRequest;
 use Revosystems\Redsys\Services\RedsysException;
+use Revosystems\Redsys\Services\RedsysPayment;
 use Revosystems\Redsys\Services\WebhookHandler;
 
 class WebhookController extends Controller
@@ -22,7 +23,7 @@ class WebhookController extends Controller
             $this->chargeFailed($request, 'Charge request validation failed');
             return;
         }
-        if (! $cachedData = WebhookHandler::get($request->get('orderReference'))) {
+        if (! $cachedData = WebhookHandler::get($request->get('paymentReference'))) {
             $this->chargeFailed($request, 'Charge retrieve cached data failed');
             return;
         }
@@ -33,7 +34,7 @@ class WebhookController extends Controller
 
         try {
             $result = $this->unserializeWebhookHandler($cachedData)->handle(
-                $this->unserializeChargeRequest($cachedData), $request, $operation
+                $this->redsysPayment($request, $operation), $this->unserializeChargeRequest($cachedData)
             );
             if (! $result->success) {
                 $this->chargeFailed($request, 'Charge authentication failed');
@@ -53,7 +54,7 @@ class WebhookController extends Controller
 
     protected function validateRequest(Request $request) : bool
     {
-        if (! $request->get('orderReference')) {
+        if (! $request->get('paymentReference')) {
             return false;
         }
         return $request->get('cres') || ($request->get('PaRes') && $request->get('MD'));
@@ -62,12 +63,12 @@ class WebhookController extends Controller
     protected function chargeFailed(Request $request, $errorMessage)
     {
         Log::error("[REDSYS] Webhook Error: {$errorMessage}");
-        Cache::put(WebhookHandler::ORDERS_CACHE_KEY . "{$request->get('orderReference')}.result", 'FAILED', Carbon::now()->addMinutes(30));
+        Cache::put(WebhookHandler::ORDERS_CACHE_KEY . "{$request->get('paymentReference')}.result", 'FAILED', Carbon::now()->addMinutes(30));
     }
 
     protected function chargeSucceeded(Request $request)
     {
-        Cache::put(WebhookHandler::ORDERS_CACHE_KEY . "{$request->get('orderReference')}.result", 'SUCCESS', Carbon::now()->addMinutes(30));
+        Cache::put(WebhookHandler::ORDERS_CACHE_KEY . "{$request->get('paymentReference')}.result", 'SUCCESS', Carbon::now()->addMinutes(30));
     }
 
     protected function unserialize(array $cachedData, string $key, $decode = false)
@@ -91,5 +92,15 @@ class WebhookController extends Controller
     protected function unserializeOperation(?array $cachedData) : ?RESTOperationElement
     {
         return $this->unserialize($cachedData, 'operation', true);
+    }
+
+    protected function redsysPayment(Request $request, RESTOperationElement $operation) : RedsysPayment
+    {
+        return (new RedsysPayment(
+            $request->get('externalReference'), $request->get('tenant'),
+            $operation->getAmount(), $operation->getCurrency()
+        ))->setCres($request->get('cres'))
+            ->setProtocolVersion(json_decode($operation->getEmv(), true)["protocolVersion"])
+            ->setPaResAndMD($request->get('PaRes'), $request->get('MD'));
     }
 }

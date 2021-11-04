@@ -18,16 +18,16 @@ class RequestAuthorizationV2 extends RequestAuthorization
         $this->webhookHandler = new WebhookHandlerV2($config);
     }
 
-    public function handle(RedsysChargeRequest $chargeRequest, string $orderId, Price $price, RESTResponseMessage $response) : ChargeResult
+    public function handle(RedsysChargePayment $chargePayment, RedsysChargeRequest $chargeRequest, RESTResponseMessage $response) : ChargeResult
     {
         $requestOperation = (new RESTAuthorizationRequestOperationMessage)
-            ->generate($this->config, $chargeRequest->orderReference, $orderId, $price)
+            ->generate($this->config, $chargePayment, $chargeRequest)
             ->setCard($chargeRequest);
-        $this->setEMV3DSParamsV2($chargeRequest, $requestOperation, $response, $orderId);
-        return $this->getAuthorizationChargeResult($chargeRequest, $requestOperation, $orderId);
+        $this->setEMV3DSParamsV2($chargePayment, $chargeRequest, $requestOperation, $response);
+        return $this->getAuthorizationChargeResult($chargePayment, $chargeRequest, $requestOperation);
     }
 
-    protected function setEMV3DSParamsV2(RedsysChargeRequest $chargeRequest, RESTRequestOperationMessage $operationRequest, RESTResponseMessage $response, string $orderId): void
+    protected function setEMV3DSParamsV2(RedsysChargePayment $chargePayment, RedsysChargeRequest $chargeRequest, RESTRequestOperationMessage $operationRequest, RESTResponseMessage $response): void
     {
         $threeDSInfo          = $response->getThreeDSInfo();
         $threeDSMethodURL     = $response->getThreeDSMethodURL();
@@ -51,7 +51,7 @@ class RequestAuthorizationV2 extends RequestAuthorization
             (string)$chargeRequest->extraInfo['browser_width'],
             (string)$chargeRequest->extraInfo['browser_tz'],
             $response->getThreeDSServerTransID(),
-            $this->getWebhookUrl($chargeRequest->orderReference, $orderId),
+            $this->getWebhookUrl($chargePayment, $chargeRequest->paymentReference),
             $threeDSMethodURL ? 'N' : 'U'
         );
 //        if (auth()->user()->email) {

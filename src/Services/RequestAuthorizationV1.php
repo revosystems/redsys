@@ -15,12 +15,12 @@ class RequestAuthorizationV1 extends RequestAuthorization
         $this->webhookHandler = new WebhookHandlerV1($config);
     }
 
-    public function handle(RedsysChargeRequest $chargeRequest, string $orderId, Price $price)
+    public function handle(RedsysChargePayment $chargePayment, RedsysChargeRequest $chargeRequest)
     {
         $requestOperation = (new RESTAuthorizationRequestOperationMessage)
-            ->generate($this->config, $chargeRequest->orderReference, $orderId, $price)
+            ->generate($this->config, $chargePayment, $chargeRequest)
             ->setCard($chargeRequest)
             ->setEMV3DSParamsV1();
-        return $this->getAuthorizationChargeResult($chargeRequest, $requestOperation, $orderId);
+        return $this->getAuthorizationChargeResult($chargePayment, $chargeRequest, $requestOperation);
     }
 }

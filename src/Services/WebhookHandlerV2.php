@@ -9,8 +9,8 @@ use Illuminate\Http\Request;
 
 class WebhookHandlerV2 extends WebhookHandler
 {
-    protected function challenge(RESTAuthenticationRequestOperationMessage $challengeRequest, Request $request, RESTOperationElement $operation) : void
+    protected function challenge(RedsysPayment $chargePayment, RESTAuthenticationRequestOperationMessage $challengeRequest) : void
     {
-        $challengeRequest->challengeRequestV2(json_decode($operation->getEmv(), true)["protocolVersion"], $request->get('cres'));
+        $challengeRequest->challengeRequestV2($chargePayment->protocolVersion, $chargePayment->cres);
     }
 }

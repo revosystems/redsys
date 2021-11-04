@@ -5,18 +5,13 @@ namespace Revosystems\Redsys\Models;
 class ChargeResult
 {
     public $success;
-    /**
-     * @var int|null
-     */
-    public $amount;
-    public $reference;
+    public $paymentReference;
     public $gatewayResponse;
 
-    public function __construct($success, ?array $gatewayResponse, $amount = null, $reference = null)
+    public function __construct(bool $success, ?array $gatewayResponse = null, ?string $paymentReference = null)
     {
         $this->success          = $success;
-        $this->amount           = $amount;
-        $this->reference        = $reference;
+        $this->paymentReference = $paymentReference;
         $this->gatewayResponse  = $gatewayResponse;
     }
 }

@@ -12,10 +12,10 @@ use Illuminate\Support\Facades\Log;
 
 class RedsysRequestGooglePay extends RedsysRequest
 {
-    public function handle(RedsysChargeRequest $chargeRequest, string $orderId, Price $price, $payData)
+    public function handle(RedsysChargePayment $chargePayment, RedsysChargeRequest $chargeRequest, $payData) : ChargeResult
     {
         $requestOperation = (new RESTAuthorizationRequestOperationMessage)
-            ->generate($this->config, $chargeRequest->orderReference, $orderId, $price);
+            ->generate($this->config, $chargePayment, $chargeRequest);
         // Set card needed?
         $requestOperation->useDirectPayment();
         $requestOperation->addParameter("DS_XPAYDATA", base64_encode($payData));
@@ -30,6 +30,6 @@ class RedsysRequestGooglePay extends RedsysRequest
             Log::error("[REDSYS] Operation `GooglePay` was not OK");
             return new ChargeResult(false, $this->getResponse($response));
         }
-        return new ChargeResult(true, $this->getResponse($response), $requestOperation->getAmount(), "redsys:{$chargeRequest->orderReference}");
+        return new ChargeResult(true, $this->getResponse($response), "redsys:{$chargeRequest->paymentReference}");
     }
 }

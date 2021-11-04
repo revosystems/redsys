@@ -7,11 +7,11 @@
     </div>
 
     @livewire('redsys-form', array_merge(
-        compact('redsysFormId', 'orderReference', 'price', 'customerToken'),
+        compact('redsysFormId', 'paymentReference', 'price', 'customerToken'),
         ['hasCards' => $cards->isNotEmpty()]
     ))
 
-    @livewire('check-status', compact('orderReference'))
+    @livewire('check-status', compact('paymentReference'))
 
     {{--@livewire('apple-pay-button')--}}
 
@@ -26,7 +26,7 @@
     function loadRedsysForm(buttonStyle = 'background-color:#E35732', bodyStyle = '', boxStyle = '', inputsStyle = '') {
         // Redsys iframe available method to load card form
         getInSiteForm('{{ $redsysFormId }}', buttonStyle, bodyStyle, boxStyle, inputsStyle, "{!! __(config('redsys.translationsPrefix') . 'pay') . ' ' . $price !!}",
-            "{{ $redsysConfig->code }}", "{{ $redsysConfig->terminal }}", "{{ $orderReference }}", false)
+            "{{ $redsysConfig->code }}", "{{ $redsysConfig->terminal }}", "{{ $paymentReference }}", false)
     }
 
     function showError(message) {

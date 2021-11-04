@@ -14,7 +14,7 @@ abstract class RequestAuthorization extends RedsysRequest
 {
     protected $webhookHandler;
 
-    protected function getAuthorizationChargeResult(RedsysChargeRequest $chargeRequest, RESTRequestOperationMessage $operationRequest, string $orderId) : ChargeResult
+    protected function getAuthorizationChargeResult(RedsysChargePayment $chargePayment, RedsysChargeRequest $chargeRequest, RESTRequestOperationMessage $operationRequest) : ChargeResult
     {
         if ($chargeRequest->customerToken) {
             $operationRequest->createReference();
@@ -35,15 +35,22 @@ abstract class RequestAuthorization extends RedsysRequest
                 CardsTokenizable::tokenize(GatewayCard::makeFromOperation($operation), $chargeRequest->customerToken);
             }
 
-            return new ChargeResult(true, $this->getResponse($response), $operationRequest->getAmount(), "redsys:{$chargeRequest->orderReference}");
+            return new ChargeResult(true, $this->getResponse($response), "redsys:{$chargeRequest->paymentReference}");
         }
         
-        return (new RedsysChallengeForm($this->webhookHandler))->display($chargeRequest, $response, $this->getWebhookUrl($chargeRequest->orderReference, $orderId), $operationRequest->getAmount());
+        return (new RedsysChallengeForm($this->webhookHandler))->display($chargeRequest, $response, $this->getWebhookUrl($chargePayment, $chargeRequest->paymentReference));
     }
 
-    protected function getWebhookUrl($orderReference, $orderId) : string
+    protected function getWebhookUrl(RedsysChargePayment $chargePayment, string $paymentReference) : string
     {
-//        return "https://9719-81-184-118-214.ngrok.io/webhooks/redsys?orderReference={$orderReference}&orderId={$orderId}";
-        return route('webhooks.redsys', compact('orderReference', 'orderId'));
+        return "https://45df-213-148-218-55.ngrok.io/webhooks/redsys?"
+        . "paymentReference={$paymentReference}&"
+        . "externalReference={$chargePayment->externalReference}&"
+        . "tenant={$chargePayment->tenant}";
+        return route('webhooks.redsys', [
+            'paymentReference'  => $paymentReference,
+            'externalReference' => $chargePayment->externalReference,
+            'tenant'            => $chargePayment->tenant
+        ]);
     }
 }

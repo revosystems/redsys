@@ -9,7 +9,7 @@
 
 @section('header')
     <div class="flex justify-center">
-        <div class="text-sm">Orden #{{$orderId}}</div>
+        <div class="text-sm">Orden #{{$externalReference}}</div>
     </div>
 @endsection
 
@@ -20,7 +20,7 @@
         'redsysFormId'      => 'redsys-init-form',
         'redsysConfig'      => $redsysConfig,
         'price'             => $price,
-        'orderReference'    => $orderReference,
+        'paymentReference'  => $paymentReference,
         'customerToken'     => $customerToken,
         'cards'             => $cards,
     ])

@@ -6,32 +6,32 @@ class RedsysChargeRequest
 {
     public $operationId;
     public $cardId;
-    public $orderReference;
+    public $paymentReference;
     public $customerToken;
     public $extraInfo;
 
-    public function __construct(?string $orderReference = null)
+    public function __construct(?string $paymentReference = null)
     {
-        $this->orderReference       = $orderReference ?? static::generateOrderReference();
+        $this->paymentReference = $paymentReference ?? static::generatePaymentReference();
     }
 
-    public static function makeWithCard($orderReference, string $cardId, array $extraInfo) : self
+    public static function makeWithCard($paymentReference, string $cardId, array $extraInfo) : self
     {
-        $chargeRequest = new self($orderReference);
+        $chargeRequest = new self($paymentReference);
         $chargeRequest->cardId          = $cardId;
         $chargeRequest->extraInfo       = $extraInfo;
         return $chargeRequest;
     }
 
-    public static function makeWithOperationId($orderReference, string $operationId, array $extraInfo) : self
+    public static function makeWithOperationId($paymentReference, string $operationId, array $extraInfo) : self
     {
-        $chargeRequest = new self($orderReference);
+        $chargeRequest = new self($paymentReference);
         $chargeRequest->operationId     = $operationId;
         $chargeRequest->extraInfo       = $extraInfo;
         return $chargeRequest;
     }
 
-    public static function generateOrderReference() : string
+    public static function generatePaymentReference() : string
     {
         return substr(str_shuffle(str_repeat('ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789', 10)), 0, 12);
     }

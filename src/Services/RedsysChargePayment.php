@@ -8,35 +8,30 @@ use Revosystems\Redsys\Exceptions\SessionExpiredException;
 use Revosystems\Redsys\Lib\Utils\Price;
 use Revosystems\Redsys\Models\RedsysPaymentHandler;
 
-class RedsysCharge
+class RedsysChargePayment extends RedsysPayment
 {
     const CACHE_KEY = 'redsys.handler.';
 
     public $payHandler;
-    public $orderId;
-    public $price;
-    public $tenant;
 
-    public function __construct(RedsysPaymentHandler $payHandler, string $orderId, int $amount, string $currency, string $tenant)
+    public function __construct(RedsysPaymentHandler $payHandler, string $externalReference, string $tenant, int $amount, string $currency)
     {
+        parent::__construct($externalReference, $tenant, $amount, $currency);
         $this->payHandler   = $payHandler;
-        $this->orderId      = $orderId;
-        $this->tenant       = $tenant;
-        $this->price        = new Price($amount, $currency);
     }
 
     //==================================
     // METHODS TO PERSIST SECTION
     //==================================
-    public function persist(string $orderReference): self
+    public function persist(string $paymentReference): self
     {
-        Session::put(static::CACHE_KEY . $orderReference, serialize($this));
+        Session::put(static::CACHE_KEY . $paymentReference, serialize($this));
         return $this;
     }
 
-    public static function get(string $orderReference) : self
+    public static function get(string $paymentReference) : self
     {
-        if (! $handler = Session::get(static::CACHE_KEY . $orderReference)) {
+        if (! $handler = Session::get(static::CACHE_KEY . $paymentReference)) {
             throw new SessionExpiredException();
         }
         return unserialize($handler);
