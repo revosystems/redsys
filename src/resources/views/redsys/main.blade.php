@@ -23,9 +23,15 @@
 </div>
 
 <script>
-    function loadRedsysForm(buttonStyle = 'background-color:#E35732', bodyStyle = '', boxStyle = '', inputsStyle = '') {
+    function loadRedsysForm(inputsStyle = '') {
+        buttonStyle = 'background-color:#000000; margin-top:28px; margin-bottom: -28px; width:310px; height:48px; text-transform: uppercase; margin-right:0; margin-left:0;' +
+            'border-radius: 0.25rem;' +
+            'font-size:16px; font-weight: 700;' +
+            'font-family: ui-sans-serif, system-ui, -apple-system, "system-ui", "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji"';
+        boxStyle = 'box-shadow:none; margin-top:24px'
+        bodyStyle = 'margin-top: -68px; color: gray'
         // Redsys iframe available method to load card form
-        getInSiteForm('{{ $redsysFormId }}', buttonStyle, bodyStyle, boxStyle, inputsStyle, "{!! __(config('redsys.translationsPrefix') . 'pay') . ' ' . $price !!}",
+        getInSiteForm('{{ $redsysFormId }}', buttonStyle, bodyStyle, boxStyle, inputsStyle, '{!! __(config('redsys.translationsPrefix') . 'pay') . ' ' . $price !!}',
             "{{ $redsysConfig->code }}", "{{ $redsysConfig->terminal }}", "{{ $paymentReference }}", false)
     }
 

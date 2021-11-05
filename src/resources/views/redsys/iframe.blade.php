@@ -3,7 +3,7 @@
     <input type="checkbox" wire:model="shouldSaveCard" />
     <label class="">{{ __(config('redsys.translationsPrefix') . 'saveCardForPayments') }}</label>
 </div>
-<div id="{{ $redsysFormId }}" style="height: 300px; margin: auto;" wire:ignore>
+<div id="{{ $redsysFormId }}" style="height: 240px; margin: auto;" wire:ignore>
 {{--    @include('redsys::livewire.includes.loading-ring')--}}
 </div>
 <input type="hidden" id="token"/>

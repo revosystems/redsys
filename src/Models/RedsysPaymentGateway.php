@@ -8,7 +8,6 @@ use Revosystems\Redsys\Exceptions\SessionExpiredException;
 use Revosystems\Redsys\Services\RedsysChargePayment;
 use Revosystems\Redsys\Services\RedsysChargeRequest;
 use Revosystems\Redsys\Services\RedsysPayment;
-use Revosystems\Redsys\Services\RedsysRefund;
 use Revosystems\Redsys\Services\RedsysRequestInit;
 use Revosystems\Redsys\Services\RedsysRequestRefund;
 
