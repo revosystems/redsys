@@ -13,9 +13,9 @@
 
     @livewire('check-status', compact('paymentReference'))
 
-    {{--@livewire('apple-pay-button')--}}
+    @livewire('apple-pay-button', compact('paymentReference'))
 
-    {{--@livewire('google-pay-button')--}}
+    @livewire('google-pay-button', compact('paymentReference'))
 
     <x-redsys-radio-selector :id="'challenge-form-box'" :name="'challenge-form'" :label="'Redsys'" :hidden="true" :hideInput="true">
         <div id="challenge-form" class="block w-full h-16 flex-row justify-center text-center items-center outline-none rounded"></div>

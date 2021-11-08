@@ -1,8 +1,12 @@
-<x-redsys-radio-selector :id="'google-pay-mode'" :name="'mode'" :label="'Google Pay'">
-    <div id="googlePay" class="block w-full h-16 flex-row justify-center text-center items-center outline-none rounded"></div>
-</x-redsys-radio-selector>
+<div>
+    <x-redsys-radio-selector :id="'google-pay-mode'" :name="'mode'" :label="'Google Pay'">
+        <div id="googlePay" class="block w-full h-16 flex-row justify-center text-center items-center outline-none rounded"></div>
+    </x-redsys-radio-selector>
 
-{{--@push('inner-scripts')--}}
+</div>
+
+@push('redsys-scripts-stack')
+
     <script>
         document.addEventListener("DOMContentLoaded", function(event) {
             window.livewire.on('buttons.customerUpdated', function (data) {
@@ -248,4 +252,4 @@
             console.log("GPAY button " + (enable ? 'enabled' : 'disabled'))
         }
     </script>
-{{--@endpush--}}
+@endpush

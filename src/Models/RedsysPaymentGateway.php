@@ -8,6 +8,8 @@ use Revosystems\Redsys\Exceptions\SessionExpiredException;
 use Revosystems\Redsys\Services\RedsysChargePayment;
 use Revosystems\Redsys\Services\RedsysChargeRequest;
 use Revosystems\Redsys\Services\RedsysPayment;
+use Revosystems\Redsys\Services\RedsysRequestApplePay;
+use Revosystems\Redsys\Services\RedsysRequestGooglePay;
 use Revosystems\Redsys\Services\RedsysRequestInit;
 use Revosystems\Redsys\Services\RedsysRequestRefund;
 
@@ -64,19 +66,17 @@ class RedsysPaymentGateway
         return (new RedsysRequestRefund($this->config))->handle($chargePayment, $chargeRequest);
     }
 
-    /*
-    public function chargeWithApple($orderId, $amount, $currency, $applePayData)
+    public function chargeWithApple(RedsysChargePayment $chargePayment, RedsysChargeRequest $chargeRequest, $applePayData)
     {
         return (new RedsysRequestApplePay($this->config))
-            ->handle(new ChargeRequest, $orderId, $amount, $currency, $applePayData);
+            ->handle($chargePayment, $chargeRequest, $applePayData);
     }
 
-    public function chargeWithGoogle($orderId, $amount, $currency, $googlePayData)
+     public function chargeWithGoogle(RedsysChargePayment $chargePayment, RedsysChargeRequest $chargeRequest, $googlePayData)
     {
         return (new RedsysRequestGooglePay($this->config))
-            ->handle(new ChargeRequest, $orderId, $amount, $currency, $googlePayData);
+            ->handle($chargePayment, $chargeRequest, $googlePayData);
     }
-    */
 
     //==================================
     // METHODS TO PERSIST SECTION

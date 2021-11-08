@@ -3,19 +3,46 @@
 namespace Revosystems\Redsys\Http\Livewire;
 
 use Livewire\Component;
-use Revosystems\Redsys\Http\Livewire\Traits\ApplePayEventsTrait;
+use Revosystems\Redsys\Models\RedsysPaymentGateway;
+use Revosystems\Redsys\Services\RedsysChargePayment;
+use Revosystems\Redsys\Services\RedsysChargeRequest;
 
 class ApplePayButton extends Component
 {
-    use ApplePayEventsTrait;
+    public $paymentReference;
 
-    protected function getListeners(): array
+    protected $listeners = [
+        'onApplePayAuthorized'
+    ];
+
+    public function mount(string $paymentReference)
     {
-        return  $this->applePayListeners();
+        $this->paymentReference = $paymentReference;
     }
-
     public function render()
     {
         return view('redsys::livewire.apple-pay-button');
+    }
+
+    public function onApplePayAuthorized($data)
+    {
+        $gatewayResponse = RedsysPaymentGateway::get()->chargeWithApple(
+            RedsysChargePayment::get($this->paymentReference),
+            (new RedsysChargeRequest($this->paymentReference)),
+            $data);
+        $this->emit('applePayPaymentCompleted', $gatewayResponse->success ? 'SUCCESS' : 'FAILED');
+
+//        $result         = $paymentHandler->onPaymentCompleted(new ChargeResult($gatewayResponse->success, $gatewayResponse, app(SoloServices::class)->order->total, $gatewayResponse->reference));
+//        if (! $result->success) {
+//            $paymentHandler->paymentError = $result->paymentError;
+//            $paymentHandler->saveToSession();
+//            return redirect($paymentHandler->paymentCompletedRedirectUrl(false));
+//        }
+//        return redirect($paymentHandler->paymentCompletedRedirectUrl(true));
+    }
+
+    public function onPaymentCompleted() : void
+    {
+        RedsysChargePayment::get($this->paymentReference)->payHandler->onPaymentSucceed($this->paymentReference);
     }
 }
