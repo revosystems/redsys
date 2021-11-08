@@ -10,13 +10,17 @@ use Revosystems\Redsys\Services\RedsysChargeRequest;
 class GooglePayButton extends Component
 {
     public $paymentReference;
+    public $merchantCode;
+    public $amount;
     protected $listeners = [
         'onGooglePayAuthorized'
     ];
 
-    public function mount(string $paymentReference)
+    public function mount(string $paymentReference, string $merchantCode, float $amount)
     {
         $this->paymentReference = $paymentReference;
+        $this->merchantCode     = $merchantCode;
+        $this->amount           = $amount;
     }
 
     public function render()

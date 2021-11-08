@@ -66,8 +66,8 @@
                 currencyCode: 'EUR', // TODO use store currency
                 countryCode: 'ES',
                 total: {
-                    label: 'Pago en ' + 'FAKE STORE NAME FIX',
-                    amount: 'FAKE TOTAL FIX'
+                    label: 'Pago en ' + '{{ $tenant }}',
+                    amount: '{{ $amount/100 }}'
                 },
                 supportedNetworks: ['visa', 'masterCard', 'amex', 'discover'],
                 merchantCapabilities: ['supports3DS', 'supportsCredit', 'supportsDebit']
@@ -81,7 +81,7 @@
                 promise.then(function(canMakePayments) {
                     if (canMakePayments) { document.getElementById('applePay').show(); }
                 }).finally( function() {
-{{--                    enableApplePayButton(String({{ solo()->customer->validate() ? 'true' : 'false'}}) === 'true');--}}
+                    {{--                    enableApplePayButton(String({{ solo()->customer->validate() ? 'true' : 'false'}}) === 'true');--}}
                     enableApplePayButton(true);
                 });
             } else {

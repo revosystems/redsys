@@ -43,8 +43,7 @@ class RedsysPaymentGateway
         $chargePayment->persist($paymentReference);
         return view('redsys::app.index', [
             'paymentReference'  => $paymentReference,
-            'price'             => $chargePayment->price->format(),
-            'externalReference' => $chargePayment->externalReference,
+            'chargePayment'     => $chargePayment,
             'redsysConfig'      => $this->config,
             'customerToken'     => $customerToken,
             'cards'             => CardsTokenizable::get($customerToken)

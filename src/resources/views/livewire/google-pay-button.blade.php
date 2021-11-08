@@ -8,12 +8,6 @@
 @push('redsys-scripts-stack')
 
     <script>
-        document.addEventListener("DOMContentLoaded", function(event) {
-            window.livewire.on('buttons.customerUpdated', function (data) {
-                enableGooglePayButton(data)
-            })
-        });
-
         /**
          * Define the version of the Google Pay API referenced when creating your
          * configuration
@@ -36,7 +30,7 @@
             type: 'PAYMENT_GATEWAY',
             parameters: {
                 'gateway': 'redsys',
-                'gatewayMerchantId': "{{ $merchantCode ?? 'FIXME' }}"
+                'gatewayMerchantId': "{{ $merchantCode }}"
             }
         };
         /**
@@ -175,8 +169,6 @@
                 onClick: onGooglePaymentButtonClicked
             });
             document.getElementById('googlePay').appendChild(button);
-            enableGooglePayButton( String(true));
-            {{--enableGooglePayButton( String({{ app(App\Services\Solo\SoloServices::class)->customer->validate() ? 'true' : 'false'}}) === 'true');--}}
         }
         /**
          * Provide Google Pay API with a payment amount, currency, and amount status
@@ -190,8 +182,7 @@
                 currencyCode: 'EUR',
                 totalPriceStatus: 'FINAL',
                 // set to cart total
-                totalPrice: '23'
-                {{--totalPrice: '{{ app(App\Services\Solo\SoloServices::class)->order->total/100 }}'--}}
+                totalPrice: {{ $amount }}
             };
         }
 
@@ -243,13 +234,5 @@
             window.livewire.emit('onGooglePayAuthorized', paymentToken)
         }
 
-        function enableGooglePayButton(enable){
-            const googlePayButton = document.getElementsByClassName("gpay-button")[0];
-            if (googlePayButton == null) {
-                return;
-            }
-            googlePayButton.disabled = !enable;
-            console.log("GPAY button " + (enable ? 'enabled' : 'disabled'))
-        }
     </script>
 @endpush

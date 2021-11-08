@@ -3,19 +3,34 @@
         <p id="errorMessage" class="flex text-m"></p>
     </div>
     <div>
-        @include('redsys::app.cards.tokenized-cards', compact('cards'))
+        @include('redsys::app.cards.tokenized-cards', [
+            'cards' => $cards,
+            'price' => $chargePayment->price->format()
+        ]))
     </div>
 
     @livewire('redsys-form', array_merge(
-        compact('redsysFormId', 'paymentReference', 'price', 'customerToken'),
-        ['hasCards' => $cards->isNotEmpty()]
+        compact('redsysFormId', 'customerToken'), [
+            'hasCards'          => $cards->isNotEmpty(),
+            'paymentReference'  => $chargePayment->externalReference,
+            'price'             => $chargePayment->price->format()
+        ]
     ))
 
-    @livewire('check-status', compact('paymentReference'))
+    @livewire('check-status', ['paymentReference' => $chargePayment->externalReference]))
 
-    @livewire('apple-pay-button', compact('paymentReference'))
 
-    @livewire('google-pay-button', compact('paymentReference'))
+    @livewire('apple-pay-button', [
+        'paymentReference'  => $chargePayment->externalReference,
+        'tenant'            => $chargePayment->tenant,
+        'amount'            => $chargePayment->price->amount / 100,
+    ])
+
+    @livewire('google-pay-button', [
+        'paymentReference'  => $chargePayment->externalReference,
+        'merchantCode'      => $redsysConfig->code,
+        'amount'            => $chargePayment->price->amount / 100,
+    ])
 
     <x-redsys-radio-selector :id="'challenge-form-box'" :name="'challenge-form'" :label="'Redsys'" :hidden="true" :hideInput="true">
         <div id="challenge-form" class="block w-full h-16 flex-row justify-center text-center items-center outline-none rounded"></div>
@@ -31,8 +46,8 @@
         boxStyle = 'box-shadow:none; margin-top:24px'
         bodyStyle = 'margin-top: -68px; color: gray'
         // Redsys iframe available method to load card form
-        getInSiteForm('{{ $redsysFormId }}', buttonStyle, bodyStyle, boxStyle, inputsStyle, '{!! __(config('redsys.translationsPrefix') . 'pay') . ' ' . $price !!}',
-            "{{ $redsysConfig->code }}", "{{ $redsysConfig->terminal }}", "{{ $paymentReference }}", false)
+        getInSiteForm('{{ $redsysFormId }}', buttonStyle, bodyStyle, boxStyle, inputsStyle, '{!! __(config('redsys.translationsPrefix') . 'pay') . ' ' . $chargePayment->price->format() !!}',
+            "{{ $redsysConfig->code }}", "{{ $redsysConfig->terminal }}", "{{ $chargePayment->externalReference }}", false)
     }
 
     function showError(message) {
