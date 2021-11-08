@@ -12,6 +12,7 @@ class GooglePayButton extends Component
     public $paymentReference;
     public $merchantCode;
     public $amount;
+
     protected $listeners = [
         'onGooglePayAuthorized'
     ];
