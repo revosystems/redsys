@@ -37,10 +37,10 @@
             'cards'             => $cards,
         ])
     </div>
-    <script async src="https://pay.google.com/gp/p/js/pay.js" onload="onGooglePayLoaded()"></script>
 
 @endsection
 
 @push('redsys-scripts-stack')
     @livewireScripts
+    <script async src="https://pay.google.com/gp/p/js/pay.js" onload="onGooglePayLoaded()"></script>
 @endpush

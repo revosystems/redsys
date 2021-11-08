@@ -182,7 +182,7 @@
                 currencyCode: 'EUR',
                 totalPriceStatus: 'FINAL',
                 // set to cart total
-                totalPrice: {{ $amount }}
+                totalPrice: '{{ $amount }}'
             };
         }
 
