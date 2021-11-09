@@ -38,6 +38,7 @@ class ApplePayButton extends Component
         if (! $gatewayResponse->success) {
             $this->emit('applePayPaymentCompleted', 'FAILED');
             RedsysChargePayment::get($this->paymentReference)->payHandler->onPaymentFailed('Apple pay error');
+            return;
         }
         $this->emit('applePayPaymentCompleted', 'SUCCESS');
         RedsysChargePayment::get($this->paymentReference)->payHandler->onPaymentSucceed($gatewayResponse->paymentReference);
