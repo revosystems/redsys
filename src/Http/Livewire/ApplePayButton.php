@@ -35,19 +35,11 @@ class ApplePayButton extends Component
             RedsysChargePayment::get($this->paymentReference),
             (new RedsysChargeRequest($this->paymentReference)),
             $data);
-        $this->emit('applePayPaymentCompleted', $gatewayResponse->success ? 'SUCCESS' : 'FAILED');
-
-//        $result         = $paymentHandler->onPaymentCompleted(new ChargeResult($gatewayResponse->success, $gatewayResponse, app(SoloServices::class)->order->total, $gatewayResponse->reference));
-//        if (! $result->success) {
-//            $paymentHandler->paymentError = $result->paymentError;
-//            $paymentHandler->saveToSession();
-//            return redirect($paymentHandler->paymentCompletedRedirectUrl(false));
-//        }
-//        return redirect($paymentHandler->paymentCompletedRedirectUrl(true));
-    }
-
-    public function onPaymentCompleted() : void
-    {
-        RedsysChargePayment::get($this->paymentReference)->payHandler->onPaymentSucceed($this->paymentReference);
+        if (! $gatewayResponse->success) {
+            $this->emit('applePayPaymentCompleted', 'FAILED');
+            RedsysChargePayment::get($this->paymentReference)->payHandler->onPaymentFailed('Apple pay error');
+        }
+        $this->emit('applePayPaymentCompleted', 'SUCCESS');
+        RedsysChargePayment::get($this->paymentReference)->payHandler->onPaymentSucceed($gatewayResponse->paymentReference);
     }
 }

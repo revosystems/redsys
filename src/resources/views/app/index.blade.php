@@ -32,6 +32,7 @@
         @include('redsys::redsys.main', [
             'redsysFormId'      => 'redsys-init-form',
             'redsysConfig'      => $redsysConfig,
+            'paymentReference'  => $paymentReference,
             'chargePayment'     => $chargePayment,
             'customerToken'     => $customerToken,
             'cards'             => $cards,

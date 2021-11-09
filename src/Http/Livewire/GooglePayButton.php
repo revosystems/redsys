@@ -29,19 +29,16 @@ class GooglePayButton extends Component
         return view('redsys::livewire.google-pay-button');
     }
 
-    public function onGooglePayAuthorized($data)
+    public function onGooglePayAuthorized($data) : void
     {
         $gatewayResponse = RedsysPaymentGateway::get()->chargeWithGoogle(
             RedsysChargePayment::get($this->paymentReference),
             (new RedsysChargeRequest($this->paymentReference)),
             $data);
-        $this->emit('applePayPaymentCompleted', $gatewayResponse->success ? 'SUCCESS' : 'FAILED');
-//        if (! $result->success) {
-//            $paymentHandler->paymentError = $result->paymentError;
-//            $paymentHandler->saveToSession();
-//            return redirect($paymentHandler->paymentCompletedRedirectUrl(false));
-//        }
-//        return redirect($paymentHandler->paymentCompletedRedirectUrl(true));
+        if (! $gatewayResponse->success) {
+            RedsysChargePayment::get($this->paymentReference)->payHandler->onPaymentFailed('Google pay error');
+            return;
+        }
+        RedsysChargePayment::get($this->paymentReference)->payHandler->onPaymentSucceed($gatewayResponse->paymentReference);
     }
-
 }

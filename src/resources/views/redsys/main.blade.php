@@ -21,13 +21,13 @@
 
 
     @livewire('apple-pay-button', [
-        'paymentReference'  => $chargePayment->externalReference,
+        'paymentReference'  => $paymentReference,
         'tenant'            => $chargePayment->tenant,
         'amount'            => $chargePayment->price->amount / 100,
     ])
 
     @livewire('google-pay-button', [
-        'paymentReference'  => $chargePayment->externalReference,
+        'paymentReference'  => $paymentReference,
         'merchantCode'      => $redsysConfig->code,
         'amount'            => $chargePayment->price->amount / 100,
     ])

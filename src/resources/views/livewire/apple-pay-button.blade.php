@@ -24,10 +24,6 @@
                 // If transaction is incorrect, show error on modal
                 session.completePayment(ApplePaySession.STATUS_FAILURE);
             })
-
-            window.livewire.on('buttons.customerUpdated', function (data) {
-                enableApplePayButton(data)
-            })
         });
 
         var session;
@@ -80,9 +76,6 @@
                 var promise = ApplePaySession.canMakePaymentsWithActiveCard(merchantIdentifier);
                 promise.then(function(canMakePayments) {
                     if (canMakePayments) { document.getElementById('applePay').show(); }
-                }).finally( function() {
-                    {{--                    enableApplePayButton(String({{ solo()->customer->validate() ? 'true' : 'false'}}) === 'true');--}}
-                    enableApplePayButton(true);
                 });
             } else {
                 document.getElementById('applePay').hidden = true
@@ -93,14 +86,5 @@
         function onApplePayAuthorized(data) {
             window.livewire.emit('onApplePayAuthorized', data)
         }
-
-        function enableApplePayButton(enable){
-            const applePayButton = document.getElementsByClassName("apple-pay-button")[0];
-            if (applePayButton == null) {
-                return;
-            }
-            applePayButton.disabled = !enable;
-        }
-
     </script>
 @endpush
