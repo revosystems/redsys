@@ -6,29 +6,28 @@
         @include('redsys::app.cards.tokenized-cards', [
             'cards' => $cards,
             'price' => $chargePayment->price->format()
-        ]))
+        ])
     </div>
 
-    @livewire('redsys-form', array_merge(
-        compact('redsysFormId', 'customerToken'), [
+    @livewire('redsys-form', [
+            'redsysFormId'      => $redsysFormId,
+            'customerToken'     => $customerToken,
             'hasCards'          => $cards->isNotEmpty(),
-            'paymentReference'  => $chargePayment->externalReference,
+            'paymentReference'  => $paymentReference,
             'price'             => $chargePayment->price->format()
-        ]
-    ))
-
-    @livewire('check-status', ['paymentReference' => $chargePayment->externalReference]))
-
-
-    @livewire('apple-pay-button', [
-        'paymentReference'  => $paymentReference,
-        'tenant'            => $chargePayment->tenant,
-        'amount'            => $chargePayment->price->amount / 100,
     ])
+
+    @livewire('check-status', compact('paymentReference'))
 
     @livewire('google-pay-button', [
         'paymentReference'  => $paymentReference,
         'merchantCode'      => $redsysConfig->code,
+        'amount'            => $chargePayment->price->amount / 100,
+    ])
+
+    @livewire('apple-pay-button', [
+        'paymentReference'  => $paymentReference,
+        'tenant'            => $chargePayment->tenant,
         'amount'            => $chargePayment->price->amount / 100,
     ])
 
@@ -47,7 +46,7 @@
         bodyStyle = 'margin-top: -68px; color: gray'
         // Redsys iframe available method to load card form
         getInSiteForm('{{ $redsysFormId }}', buttonStyle, bodyStyle, boxStyle, inputsStyle, '{!! __(config('redsys.translationsPrefix') . 'pay') . ' ' . $chargePayment->price->format() !!}',
-            "{{ $redsysConfig->code }}", "{{ $redsysConfig->terminal }}", "{{ $chargePayment->externalReference }}", false)
+            "{{ $redsysConfig->code }}", "{{ $redsysConfig->terminal }}", "{{ $paymentReference }}", false)
     }
 
     function showError(message) {
@@ -112,11 +111,11 @@
     window.addEventListener("message", function receiveMessage(event) {
         // Redsys iframe available method to validate card submitted event was received
         storeIdOper(event, "token", "errorCode", function merchantValidation() { return true });
-        if (event.data.error || event.data.idOper === -1) {
+        if (event.data.error || event.data.idOper === "-1") {
             showError(redsysErrors[event.data.error] ?? 'Redsys error');
             return;
         }
-        if (event.data.idOper && event.data.idOper !== -1) {
+        if (event.data.idOper && event.data.idOper !== "-1") {
             window.livewire.emit('onCardFormSubmit', event.data.idOper, browserData())
         }
     });

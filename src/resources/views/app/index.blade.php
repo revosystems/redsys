@@ -2,7 +2,7 @@
 
 @section('redsys-head')
     <script src="https://cdn.jsdelivr.net/gh/alpinejs/alpine@v2.8.2/dist/alpine.min.js" defer></script>
-    {{--    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>--}}
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
     {!! \Khill\FontAwesome\FontAwesome::css() !!}
     <style>
         .apple-pay-button {
@@ -17,7 +17,6 @@
             -apple-pay-button-style: white-outline;
         }
     </style>
-    @livewireStyles
 @endsection
 
 @section('header')
@@ -42,6 +41,5 @@
 @endsection
 
 @push('redsys-scripts-stack')
-    @livewireScripts
     <script async src="https://pay.google.com/gp/p/js/pay.js" onload="onGooglePayLoaded()"></script>
 @endpush
