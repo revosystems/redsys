@@ -35,11 +35,11 @@
             // Send session petition
             // check store token is valid
             session.onvalidatemerchant = (event) => {
-                axios.post("/applePay/redsys", {"validationUrl" : event.validationURL}, function(data){
-                    session.completeMerchantValidation(data)
-                }, "json").then(function(res){
-                    console(res.status)
+                axios.post("/applePay/redsys", {
+                    "validationUrl" : event.validationURL
+                }).then(function(res){
                     console.log("Apple Pay post")
+                    session.completeMerchantValidation(res.data)
                 }).catch(function(){
                     console.log("Apple Pay Validate merchant error")
                 });
@@ -63,22 +63,21 @@
                 countryCode: 'ES',
                 total: {
                     label: 'Pago en ' + '{{ $tenant }}',
-                    amount: '{{ $amount/100 }}'
+                    amount: '{{ $amount }}'
                 },
                 supportedNetworks: ['visa', 'masterCard', 'amex', 'discover'],
                 merchantCapabilities: ['supports3DS', 'supportsCredit', 'supportsDebit']
             };
         }
         function checkApplePayAvailability() {
-            // $('#applePay').hide()
+            document.getElementById('apple-pay-mode').hidden = true
             if(window.ApplePaySession) {
                 var merchantIdentifier = 'merchant.com.redsys.revointouch';
                 var promise = ApplePaySession.canMakePaymentsWithActiveCard(merchantIdentifier);
                 promise.then(function(canMakePayments) {
-                    if (canMakePayments) { document.getElementById('applePay').show(); }
+                    if (canMakePayments) { document.getElementById('apple-pay-mode').hidden = false; }
                 });
             } else {
-                document.getElementById('applePay').hidden = true
                 document.getElementById('apple-pay-mode').hidden = true
             }
         }
