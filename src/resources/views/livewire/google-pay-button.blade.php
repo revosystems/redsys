@@ -1,6 +1,6 @@
 <div>
     <x-redsys-radio-selector :id="'google-pay-mode'" :name="'mode'" :label="'Google Pay'">
-        <div id="googlePay" class="block w-full h-16 flex-row justify-center text-center items-center outline-none rounded"></div>
+        <div id="googlePay" class="block w-full h-12 flex-row justify-center text-center items-center outline-none rounded"></div>
     </x-redsys-radio-selector>
 
 </div>
@@ -127,8 +127,7 @@
          */
         function getGooglePaymentsClient() {
             if ( paymentsClient === null ) {
-                paymentsClient = new google.payments.api.PaymentsClient({environment: "TEST" });
-{{--                paymentsClient = new google.payments.api.PaymentsClient({environment: "{{ app( \App\Billing\WebApp\WebAppPaymentGateway::class)->gatewayService->isTestEnvironment() ? 'TEST' : 'PRODUCTION'}}" });--}}
+                paymentsClient = new google.payments.api.PaymentsClient({environment: "{{ \Revosystems\Redsys\Models\RedsysPaymentGateway::isTestEnvironment() ? 'TEST' : 'PRODUCTION'}}" });
             }
             return paymentsClient;
         }
@@ -163,7 +162,7 @@
         function addGooglePayButton() {
             const paymentsClient = getGooglePaymentsClient();
             const button = paymentsClient.createButton({
-                buttonColor: 'white',
+                buttonColor: 'dark',
                 buttonType: 'plain',
                 buttonSizeMode: 'fill',
                 onClick: onGooglePaymentButtonClicked
