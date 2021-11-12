@@ -114,7 +114,7 @@
                 // See {@link https://developers.google.com/pay/api/web/guides/test-and-deploy/integration-checklist|Integration checklist}
                 merchantId: 'BCR2DN6T275ZLS3R',
                 merchantName: 'Revo Systems',
-                merchantOrigin: '{{ Illuminate\Support\Str::contains( config('app.name'),'staging') ?  "staging.revointouch.works"  : "solo.revointouch.works" }}'
+                merchantOrigin: '{{ Illuminate\Support\Str::contains( config('app.name'), 'staging') ? "staging-xpress.revo.works" : "xpress.revo.works" }}'
             };
             return paymentDataRequest;
         }
