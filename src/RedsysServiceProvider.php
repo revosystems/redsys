@@ -5,7 +5,9 @@ namespace Revosystems\Redsys;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\ServiceProvider;
 use Livewire\Livewire;
+use Revosystems\Redsys\Http\Livewire\ApplePayButton;
 use Revosystems\Redsys\Http\Livewire\CheckStatus;
+use Revosystems\Redsys\Http\Livewire\GooglePayButton;
 use Revosystems\Redsys\Http\Livewire\RedsysForm;
 use Revosystems\Redsys\View\Components\RadioSelector;
 use FA;
@@ -25,8 +27,8 @@ class RedsysServiceProvider extends ServiceProvider
 
         Livewire::component('redsys-form', RedsysForm::class);
         Livewire::component('check-status', CheckStatus::class);
-//        Livewire::component('apple-pay-button', ApplePayButton::class);
-//        Livewire::component('google-pay-button', GooglePayButton::class);
+        Livewire::component('apple-pay-button', ApplePayButton::class);
+        Livewire::component('google-pay-button', GooglePayButton::class);
 
         $this->publishes([
             __DIR__.'/config/redsys.php' => config_path('redsys.php')

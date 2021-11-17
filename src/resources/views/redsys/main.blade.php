@@ -3,19 +3,33 @@
         <p id="errorMessage" class="flex text-m"></p>
     </div>
     <div>
-        @include('redsys::app.cards.tokenized-cards', compact('cards'))
+        @include('redsys::app.cards.tokenized-cards', [
+            'cards' => $cards,
+            'price' => $chargePayment->price->format()
+        ])
     </div>
 
-    @livewire('redsys-form', array_merge(
-        compact('redsysFormId', 'paymentReference', 'price', 'customerToken'),
-        ['hasCards' => $cards->isNotEmpty()]
-    ))
+    @livewire('redsys-form', [
+            'redsysFormId'      => $redsysFormId,
+            'customerToken'     => $customerToken,
+            'hasCards'          => $cards->isNotEmpty(),
+            'paymentReference'  => $paymentReference,
+            'price'             => $chargePayment->price->format()
+    ])
 
     @livewire('check-status', compact('paymentReference'))
 
-    {{--@livewire('apple-pay-button')--}}
+    @livewire('google-pay-button', [
+        'paymentReference'  => $paymentReference,
+        'merchantCode'      => $redsysConfig->code,
+        'amount'            => $chargePayment->price->amount / 100,
+    ])
 
-    {{--@livewire('google-pay-button')--}}
+    @livewire('apple-pay-button', [
+        'paymentReference'  => $paymentReference,
+        'tenant'            => $chargePayment->tenant,
+        'amount'            => $chargePayment->price->amount / 100,
+    ])
 
     <x-redsys-radio-selector :id="'challenge-form-box'" :name="'challenge-form'" :label="'Redsys'" :hidden="true" :hideInput="true">
         <div id="challenge-form" class="block w-full h-16 flex-row justify-center text-center items-center outline-none rounded"></div>
@@ -31,7 +45,7 @@
         boxStyle = 'box-shadow:none; margin-top:24px'
         bodyStyle = 'margin-top: -68px; color: gray'
         // Redsys iframe available method to load card form
-        getInSiteForm('{{ $redsysFormId }}', buttonStyle, bodyStyle, boxStyle, inputsStyle, '{!! __(config('redsys.translationsPrefix') . 'pay') . ' ' . $price !!}',
+        getInSiteForm('{{ $redsysFormId }}', buttonStyle, bodyStyle, boxStyle, inputsStyle, '{!! __(config('redsys.translationsPrefix') . 'pay') . ' ' . $chargePayment->price->format() !!}',
             "{{ $redsysConfig->code }}", "{{ $redsysConfig->terminal }}", "{{ $paymentReference }}", false)
     }
 
@@ -97,11 +111,11 @@
     window.addEventListener("message", function receiveMessage(event) {
         // Redsys iframe available method to validate card submitted event was received
         storeIdOper(event, "token", "errorCode", function merchantValidation() { return true });
-        if (event.data.error || event.data.idOper === -1) {
+        if (event.data.error || event.data.idOper === "-1") {
             showError(redsysErrors[event.data.error] ?? 'Redsys error');
             return;
         }
-        if (event.data.idOper && event.data.idOper !== -1) {
+        if (event.data.idOper && event.data.idOper !== "-1") {
             window.livewire.emit('onCardFormSubmit', event.data.idOper, browserData())
         }
     });

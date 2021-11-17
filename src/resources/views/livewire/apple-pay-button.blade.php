@@ -1,24 +1,11 @@
-<style>
-    /* CSS */
-    .apple-pay-button {
-        display: inline-block;
-        -webkit-appearance: -apple-pay-button;
-        -apple-pay-button-type: pay; /* Use any supported button type. */
-    }
-    .apple-pay-button-black {
-        -apple-pay-button-style: black;
-    }
-    .apple-pay-button-white-with-line {
-        -apple-pay-button-style: white-outline;
-    }
-</style>
+<div>
+    <x-redsys-radio-selector :id="'apple-pay-mode'" :name="'mode'" :label="'Apple Pay'">
+        <button type="button" id="applePay" class="apple-pay-button apple-pay-button-white-with-line block w-full h-16 flex-row justify-center text-center items-center outline-none p-4 mb-1 rounded" onclick="onApplePayClicked()"></button>
+    </x-redsys-radio-selector>
+</div>
 
-<x-redsys-radio-selector :id="'apple-pay-mode'" :name="'mode'" :label="'Apple Pay'">
-    <button type="button" id="applePay" class="apple-pay-button apple-pay-button-white-with-line block w-full h-16 flex-row justify-center text-center items-center outline-none p-4 mb-1 rounded" onclick="onApplePayClicked()"></button>
-</x-redsys-radio-selector>
-<script src="https://applepay.cdn-apple.com/jsapi/v1/apple-pay-sdk.js"></script>
-
-{{--@push('inner-scripts')--}}
+@push('redsys-scripts-stack')
+    <script src="https://applepay.cdn-apple.com/jsapi/v1/apple-pay-sdk.js"></script>
     <script>
         document.addEventListener("DOMContentLoaded", function(event) {
             // Check that client is connected using Safari
@@ -37,10 +24,6 @@
                 // If transaction is incorrect, show error on modal
                 session.completePayment(ApplePaySession.STATUS_FAILURE);
             })
-
-            window.livewire.on('buttons.customerUpdated', function (data) {
-                enableApplePayButton(data)
-            })
         });
 
         var session;
@@ -52,11 +35,11 @@
             // Send session petition
             // check store token is valid
             session.onvalidatemerchant = (event) => {
-                axios.post("/applePay/redsys", {"validationUrl" : event.validationURL}, function(data){
-                    session.completeMerchantValidation(data)
-                }, "json").then(function(res){
-                    console(res.status)
+                axios.post("/applePay/redsys", {
+                    "validationUrl" : event.validationURL
+                }).then(function(res){
                     console.log("Apple Pay post")
+                    session.completeMerchantValidation(res.data)
                 }).catch(function(){
                     console.log("Apple Pay Validate merchant error")
                 });
@@ -79,26 +62,22 @@
                 currencyCode: 'EUR', // TODO use store currency
                 countryCode: 'ES',
                 total: {
-                    label: 'Pago en ' + 'FAKE STORE NAME FIX',
-                    amount: 'FAKE TOTAL FIX'
+                    label: 'Pago en ' + '{{ $tenant }}',
+                    amount: '{{ $amount }}'
                 },
                 supportedNetworks: ['visa', 'masterCard', 'amex', 'discover'],
                 merchantCapabilities: ['supports3DS', 'supportsCredit', 'supportsDebit']
             };
         }
         function checkApplePayAvailability() {
-            // $('#applePay').hide()
+            document.getElementById('apple-pay-mode').hidden = true
             if(window.ApplePaySession) {
                 var merchantIdentifier = 'merchant.com.redsys.revointouch';
                 var promise = ApplePaySession.canMakePaymentsWithActiveCard(merchantIdentifier);
                 promise.then(function(canMakePayments) {
-                    if (canMakePayments) { document.getElementById('applePay').show(); }
-                }).finally( function() {
-{{--                    enableApplePayButton(String({{ solo()->customer->validate() ? 'true' : 'false'}}) === 'true');--}}
-                    enableApplePayButton(true);
+                    if (canMakePayments) { document.getElementById('apple-pay-mode').hidden = false; }
                 });
             } else {
-                document.getElementById('applePay').hidden = true
                 document.getElementById('apple-pay-mode').hidden = true
             }
         }
@@ -106,15 +85,5 @@
         function onApplePayAuthorized(data) {
             window.livewire.emit('onApplePayAuthorized', data)
         }
-
-        function enableApplePayButton(enable){
-            const applePayButton = document.getElementsByClassName("apple-pay-button")[0];
-            if (applePayButton == null) {
-                return;
-            }
-            applePayButton.disabled = !enable;
-        }
-        // checkApplePayAvailability();
-
     </script>
-{{--@endpush--}}
+@endpush

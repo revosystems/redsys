@@ -1,15 +1,13 @@
-<x-redsys-radio-selector :id="'google-pay-mode'" :name="'mode'" :label="'Google Pay'">
-    <div id="googlePay" class="block w-full h-16 flex-row justify-center text-center items-center outline-none rounded"></div>
-</x-redsys-radio-selector>
+<div>
+    <x-redsys-radio-selector :id="'google-pay-mode'" :name="'mode'" :label="'Google Pay'">
+        <div id="googlePay" class="block w-full h-12 flex-row justify-center text-center items-center outline-none rounded"></div>
+    </x-redsys-radio-selector>
 
-{{--@push('inner-scripts')--}}
+</div>
+
+@push('redsys-scripts-stack')
+
     <script>
-        document.addEventListener("DOMContentLoaded", function(event) {
-            window.livewire.on('buttons.customerUpdated', function (data) {
-                enableGooglePayButton(data)
-            })
-        });
-
         /**
          * Define the version of the Google Pay API referenced when creating your
          * configuration
@@ -32,7 +30,7 @@
             type: 'PAYMENT_GATEWAY',
             parameters: {
                 'gateway': 'redsys',
-                'gatewayMerchantId': "{{ $merchantCode ?? 'FIXME' }}"
+                'gatewayMerchantId': "{{ $merchantCode }}"
             }
         };
         /**
@@ -116,7 +114,7 @@
                 // See {@link https://developers.google.com/pay/api/web/guides/test-and-deploy/integration-checklist|Integration checklist}
                 merchantId: 'BCR2DN6T275ZLS3R',
                 merchantName: 'Revo Systems',
-                merchantOrigin: '{{ Illuminate\Support\Str::contains( config('app.name'),'staging') ?  "staging.revointouch.works"  : "solo.revointouch.works" }}'
+                merchantOrigin: '{{ Illuminate\Support\Str::contains( config('app.name'), 'staging') ? "staging-xpress.revo.works" : "xpress.revo.works" }}'
             };
             return paymentDataRequest;
         }
@@ -129,8 +127,7 @@
          */
         function getGooglePaymentsClient() {
             if ( paymentsClient === null ) {
-                paymentsClient = new google.payments.api.PaymentsClient({environment: "TEST" });
-{{--                paymentsClient = new google.payments.api.PaymentsClient({environment: "{{ app( \App\Billing\WebApp\WebAppPaymentGateway::class)->gatewayService->isTestEnvironment() ? 'TEST' : 'PRODUCTION'}}" });--}}
+                paymentsClient = new google.payments.api.PaymentsClient({environment: "{{ \Revosystems\Redsys\Models\RedsysPaymentGateway::isTestEnvironment() ? 'TEST' : 'PRODUCTION'}}" });
             }
             return paymentsClient;
         }
@@ -165,14 +162,12 @@
         function addGooglePayButton() {
             const paymentsClient = getGooglePaymentsClient();
             const button = paymentsClient.createButton({
-                buttonColor: 'white',
+                buttonColor: 'dark',
                 buttonType: 'plain',
                 buttonSizeMode: 'fill',
                 onClick: onGooglePaymentButtonClicked
             });
             document.getElementById('googlePay').appendChild(button);
-            enableGooglePayButton( String(true));
-            {{--enableGooglePayButton( String({{ app(App\Services\Solo\SoloServices::class)->customer->validate() ? 'true' : 'false'}}) === 'true');--}}
         }
         /**
          * Provide Google Pay API with a payment amount, currency, and amount status
@@ -186,8 +181,7 @@
                 currencyCode: 'EUR',
                 totalPriceStatus: 'FINAL',
                 // set to cart total
-                totalPrice: '23'
-                {{--totalPrice: '{{ app(App\Services\Solo\SoloServices::class)->order->total/100 }}'--}}
+                totalPrice: '{{ $amount }}'
             };
         }
 
@@ -239,13 +233,5 @@
             window.livewire.emit('onGooglePayAuthorized', paymentToken)
         }
 
-        function enableGooglePayButton(enable){
-            const googlePayButton = document.getElementsByClassName("gpay-button")[0];
-            if (googlePayButton == null) {
-                return;
-            }
-            googlePayButton.disabled = !enable;
-            console.log("GPAY button " + (enable ? 'enabled' : 'disabled'))
-        }
     </script>
-{{--@endpush--}}
+@endpush
