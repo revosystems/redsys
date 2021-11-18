@@ -28,7 +28,8 @@ class CardsTokenizable
     public static function tokenize(GatewayCard $card, $customerToken)
     {
         try {
-            $tokenizedCards = unserialize(Cache::get(self::CACHE_KEY . "{$customerToken}", []));
+            $cachedCards    = Cache::get(self::CACHE_KEY . "{$customerToken}");
+            $tokenizedCards = $cachedCards ? unserialize($cachedCards) : [];
         } catch (\Exception $e) {
             Log::error("[REDSYS] Unserialize old cards exception: {$e->getMessage()}");
             $tokenizedCards = [];

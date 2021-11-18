@@ -12,7 +12,7 @@ class RedsysUserUUid
     {
         if (! $uuid = Cookie::get('redsys-uuid')){
             $uuid = Str::random(24);
-            Cookie::queue('redsys-uuid', $uuid);
+            Cookie::queue(Cookie::forever('redsys-uuid', $uuid));
         }
         return $uuid;
     }
