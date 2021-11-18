@@ -10,11 +10,11 @@
     </div>
 
     @livewire('redsys-form', [
-            'redsysFormId'      => $redsysFormId,
-            'customerToken'     => $customerToken,
-            'hasCards'          => $cards->isNotEmpty(),
-            'paymentReference'  => $paymentReference,
-            'price'             => $chargePayment->price->format()
+        'redsysFormId'      => $redsysFormId,
+        'customerToken'     => $customerToken,
+        'hasCards'          => $cards->isNotEmpty(),
+        'paymentReference'  => $paymentReference,
+        'price'             => $chargePayment->price->format()
     ])
 
     @livewire('check-status', compact('paymentReference'))
@@ -57,7 +57,7 @@
         document.getElementById("errorContainer").classList.remove('hidden')
         setTimeout(function () {
             document.getElementById("errorContainer").classList.add('hidden')
-        }, 3000);
+        }, 3400);
     }
 
     function onTokenizedCardPressed(cardId) {
@@ -111,13 +111,28 @@
     window.addEventListener("message", function receiveMessage(event) {
         // Redsys iframe available method to validate card submitted event was received
         storeIdOper(event, "token", "errorCode", function merchantValidation() { return true });
-        if (event.data.error || event.data.idOper === "-1") {
-            showError(redsysErrors[event.data.error] ?? 'Redsys error');
+        if (event.data.error) {
+            let errorMessage = redsysErrors[event.data.error];
+            if (! errorMessage) {
+                console.log("Unknown error: " + event.data.error)
+                return;
+            }
+            showError(errorMessage);
             return;
         }
-        if (event.data.idOper && event.data.idOper !== "-1") {
-            window.livewire.emit('onCardFormSubmit', event.data.idOper, browserData())
+
+        let idOper = event.data.idOper;
+        if (! idOper) {
+            return;
         }
+        if (idOper === "-1") {
+            showError('Id de pedido duplicado');
+            setTimeout(function () {
+                location.reload();
+            }, 3000)
+            return;
+        }
+        window.livewire.emit('onCardFormSubmit', idOper, browserData())
     });
 
     document.addEventListener("DOMContentLoaded", function(event) {
