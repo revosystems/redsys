@@ -127,7 +127,7 @@
          */
         function getGooglePaymentsClient() {
             if ( paymentsClient === null ) {
-                paymentsClient = new google.payments.api.PaymentsClient({environment: "{{ \Revosystems\Redsys\Models\RedsysPaymentGateway::isTestEnvironment() ? 'TEST' : 'PRODUCTION'}}" });
+                paymentsClient = new google.payments.api.PaymentsClient({environment: "{{ \Revosystems\Redsys\Models\RedsysPaymentGateway::get()->isTestEnvironment() ? 'TEST' : 'PRODUCTION'}}" });
             }
             return paymentsClient;
         }

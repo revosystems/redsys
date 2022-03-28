@@ -9,6 +9,7 @@ use Revosystems\Redsys\Lib\Service\Impl\RESTTrataRequestService;
 use Revosystems\Redsys\Models\CardsTokenizable;
 use Revosystems\Redsys\Models\ChargeResult;
 use Revosystems\Redsys\Models\GatewayCard;
+use Revosystems\Redsys\Models\RedsysPaymentGateway;
 
 abstract class RequestAuthorization extends RedsysRequest
 {
@@ -20,7 +21,7 @@ abstract class RequestAuthorization extends RedsysRequest
             $operationRequest->createReference();
         }
 
-        $response = RedsysRest::make(RESTTrataRequestService::class, $this->config->key)->sendOperation($operationRequest);
+        $response = RedsysRest::make(RESTTrataRequestService::class, $this->config->key, RedsysPaymentGateway::get()->isTestEnvironment())->sendOperation($operationRequest);
         $result   = $response->getResult();
         Log::debug("[REDSYS] Getting response {$result}");
         if ($result == RESTConstants::$RESP_LITERAL_KO) {

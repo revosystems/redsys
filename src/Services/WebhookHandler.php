@@ -16,6 +16,7 @@ use Revosystems\Redsys\Models\CardsTokenizable;
 use Revosystems\Redsys\Models\ChargeResult;
 use Revosystems\Redsys\Models\GatewayCard;
 use Revosystems\Redsys\Models\RedsysConfig;
+use Revosystems\Redsys\Models\RedsysPaymentGateway;
 
 abstract class WebhookHandler
 {
@@ -30,21 +31,21 @@ abstract class WebhookHandler
     /**
      * @throws RedsysException
      */
-    public function handle(RedsysPayment $chargePayment, RedsysChargeRequest $chargeRequest) : ChargeResult
+    public function handle(RedsysPayment $chargePayment, RedsysChargeRequest $chargeRequest, bool $isTest) : ChargeResult
     {
         $challengeRequest = (new RESTAuthenticationRequestOperationMessage)->generate($this->config, $chargePayment, $chargeRequest);
         $this->challenge($chargePayment, $challengeRequest);
-        return $this->sendAuthenticationConfirmationOperation($challengeRequest, $chargeRequest);
+        return $this->sendAuthenticationConfirmationOperation($challengeRequest, $chargeRequest, $isTest);
     }
 
     abstract protected function challenge(RedsysPayment $chargePayment, RESTAuthenticationRequestOperationMessage $challengeRequest) : void;
 
-    protected function sendAuthenticationConfirmationOperation(RESTAuthenticationRequestOperationMessage $challengeRequest, RedsysChargeRequest $chargeRequest) : ChargeResult
+    protected function sendAuthenticationConfirmationOperation(RESTAuthenticationRequestOperationMessage $challengeRequest, RedsysChargeRequest $chargeRequest, bool $isTest): ChargeResult
     {
         if ($chargeRequest->customerToken) {
             $challengeRequest->createReference();
         }
-        $response   = RedsysRest::make(RESTTrataRequestService::class, $this->config->key)->sendOperation($challengeRequest);
+        $response   = RedsysRest::make(RESTTrataRequestService::class, $this->config->key, $isTest)->sendOperation($challengeRequest);
         $result     = $response->getResult();
 
         Log::debug("[REDSYS] Getting webhook authentication response {$result}");
@@ -73,6 +74,7 @@ abstract class WebhookHandler
             'chargeRequest' => serialize($chargeRequest),
             'operation'     => base64_encode(serialize($operation)),
             'webhookHandler'=> serialize($this),
+            'test' => RedsysPaymentGateway::get()->isTestEnvironment()
         ], Carbon::now()->addMinutes(30));
     }
 

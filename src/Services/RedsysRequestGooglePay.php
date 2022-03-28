@@ -3,12 +3,12 @@
 
 namespace Revosystems\Redsys\Services;
 
-use Revosystems\Redsys\Lib\Utils\Price;
 use Revosystems\Redsys\Models\ChargeResult;
 use Revosystems\Redsys\Lib\Constants\RESTConstants;
 use Revosystems\Redsys\Lib\Model\Message\RESTAuthorizationRequestOperationMessage;
 use Revosystems\Redsys\Lib\Service\Impl\RESTTrataRequestService;
 use Illuminate\Support\Facades\Log;
+use Revosystems\Redsys\Models\RedsysPaymentGateway;
 
 class RedsysRequestGooglePay extends RedsysRequest
 {
@@ -22,7 +22,7 @@ class RedsysRequestGooglePay extends RedsysRequest
         $requestOperation->addParameter("DS_XPAYTYPE", "Google");
         $requestOperation->addParameter("DS_XPAYORIGEN", 'WEB');
 
-        $response = RedsysRest::make(RESTTrataRequestService::class, $this->config->key)
+        $response = RedsysRest::make(RESTTrataRequestService::class, $this->config->key, RedsysPaymentGateway::get()->isTestEnvironment())
             ->sendOperation($requestOperation);
         $result   = $response->getResult();
         Log::debug("[REDSYS] Getting google pay response {$result}");

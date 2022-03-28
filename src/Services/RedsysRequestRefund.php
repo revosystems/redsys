@@ -9,6 +9,7 @@ use Revosystems\Redsys\Lib\Constants\RESTConstants;
 use Revosystems\Redsys\Lib\Model\Message\RESTRefundRequestOperationMessage;
 use Revosystems\Redsys\Lib\Service\Impl\RESTTrataRequestService;
 use Illuminate\Support\Facades\Log;
+use Revosystems\Redsys\Models\RedsysPaymentGateway;
 
 class RedsysRequestRefund extends RedsysRequest
 {
@@ -16,7 +17,7 @@ class RedsysRequestRefund extends RedsysRequest
     {
         $requestOperation   = (new RESTRefundRequestOperationMessage)->generate($this->config, $chargePayment, $chargeRequest);
         Log::debug("[REDSYS] Operation");
-        $response           = RedsysRest::make(RESTTrataRequestService::class, $this->config->key)->sendOperation($requestOperation);
+        $response           = RedsysRest::make(RESTTrataRequestService::class, $this->config->key, RedsysPaymentGateway::get()->isTestEnvironment())->sendOperation($requestOperation);
         Log::debug("[REDSYS] Response");
         $result             = $response->getResult();
         Log::debug("[REDSYS] Getting refund response {$result}");
