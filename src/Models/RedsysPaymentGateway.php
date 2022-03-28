@@ -34,7 +34,7 @@ class RedsysPaymentGateway
 
     public function isTestEnvironment() : bool
     {
-        return config('services.payment_gateways.redsys.test') || $this->config->test;
+        return $this->config->test;
     }
 
     public function render(RedsysChargePayment $chargePayment, $customerToken)

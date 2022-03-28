@@ -9,7 +9,6 @@ use Revosystems\Redsys\Lib\Constants\RESTConstants;
 use Revosystems\Redsys\Lib\Model\Message\RESTInitialRequestOperationMessage;
 use Revosystems\Redsys\Lib\Service\Impl\RESTInitialRequestService;
 use Illuminate\Support\Facades\Log;
-use Revosystems\Redsys\Models\RedsysPaymentGateway;
 
 class RedsysRequestInit extends RedsysRequest
 {
@@ -20,7 +19,7 @@ class RedsysRequestInit extends RedsysRequest
             ->setCard($chargeRequest)
             ->demandCardData();
 
-        $response = RedsysRest::make(RESTInitialRequestService::class, $this->config->key, RedsysPaymentGateway::get()->isTestEnvironment())
+        $response = RedsysRest::make(RESTInitialRequestService::class, $this->config->key, $this->config->test)
             ->sendOperation($requestOperation);
         return $this->parseResult($chargePayment, $chargeRequest, $response);
     }

@@ -8,7 +8,6 @@ use Revosystems\Redsys\Lib\Constants\RESTConstants;
 use Revosystems\Redsys\Lib\Model\Message\RESTAuthorizationRequestOperationMessage;
 use Revosystems\Redsys\Lib\Service\Impl\RESTTrataRequestService;
 use Revosystems\Redsys\Models\ChargeResult;
-use Revosystems\Redsys\Models\RedsysPaymentGateway;
 
 class RedsysRequestApplePay extends RedsysRequest
 {
@@ -22,7 +21,7 @@ class RedsysRequestApplePay extends RedsysRequest
         $requestOperation->addParameter("DS_XPAYTYPE", "Apple");
         $requestOperation->addParameter("DS_XPAYORIGEN", 'WEB');
 
-        $response = RedsysRest::make(RESTTrataRequestService::class, $this->config->key, RedsysPaymentGateway::get()->isTestEnvironment())
+        $response = RedsysRest::make(RESTTrataRequestService::class, $this->config->key, $this->config->test)
             ->sendOperation($requestOperation);
         $result   = $response->getResult();
         Log::debug("[REDSYS] Getting apple pay response {$result}");
