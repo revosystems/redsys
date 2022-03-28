@@ -30,7 +30,7 @@ class RedsysForm extends Component
         $this->paymentReference = $paymentReference;
         $this->customerToken    = $customerToken;
         $this->hasCards         = $hasCards;
-        $this->iframeUrl        = RedsysPaymentGateway::isTestEnvironment() ? 'https://sis-t.redsys.es:25443/sis/NC/sandbox/redsysV2.js' : 'https://sis.redsys.es/sis/NC/redsysV2.js';
+        $this->iframeUrl        = RedsysPaymentGateway::get()->isTestEnvironment() ? 'https://sis-t.redsys.es:25443/sis/NC/sandbox/redsysV2.js' : 'https://sis.redsys.es/sis/NC/redsysV2.js';
     }
 
     public function render()

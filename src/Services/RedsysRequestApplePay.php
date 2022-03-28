@@ -21,7 +21,7 @@ class RedsysRequestApplePay extends RedsysRequest
         $requestOperation->addParameter("DS_XPAYTYPE", "Apple");
         $requestOperation->addParameter("DS_XPAYORIGEN", 'WEB');
 
-        $response = RedsysRest::make(RESTTrataRequestService::class, $this->config->key)
+        $response = RedsysRest::make(RESTTrataRequestService::class, $this->config->key, $this->config->test)
             ->sendOperation($requestOperation);
         $result   = $response->getResult();
         Log::debug("[REDSYS] Getting apple pay response {$result}");

@@ -20,7 +20,7 @@ abstract class RequestAuthorization extends RedsysRequest
             $operationRequest->createReference();
         }
 
-        $response = RedsysRest::make(RESTTrataRequestService::class, $this->config->key)->sendOperation($operationRequest);
+        $response = RedsysRest::make(RESTTrataRequestService::class, $this->config->key, $this->config->test)->sendOperation($operationRequest);
         $result   = $response->getResult();
         Log::debug("[REDSYS] Getting response {$result}");
         if ($result == RESTConstants::$RESP_LITERAL_KO) {

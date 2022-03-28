@@ -34,7 +34,7 @@ class WebhookController extends Controller
 
         try {
             $result = $this->unserializeWebhookHandler($cachedData)->handle(
-                $this->redsysPayment($request, $operation), $this->unserializeChargeRequest($cachedData)
+                $this->redsysPayment($request, $operation), $this->unserializeChargeRequest($cachedData), $this->isTest($cachedData)
             );
             if (! $result->success) {
                 $this->chargeFailed($request, 'Charge authentication failed');
@@ -92,6 +92,11 @@ class WebhookController extends Controller
     protected function unserializeOperation(?array $cachedData) : ?RESTOperationElement
     {
         return $this->unserialize($cachedData, 'operation', true);
+    }
+
+    protected function isTest(?array $cachedData): bool
+    {
+        return $cachedData['test'] ?? false;
     }
 
     protected function redsysPayment(Request $request, RESTOperationElement $operation) : RedsysPayment

@@ -15,14 +15,14 @@ class RedsysRest
      */
     private $service;
 
-    public function __construct($class, $claveComercio)
+    public function __construct($class, $claveComercio, bool $test)
     {
-        $this->service = new $class($claveComercio, RedsysPaymentGateway::isTestEnvironment() ? RESTConstants::$ENV_SANDBOX : RESTConstants::$ENV_PRODUCTION);
+        $this->service = new $class($claveComercio, $test ? RESTConstants::$ENV_SANDBOX : RESTConstants::$ENV_PRODUCTION);
     }
 
-    public static function make($class, $key) : RedsysRest
+    public static function make($class, $key, bool $test) : RedsysRest
     {
-        return new self($class, $key);
+        return new self($class, $key, $test);
     }
 
     public function sendOperation($request) : RESTResponseMessage

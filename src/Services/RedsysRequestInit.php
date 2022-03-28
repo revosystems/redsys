@@ -19,7 +19,7 @@ class RedsysRequestInit extends RedsysRequest
             ->setCard($chargeRequest)
             ->demandCardData();
 
-        $response = RedsysRest::make(RESTInitialRequestService::class, $this->config->key)
+        $response = RedsysRest::make(RESTInitialRequestService::class, $this->config->key, $this->config->test)
             ->sendOperation($requestOperation);
         return $this->parseResult($chargePayment, $chargeRequest, $response);
     }
