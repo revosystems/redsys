@@ -43,7 +43,7 @@
             'font-size:16px; font-weight: 700;' +
             'font-family: ui-sans-serif, system-ui, -apple-system, "system-ui", "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji"';
         boxStyle = 'box-shadow:none; margin-top:24px'
-        bodyStyle = 'margin-top: -68px; color: gray'
+        bodyStyle = 'margin-top: -30px; color: gray'
         // Redsys iframe available method to load card form
         getInSiteForm('{{ $redsysFormId }}', buttonStyle, bodyStyle, boxStyle, inputsStyle, '{!! __(config('redsys.translationsPrefix') . 'pay') . ' ' . $chargePayment->price->format() !!}',
             "{{ $redsysConfig->code }}", "{{ $redsysConfig->terminal }}", "{{ $paymentReference }}", false)
