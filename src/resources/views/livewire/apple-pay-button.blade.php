@@ -85,5 +85,13 @@
         function onApplePayAuthorized(data) {
             window.livewire.emit('onApplePayAuthorized', data)
         }
+
+        function enableApplePayButton(enable){
+            const applePayButton = document.getElementsByClassName("apple-pay-button")[0];
+            if (applePayButton == null) {
+                return;
+            }
+            applePayButton.disabled = !enable;
+        }
     </script>
 @endpush

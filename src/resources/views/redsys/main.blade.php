@@ -1,4 +1,19 @@
-<div class="flex w-full flex-col space-y-4 justify-center md:justify-start">
+<div x-data="{
+        init() {
+            setTimeout(() => this.enableButtons(false), 200)
+        },
+        enableButtons(enable) {
+            enableGooglePayButton(enable)
+            enableApplePayButton(enable)
+            this.updateButtom(document.getElementById('redsys-hosted-pay-button'), enable)
+            Array.from(document.getElementsByClassName('token-card')).forEach(elem => this.updateButtom(elem, enable))
+        },
+        updateButtom(elem, enable) {
+            elem.style.pointerEvents = enable ? 'all' : 'none'
+            elem.style.opacity = enable ? 1 : 0.5
+        }
+    }"
+    x-init="init()" class="flex w-full flex-col space-y-4 justify-center md:justify-start">
     <div id="errorContainer" class="hidden flex items-center text-center text-white font-bold px-3 py-3 rounded shadow-xl bg-red-600" style="background-color: #e46e6a">
         <p id="errorMessage" class="flex text-m"></p>
     </div>
@@ -30,6 +45,14 @@
         'tenant'            => $chargePayment->tenant,
         'amount'            => $chargePayment->price->amount / 100,
     ])
+
+    <div class="inline-flex mx-auto items-center space-x-3">
+        <input x-on:change="enableButtons($event.target.checked)" name="policyCheck" id="policyCheck" type="checkbox">
+        <label class="text-gray-700 text-sm font-bold" for="policyCheck"> {{ __(config('redsys.translationsPrefix') . 'readPolicy') }}
+            <a class="text-blue-500 underline" target="_blank" href="{{$redsysConfig->refundPolicy ?? ''}}">{{ mb_strtolower(__(config('redsys.translationsPrefix') . 'refundPolicy')) }}</a>
+        </label>
+    </div>
+    <p class="text-xs text-center max-w-md mx-auto">{{ $redsysConfig->legalInfo ?? '' }}</p>
 
     <x-redsys-radio-selector :id="'challenge-form-box'" :name="'challenge-form'" :label="'Redsys'" :hidden="true" :hideInput="true">
         <div id="challenge-form" class="block w-full h-16 flex-row justify-center text-center items-center outline-none rounded"></div>
