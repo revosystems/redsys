@@ -233,5 +233,13 @@
             window.livewire.emit('onGooglePayAuthorized', paymentToken)
         }
 
+
+        function enableGooglePayButton(enable){
+            const googlePayButton = document.getElementsByClassName("gpay-button")[0];
+            if (googlePayButton == null) {
+                return;
+            }
+            googlePayButton.disabled = !enable;
+        }
     </script>
 @endpush
