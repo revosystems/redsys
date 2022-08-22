@@ -46,7 +46,9 @@ class RedsysPaymentGateway
             'chargePayment'     => $chargePayment,
             'redsysConfig'      => $this->config,
             'customerToken'     => $customerToken,
-            'cards'             => CardsTokenizable::get($customerToken)
+            'cards'             => CardsTokenizable::get($customerToken),
+            'applePayEnabled' => $this->config->applePayEnabled,
+            'googlePayEnabled' => $this->config->googlePayEnabled,
         ])->render();
     }
 
