@@ -34,17 +34,21 @@
 
     @livewire('check-status', compact('paymentReference'))
 
-    @livewire('google-pay-button', [
-        'paymentReference'  => $paymentReference,
-        'merchantCode'      => $redsysConfig->code,
-        'amount'            => $chargePayment->price->amount / 100,
-    ])
+    @if($googlePayEnabled)
+        @livewire('google-pay-button', [
+            'paymentReference'  => $paymentReference,
+            'merchantCode'      => $redsysConfig->code,
+            'amount'            => $chargePayment->price->amount / 100,
+        ])
+    @endif
 
-    @livewire('apple-pay-button', [
-        'paymentReference'  => $paymentReference,
-        'tenant'            => $chargePayment->tenant,
-        'amount'            => $chargePayment->price->amount / 100,
-    ])
+    @if($applePayEnabled)
+        @livewire('apple-pay-button', [
+            'paymentReference'  => $paymentReference,
+            'tenant'            => $chargePayment->tenant,
+            'amount'            => $chargePayment->price->amount / 100,
+        ])
+    @endif
 
     <div class="inline-flex mx-auto items-center space-x-3">
         <input x-on:change="enableButtons($event.target.checked)" name="policyCheck" id="policyCheck" type="checkbox">
