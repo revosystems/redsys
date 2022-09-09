@@ -3,8 +3,8 @@
             setTimeout(() => this.enableButtons(false), 200)
         },
         enableButtons(enable) {
-            enableGooglePayButton(enable)
-            enableApplePayButton(enable)
+            if({{$googlePayEnabled}}) enableGooglePayButton(enable)
+            if({{$applePayEnabled}}) enableApplePayButton(enable)
             this.updateButtom(document.getElementById('redsys-hosted-pay-button'), enable)
             Array.from(document.getElementsByClassName('token-card')).forEach(elem => this.updateButtom(elem, enable))
         },
@@ -50,11 +50,13 @@
         ])
     @endif
 
-    <div class="inline-flex mx-auto items-center space-x-3">
-        <input x-on:change="enableButtons($event.target.checked)" name="policyCheck" id="policyCheck" type="checkbox">
-        <label class="text-gray-700 text-sm font-bold" for="policyCheck"> {{ __(config('redsys.translationsPrefix') . 'readPolicy') }}
-            <a class="text-blue-500 underline" target="_blank" href="{{$redsysConfig->refundPolicy ?? ''}}">{{ mb_strtolower(__(config('redsys.translationsPrefix') . 'refundPolicy')) }}</a>
-        </label>
+    <div id="refund-policy" class="w-full fixed bottom-4 flex left-0 p-4">
+        <div class="w-full max-w-md mx-auto inline-flex mx-auto items-center space-x-3 bg-blue-400 p-4 py-2 rounded-full shadow-xl">
+            <input x-on:change="enableButtons($event.target.checked)" name="policyCheck" id="policyCheck" type="checkbox">
+            <label class="text-white text-sm font-bold" for="policyCheck"> {{ __(config('redsys.translationsPrefix') . 'readPolicy') }}
+                <a class="underline" target="_blank" href="{{$redsysConfig->refundPolicy ?? ''}}">{{ mb_strtolower(__(config('redsys.translationsPrefix') . 'refundPolicy')) }}</a>
+            </label>
+        </div>
     </div>
     <p class="text-xs text-center max-w-md mx-auto">{{ $redsysConfig->legalInfo ?? '' }}</p>
 
