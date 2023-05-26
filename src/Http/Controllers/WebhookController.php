@@ -8,6 +8,7 @@ use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 use Revosystems\Redsys\Lib\Model\Element\RESTOperationElement;
+use Revosystems\Redsys\Models\ChargeResult;
 use Revosystems\Redsys\Services\RedsysChargeRequest;
 use Revosystems\Redsys\Services\RedsysException;
 use Revosystems\Redsys\Services\RedsysPayment;
@@ -41,7 +42,7 @@ class WebhookController extends Controller
                 return;
             }
             Log::debug('[REDSYS] Authenticate charge success');
-            $this->chargeSucceeded($request);
+            $this->chargeSucceeded($request, $result);
             return;
         } catch (RedsysException $e) {
             $this->chargeFailed($request, "Charge failed {$e->getMessage()}");
@@ -66,8 +67,9 @@ class WebhookController extends Controller
         Cache::put(WebhookHandler::ORDERS_CACHE_KEY . "{$request->get('paymentReference')}.result", 'FAILED', Carbon::now()->addMinutes(30));
     }
 
-    protected function chargeSucceeded(Request $request)
+    protected function chargeSucceeded(Request $request, ChargeResult $result)
     {
+        Cache::put(WebhookHandler::ORDERS_CACHE_KEY . "{$request->get('paymentReference')}.chargeResult", serialize($result), Carbon::now()->addMinutes(30));
         Cache::put(WebhookHandler::ORDERS_CACHE_KEY . "{$request->get('paymentReference')}.result", 'SUCCESS', Carbon::now()->addMinutes(30));
     }
 

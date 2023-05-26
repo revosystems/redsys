@@ -31,7 +31,8 @@ class CheckStatus extends Component
             return;
         }
         if ($result === 'SUCCESS') {
-            RedsysChargePayment::get($this->paymentReference)->payHandler->onPaymentSucceed($this->paymentReference);
+            $chargeResult = unserialize(Cache::get(WebhookHandler::ORDERS_CACHE_KEY . "{$this->paymentReference}.chargeResult"));
+            RedsysChargePayment::get($this->paymentReference)->payHandler->onPaymentSucceed($this->paymentReference, $chargeResult);
         }
     }
 }

@@ -52,6 +52,27 @@ class RedsysPaymentGateway
         ])->render();
     }
 
+    public function renderTokenize(RedsysChargePayment $chargePayment)
+    {
+        $paymentReference = RedsysChargeRequest::generatePaymentReference();
+        $chargePayment->persist($paymentReference);
+        return view('redsys::tokenize.index', [
+            'paymentReference'  => $paymentReference,
+            'chargePayment'     => $chargePayment,
+            'redsysConfig'      => $this->config,
+        ])->render();
+    }
+
+    public function tokenizeCard(RedsysChargePayment $chargePayment, RedsysChargeRequest $chargeRequest) : ChargeResult
+    {
+        $operationId = $chargeRequest->operationId;
+        $cardId      = $chargeRequest->cardId;
+        if ($operationId === -1 || (! $operationId && ! $cardId)) {
+            return new ChargeResult(false);
+        }
+        return (new RedsysRequestInit($this->config))->handle($chargePayment, $chargeRequest);
+    }
+
     public function charge(RedsysChargePayment $chargePayment, RedsysChargeRequest $chargeRequest) : ChargeResult
     {
         $operationId = $chargeRequest->operationId;
