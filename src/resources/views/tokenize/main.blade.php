@@ -141,12 +141,12 @@
     })
 
     let redsysErrors = {
-        "msg1": "Ha de rellenar los datos de la tarjeta",
+        "msg1": "Debe de rellenar los datos de la tarjeta",
         "msg2": "La tarjeta es obligatoria",
-        "msg3": "La tarjeta ha de ser numérica",
+        "msg3": "La tarjeta debe de ser numérica",
         "msg4": "La tarjeta no puede ser negativa",
         "msg5": "El mes de caducidad de la tarjeta es obligatorio",
-        "msg6": "El mes de caducidad de la tarjeta ha de ser numérico",
+        "msg6": "El mes de caducidad de la tarjeta debe de ser numérico",
         "msg7": "El mes de caducidad de la tarjeta es incorrecto",
         "msg8": "El año de caducidad de la tarjeta es obligatorio",
         "msg9": "El año de caducidad de la tarjeta ha de ser numérico",
@@ -156,7 +156,7 @@
         "msg13": "El código de seguridad de la tarjeta no puede ser negativo",
         "msg14": "El código de seguridad no es necesario para su tarjeta",
         "msg15": "La longitud de la tarjeta no es correcta",
-        "msg16": "Debe Introducir un número de tarjeta válido (sin espacios ni guiones).",
+        "msg16": "Debe introducir un número de tarjeta válido (sin espacios ni guiones).",
         "msg17": "Validación incorrecta por parte del comercio"
     }
 </script>
