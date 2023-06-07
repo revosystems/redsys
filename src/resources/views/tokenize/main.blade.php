@@ -3,10 +3,7 @@
             setTimeout(() => this.enableButtons(false), 200)
         },
         enableButtons(enable) {
-            if({{$googlePayEnabled}}) enableGooglePayButton(enable)
-            if({{$applePayEnabled}}) enableApplePayButton(enable)
             this.updateButton(document.getElementById('redsys-hosted-pay-button'), enable)
-            Array.from(document.getElementsByClassName('token-card')).forEach(elem => this.updateButton(elem, enable))
         },
         updateButton(elem, enable) {
             elem.style.pointerEvents = enable ? 'all' : 'none'
@@ -17,38 +14,13 @@
     <div id="errorContainer" class="hidden flex items-center text-center text-white font-bold px-3 py-3 rounded shadow-xl bg-red-600" style="background-color: #e46e6a">
         <p id="errorMessage" class="flex text-m"></p>
     </div>
-    <div>
-        @include('redsys::app.cards.tokenized-cards', [
-            'cards' => $cards,
-            'price' => $chargePayment->price->format()
-        ])
-    </div>
 
-    @livewire('redsys-form', [
+    @livewire('redsys-tokenize-form', [
         'redsysFormId'      => $redsysFormId,
-        'customerToken'     => $customerToken,
-        'hasCards'          => $cards->isNotEmpty(),
         'paymentReference'  => $paymentReference,
-        'price'             => $chargePayment->price->format()
     ])
 
     @livewire('check-status', compact('paymentReference'))
-
-    @if($googlePayEnabled)
-        @livewire('google-pay-button', [
-            'paymentReference'  => $paymentReference,
-            'merchantCode'      => $redsysConfig->code,
-            'amount'            => $chargePayment->price->amount / 100,
-        ])
-    @endif
-
-    @if($applePayEnabled)
-        @livewire('apple-pay-button', [
-            'paymentReference'  => $paymentReference,
-            'tenant'            => $chargePayment->tenant,
-            'amount'            => $chargePayment->price->amount / 100,
-        ])
-    @endif
 
     <div id="refund-policy" class="w-full fixed bottom-4 flex left-0 p-4">
         <div class="w-full max-w-md mx-auto inline-flex mx-auto items-center space-x-3 bg-blue-400 p-4 py-2 rounded-full shadow-xl">
@@ -67,14 +39,14 @@
 
 <script>
     function loadRedsysForm(inputsStyle = '') {
-        buttonStyle = 'background-color:#000000; margin-top:28px; margin-bottom: -28px; width:310px; height:48px; text-transform: uppercase; margin-right:0; margin-left:0;' +
+        let buttonStyle = 'background-color:#000000; margin-top:28px; margin-bottom: 28px; width:310px; height:48px; text-transform: uppercase;' +
             'border-radius: 0.25rem;' +
             'font-size:16px; font-weight: 700;' +
             'font-family: ui-sans-serif, system-ui, -apple-system, "system-ui", "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji"';
-        boxStyle = 'box-shadow:none; margin-top:24px'
-        bodyStyle = 'margin-top: -30px; color: gray'
+        let boxStyle = 'box-shadow:none; margin-top:24px'
+        let bodyStyle = 'margin-top: 30px; color: gray'
         // Redsys iframe available method to load card form
-        getInSiteForm('{{ $redsysFormId }}', buttonStyle, bodyStyle, boxStyle, inputsStyle, '{!! __(config('redsys.translationsPrefix') . 'pay') . ' ' . $chargePayment->price->format() !!}',
+        getInSiteForm('{{ $redsysFormId }}', buttonStyle, bodyStyle, boxStyle, inputsStyle, '{!! __(config('redsys.translationsPrefix') . 'saveCard') !!}',
             "{{ $redsysConfig->code }}", "{{ $redsysConfig->terminal }}", "{{ $paymentReference }}", false)
     }
 
@@ -87,10 +59,6 @@
         setTimeout(function () {
             document.getElementById("errorContainer").classList.add('hidden')
         }, 3400);
-    }
-
-    function onTokenizedCardPressed(cardId) {
-        window.livewire.emit('onTokenizedCardPressed', cardId, browserData())
     }
 
     function browserData() {
@@ -115,13 +83,14 @@
             submitChallengeForm()
         }
         if (data.result === 'OK') {
-            window.livewire.emit("onPaymentCompleted")
+            window.livewire.emit("onTokenizeCompleted", data)
         }
     }
 
     function loadChallengeForm(displayForm) {
         console.debug(displayForm);
         Array.from(document.getElementsByClassName('radio-selector-box')).forEach((el) => { el.classList.contains('hidden') ? el.classList.remove('hidden') : el.classList.add('hidden') })
+        document.getElementById("redsys-init-form").classList.add('hidden')
         document.getElementById("challenge-form-box").classList.remove('hidden')
         document.getElementById("challenge-form").style.height = '980px'
         document.getElementById("challenge-form").innerHTML = displayForm

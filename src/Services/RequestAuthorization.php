@@ -19,6 +19,9 @@ abstract class RequestAuthorization extends RedsysRequest
         if ($chargeRequest->customerToken) {
             $operationRequest->createReference();
         }
+        if ($chargeRequest->cardId && !$chargeRequest->extraInfo) {
+            $operationRequest->useDirectPayment();
+        }
 
         $response = RedsysRest::make(RESTTrataRequestService::class, $this->config->key, $this->config->test)->sendOperation($operationRequest);
         $result   = $response->getResult();

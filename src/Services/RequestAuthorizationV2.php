@@ -38,22 +38,24 @@ class RequestAuthorizationV2 extends RequestAuthorization
         if ($threeDSMethodURL) {
             // implementar nou flux
         }
-        $operationRequest->setEMV3DSParamsV2(
-            $protocolVersion,
-            request()->header('Accept'),
-            request()->header('User-Agent'),
-            "true", "true",
-            request()->ip(),
-//            request()->header('Accept-Language', 'es-ES'), // navigator.language
-            "es-ES",
-            (string)$chargeRequest->extraInfo['browser_color_depth'],
-            (string)$chargeRequest->extraInfo['browser_height'],
-            (string)$chargeRequest->extraInfo['browser_width'],
-            (string)$chargeRequest->extraInfo['browser_tz'],
-            $response->getThreeDSServerTransID(),
-            $this->getWebhookUrl($chargePayment, $chargeRequest->paymentReference),
-            $threeDSMethodURL ? 'N' : 'U'
-        );
+        if ($chargeRequest->extraInfo){
+            $operationRequest->setEMV3DSParamsV2(
+                $protocolVersion,
+                request()->header('Accept'),
+                request()->header('User-Agent'),
+                "true", "true",
+                request()->ip(),
+    //            request()->header('Accept-Language', 'es-ES'), // navigator.language
+                "es-ES",
+                (string)$chargeRequest->extraInfo['browser_color_depth'],
+                (string)$chargeRequest->extraInfo['browser_height'],
+                (string)$chargeRequest->extraInfo['browser_width'],
+                (string)$chargeRequest->extraInfo['browser_tz'],
+                $response->getThreeDSServerTransID(),
+                $this->getWebhookUrl($chargePayment, $chargeRequest->paymentReference),
+                $threeDSMethodURL ? 'N' : 'U'
+            );
+        }
 //        if (auth()->user()->email) {
 //            $operationRequest->addEmvParameter(RESTConstants::$REQUEST_MERCHANT_EMV3DS_EMAIL, auth()->user()->email);
 //        }

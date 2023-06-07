@@ -31,6 +31,13 @@ class RedsysChargeRequest
         return $chargeRequest;
     }
 
+    public static function makeWithCardForCOF(string $cardId, $paymentReference = null) : self
+    {
+        $chargeRequest = new self($paymentReference);
+        $chargeRequest->cardId          = $cardId;
+        return $chargeRequest;
+    }
+
     public static function generatePaymentReference() : string
     {
         return substr(str_shuffle(str_repeat('ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789', 10)), 0, 12);
