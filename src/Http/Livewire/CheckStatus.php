@@ -27,10 +27,12 @@ class CheckStatus extends Component
             return;
         }
         if ($result === 'FAILED') {
+            Cache::forget(WebhookHandler::ORDERS_CACHE_KEY . "{$this->paymentReference}.result");
             RedsysChargePayment::get($this->paymentReference)->payHandler->onPaymentFailed('Redsys payment failed');
             return;
         }
         if ($result === 'SUCCESS') {
+            Cache::forget(WebhookHandler::ORDERS_CACHE_KEY . "{$this->paymentReference}.result");
             $chargeResult = unserialize(Cache::get(WebhookHandler::ORDERS_CACHE_KEY . "{$this->paymentReference}.chargeResult"));
             RedsysChargePayment::get($this->paymentReference)->payHandler->onPaymentSucceed($this->paymentReference, $chargeResult);
         }
