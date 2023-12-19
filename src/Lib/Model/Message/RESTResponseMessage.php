@@ -41,7 +41,7 @@ class RESTResponseMessage extends RESTGenericXml implements RESTResponseInterfac
         $this->apiCode = $apiCode;
     }
 
-    public function getOperation() : RESTOperationElement
+    public function getOperation() : ?RESTOperationElement
     {
         return $this->operation;
     }

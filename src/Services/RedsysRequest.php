@@ -23,8 +23,8 @@ abstract class RedsysRequest
         return [
             "result"    => $response->getResult(),
             "operation" => $response->getResult() !== 'KO' ? $response->getOperation() : null,
-            'customerToken' => $response->getOperation()->getMerchantIdentifier(),
-            'customerTokenExpiration' => $response->getOperation()->getExpiryDate()
+            'customerToken' => $response->getOperation()?->getMerchantIdentifier(),
+            'customerTokenExpiration' => $response->getOperation()?->getExpiryDate()
         ];
     }
 }
