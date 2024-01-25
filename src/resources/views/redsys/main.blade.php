@@ -75,7 +75,7 @@
         bodyStyle = 'margin-top: -30px; color: gray'
         // Redsys iframe available method to load card form
         getInSiteForm('{{ $redsysFormId }}', buttonStyle, bodyStyle, boxStyle, inputsStyle, '{!! __(config('redsys.translationsPrefix') . 'pay') . ' ' . $chargePayment->price->format() !!}',
-            "{{ $redsysConfig->code }}", "{{ $redsysConfig->terminal }}", "{{ $paymentReference }}", false)
+            "{{ $redsysConfig->code }}", "{{ $redsysConfig->terminal }}", "{{ $paymentReference }}", "{{ $locale }}",false)
     }
 
     function showError(message) {

@@ -21,7 +21,7 @@
 
 @section('header')
     <div class="flex justify-center">
-        <div class="text-sm">Orden #{{$chargePayment->externalReference}}</div>
+        <div class="text-sm">{{ __(config('redsys.translationsPrefix') . 'order') }} #{{$chargePayment->externalReference}}</div>
     </div>
 @endsection
 
@@ -35,6 +35,7 @@
             'chargePayment'     => $chargePayment,
             'customerToken'     => $customerToken,
             'cards'             => $cards,
+            'locale'            => strtoupper(app()->getLocale()),
         ])
     </div>
 
