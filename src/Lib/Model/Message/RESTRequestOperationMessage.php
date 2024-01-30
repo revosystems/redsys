@@ -22,6 +22,7 @@ abstract class RESTRequestOperationMessage extends RESTGenericXml
 
         $this->addParameter("DS_MERCHANT_REVO_ORDER_ID", $chargePayment->externalReference);
         $this->addParameter("DS_MERCHANT_REVO_TENANT", $chargePayment->tenant);
+        $this->addParameter(RESTConstants::$REQUEST_MERCHANT_EXEMPTION, RESTConstants::$REQUEST_MERCHANT_EXEMPTION_VALUE_MIT);
         return $this;
     }
 
