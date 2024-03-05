@@ -1,6 +1,8 @@
 <div x-data="{
         init() {
-            setTimeout(() => this.enableButtons(false), 200)
+            @if ($redsysConfig->refundPolicy)
+                setTimeout(() => this.enableButtons(false), 200)
+            @endif
         },
         enableButtons(enable) {
             this.updateButton(document.getElementById('redsys-hosted-pay-button'), enable)
@@ -22,15 +24,19 @@
 
     @livewire('check-status', compact('paymentReference'))
 
-    <div id="refund-policy" class="w-full fixed bottom-4 flex left-0 p-4">
-        <div class="w-full max-w-md mx-auto inline-flex mx-auto items-center space-x-3 bg-blue-400 p-4 py-2 rounded-full shadow-xl">
-            <input x-on:change="enableButtons($event.target.checked)" name="policyCheck" id="policyCheck" type="checkbox">
-            <label class="text-white text-sm font-bold" for="policyCheck"> {{ __(config('redsys.translationsPrefix') . 'readPolicy') }}
-                <a class="underline" target="_blank" href="{{$redsysConfig->refundPolicy ?? ''}}">{{ mb_strtolower(__(config('redsys.translationsPrefix') . 'refundPolicy')) }}</a>
-            </label>
+    @if ($redsysConfig->refundPolicy)
+        <div id="refund-policy" class="w-full fixed bottom-4 flex left-0 p-4">
+            <div class="w-full max-w-md mx-auto inline-flex mx-auto items-center space-x-3 bg-blue-400 p-4 py-2 rounded-full shadow-xl">
+                <input x-on:change="enableButtons($event.target.checked)" name="policyCheck" id="policyCheck" type="checkbox">
+                <label class="text-white text-sm font-bold" for="policyCheck"> {{ __(config('redsys.translationsPrefix') . 'readPolicy') }}
+                    <a class="underline" target="_blank" href="{{$redsysConfig->refundPolicy ?? ''}}">{{ mb_strtolower(__(config('redsys.translationsPrefix') . 'refundPolicy')) }}</a>
+                </label>
+            </div>
         </div>
-    </div>
-    <p class="text-xs text-center max-w-md mx-auto">{{ $redsysConfig->legalInfo ?? '' }}</p>
+    @endif
+    @if ($redsysConfig->legalInfo)
+        <p class="text-xs text-center max-w-md mx-auto">{{ $redsysConfig->legalInfo ?? '' }}</p>
+    @endif
 
     <x-redsys-radio-selector :id="'challenge-form-box'" :name="'challenge-form'" :label="'Redsys'" :hidden="true" :hideInput="true">
         <div id="challenge-form" class="block w-full h-16 flex-row justify-center text-center items-center outline-none rounded"></div>
