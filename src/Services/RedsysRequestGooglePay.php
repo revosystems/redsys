@@ -24,11 +24,15 @@ class RedsysRequestGooglePay extends RedsysRequest
         $response = RedsysRest::make(RESTTrataRequestService::class, $this->config->key, $this->config->test)
             ->sendOperation($requestOperation);
         $result   = $response->getResult();
-        Log::debug("[REDSYS] Getting google pay response {$result}");
-        if ($result == RESTConstants::$RESP_LITERAL_KO) {
-            Log::error("[REDSYS] Operation `GooglePay` was not OK");
-            return new ChargeResult(false, $this->getResponse($response));
+        
+        Log::debug("[{$chargeRequest->operationId}] REDSYS getting google pay response {$result}");
+        
+        if ($result == RESTConstants::$RESP_LITERAL_OK) {
+            return new ChargeResult(true, $this->getResponse($response), "redsys:{$chargeRequest->paymentReference}");
         }
-        return new ChargeResult(true, $this->getResponse($response), "redsys:{$chargeRequest->paymentReference}");
+        
+        Log::error("[{$chargeRequest->operationId}] REDSYS operation `GooglePay` was not OK");
+        
+        return new ChargeResult(false, $this->getResponse($response));
     }
 }
